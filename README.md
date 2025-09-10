@@ -14,6 +14,7 @@ There are a few things you will need to do to get this flake working. If you are
 * NixOS installation
 * flakes enabled
 * internet access
+* Foobar
 
 You will need to clone this repo:
 
