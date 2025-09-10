@@ -1,0 +1,194 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json───",
+  "logo": {
+    "source": "/home/wyatt/.config/fastfetch/nixos1.png",
+    "type": "auto",
+    "height": 25
+    // "width": 55,
+    // "padding": {
+    //   "top": 2,
+    //   "left": 2,
+    // }
+  },
+  "modules": [
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[90m┌──────────────────────────── NixOS ──────────────────────────────┐"
+    },
+    {
+      "type": "os",
+      "key": "󱄅 OS                ",
+      "keyColor": "#f5c2e7"
+    },
+    {
+      "type": "title",
+      "key": "│ ├ HOST           ",
+      "format": "{host-name}",
+      "keyColor": "#f5c2e7"
+    },
+    {
+      "type": "kernel",
+      "key": "│ ├󰞸 KERNEL         ",
+      "keyColor": "#f5c2e7"
+    },
+    {
+      "type": "packages",
+      "key": "│ ├󰏖 PACKAGES       ",
+      "keyColor": "#f5c2e7"
+    },
+    {
+      "type": "terminal",
+      "key": "│ ├ TERMINAL       ",
+      "keyColor": "#f5c2e7"
+    },
+    {
+      "type": "terminalfont",
+      "key": "│ ├󰛖 TERMINAL FONT  ",
+      "keyColor": "#f5c2e7"
+    },
+    {
+      "type": "shell",
+      "key": "│ └ SHELL          ",
+      "keyColor": "#f5c2e7"
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[90m└────────────────────────────────────────────────────────────────┘"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[90m┌────────────────────── Desktop Environment ─────────────────────┐"
+    },
+    {
+      "type": "player",
+      "key": "│ ├󰥠 Player   ",
+      "format": "{player}",
+      "keyColor": "#f9e2af"
+    },
+    //       {
+    //           "type": "lm",
+    //           "key": "│ ├ DISPLAY MANAGER",
+    //           "keyColor": "#04a5e5"
+    //        },
+    {
+      "type": "wm",
+      "key": "│ ├ WINDER MANAJER ",
+      "keyColor": "#f9e2af"
+    },
+    {
+      "type": "wmtheme",
+      "key": "│ ├ THEME",
+      "keyColor": "#f9e2af"
+    },
+    //        {
+    //            "type": "icons",
+    //            "key": "│ ├󰉼 ICONS          ",
+    //            "keyColor": "#04a5e5"
+    //        },
+    {
+      "type": "font",
+      "key": "│ ├󰛖 SYSTEM FONT    ",
+      "format": "{3}",
+      "keyColor": "#f9e2af"
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[90m└────────────────────────────────────────────────────────────────┘"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[90m┌───────────────────────── Age / Uptime ─────────────────────────┐"
+    },
+    {
+      "type": "command",
+      "key": "󱄅 Challange progres ",
+      "keyColor": "#f9e2af",
+      "text": "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current -  birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days of 2 years."
+    },
+    {
+      "type": "command",
+      "key": "│ ├ Days left:     ",
+      "keyColor": "#f9e2af",
+      "text": "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); remaining_days=$((730 - days_difference)); echo $remaining_days days"
+    },
+    {
+      "type": "uptime",
+      "key": "│ ├ Uptime         ",
+      "keyColor": "#f9e2af"
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[90m└────────────────────────────────────────────────────────────────┘"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[90m┌──────────────────────── Build Specs ───────────────────────────┐"
+    },
+    {
+      "type": "host",
+      "key": "  PC",
+      "keyColor": "#89dceb"
+    },
+    {
+      "type": "cpu",
+      "key": "│ ├ CPU            ",
+      "showPeCoreCount": true,
+      "keyColor": "#89dceb"
+    },
+    {
+      "type": "gpu",
+      "key": "│ ├󰍛 GPU            ",
+      "keyColor": "#89dceb"
+    },
+    //        {
+    //            "type": "gpu",
+    //            "key": "│ ├󰍛 GPU            ",
+    //            "format": "{3}",
+    //            "keyColor": "#a6d189"
+    //        },
+    {
+      "type": "display",
+      "key": "│ ├󰹑 DISPLAY        ",
+      "keyColor": "#89dceb"
+    },
+    {
+      "type": "sound",
+      "key": "│ ├󰓃 SOUND          ",
+      "format": "{name: 38}",
+      "keyColor": "#89dceb"
+    },
+    {
+      "type": "memory",
+      "key": "│ ├󰍛 MEMORY         ",
+      "keyColor": "#89dceb"
+    },
+    {
+      "type": "swap",
+      "key": "│ ├󰓡 SWAP           ",
+      "keyColor": "#89dceb"
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[90m└────────────────────────────────────────────────────────────────┘"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[90m┌────────────────────────── SSD Storage ─────────────────────────┐"
+    },
+    {
+      "type": "disk",
+      "key": "│ ├ DISK  ",
+      "keyColor": "#89dceb"
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[90m└────────────────────────────────────────────────────────────────┘"
+    },
+    "break",
+  ]
+}

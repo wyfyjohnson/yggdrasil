@@ -1,0 +1,23 @@
+background="#1E1E2E" # base
+text="#C6D0F5" # text
+subtle="#7B819D" # overlay1
+warning-text="#FAB387" # peach
+text-special-one="#F5E0DC" # rosewater
+text-special-two="#A6E3A1" # green
+controls-highlight="#74C7EC" # sapphire
+button-color-one="#87B0F9" # blue
+button-color-two="#1E1E2E" # base
+top-bar-background="#43465A" # surface1
+top-bar-text="#C6D0F5" # text
+status-bar-background="#696D86" # overlay0
+status-bar-text="#C6D0F5" # text
+status-bar-view-background="#7B819D" # overlay1
+status-bar-view-text="#C6D0F5" # text
+list-selected-background="#A6E3A1" # green
+list-selected-text="#1E1E2E" # base
+list-selected-inactive-background="#1E1E2E" # base
+list-selected-inactive-text="#EBA0AC" # maroon
+timeline-name-background="#696D86" # overlay0
+timeline-name-text="#C6D0F5" # text
+command-text="#F5E0DC" # rosewater
+

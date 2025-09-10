@@ -1,0 +1,5 @@
+import:
+    move: yes
+plugins: fetchart thumbnails
+fetchart:
+    auto: yes

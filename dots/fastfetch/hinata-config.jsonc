@@ -1,0 +1,107 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "display": {
+      "separator": " -> "
+  },
+  "logo": {
+      "source": "~/Pictures/hinata.png",
+      "type": "kitty-direct",
+      "height": 27,
+      "width": 40
+  },
+  "modules": [
+    "title",
+    "separator",
+    {
+        "type": "os",
+        "key": "\uf322 OS"
+    },
+    {
+        "type": "kernel",
+        "key": "  ├\uf31a"
+    },
+    {
+        "type": "packages",
+        "key": "  ├\uf487"
+    },
+    {
+        "type": "shell",
+        "key": "  └\ue691"
+    },
+    "break",
+    {
+        "type": "host",
+        "key": "󰇅 PC",
+        "keyColor": "yellow"
+    },
+    {
+        "type": "cpu",
+        "key": "  ├\uf4bc",
+        "keyColor": "yellow"
+    },
+    {
+        "type": "gpu",
+        "key": "  ├\uf4bc",
+        "keyColor": "yellow"
+    },
+    {
+        "type": "memory",
+        "key": "  ├\ue266",
+        "keyColor": "yellow"
+    },
+    {
+        "type": "display",
+        "key": "  ├󰍹",
+        "keyColor": "yellow"
+    },
+    {
+        "type": "disk",
+        "key": "  ├\uf0a0",
+        "keyColor": "yellow"
+    },
+    {
+        "type": "uptime",
+        "key": "  └\uf017",
+        "keyColor": "yellow"
+    },
+    "break",
+    {
+        "type": "de",
+        "key": "󰨇 DE",
+        "keyColor": "green"
+    },
+    {
+        "type": "wm",
+        "key": "\ueb7f WM",
+        "keyColor": "green"
+    },
+    {
+        "type": "terminal",
+        "key": "  └\uf489",
+        "keyColor": "green"
+    },
+    "break",
+    {
+        "type": "custom",
+        "key": "\uf274 LC",
+        "format": "2 year distro challenge",
+        "keyColor": "magenta"
+    },
+    {
+        "type": "command",
+        "key": "  ├󱙭",
+        "shell": "/bin/bash",
+        "text": "stat -c %W / | awk '{print strftime(\"%Y-%m-%d\", $1)}'",
+        "keyColor": "magenta"
+    },
+    {
+        "type": "command",
+        "key": "  └󰃶",
+        "shell": "/bin/bash",
+        "text": "date +%s | awk '{print strftime(\"%Y-%m-%d\", $1)}'",
+        "keyColor": "magenta"
+    },
+    "break",
+    "colors"
+  ]
+}

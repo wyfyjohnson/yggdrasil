@@ -1,0 +1,10 @@
+* {
+    font: "CaskaydiaCove NF 12";
+    background: #1e1e2e;
+    bg-alt: #11111b;
+    background-alt: #181825;
+    foreground: #cdd6f4;
+    selected: #b4befe;
+    active: #cba6f7;
+    urgent: #f38ba8;
+}

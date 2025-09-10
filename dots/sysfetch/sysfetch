@@ -1,0 +1,124 @@
+#!/bin/sh
+
+# sysfetch
+# Thanks to u/x_ero for his sysinfo script
+
+# color escapes
+CBK=$(tput setaf 0)
+CRE=$(tput setaf 1)
+CGR=$(tput setaf 2)
+CYE=$(tput setaf 3)
+CBL=$(tput setaf 4)
+
+CMA=$(tput setaf 5)
+CCY=$(tput setaf 6)
+CWH=$(tput setaf 7)
+CBD=$(tput bold)
+CNC=$(tput sgr0)
+
+#█▓▒░ progress bar
+draw() {
+  FULL=━
+  EMPTY=━
+  out=
+  perc=$1
+  size=$2
+  inc=$(( perc * size / 100 ))
+  color=34
+  color2=31
+  for v in $(seq 0 $(( size - 1 ))); do
+    [ "$v" -le "$inc" ] && out="${out}${CMA}${FULL}" || out="${out}${CWH}${EMPTY}"
+  done
+  printf "%b" "$out"
+}
+
+#█▓▒░ populate vals
+i=1
+c=$(printf "\033[0m\033[31m░▒")
+while [ "$i" -le 6 ]; do
+  c=${c}$(printf "\033[%dm\033[%dm█▓▒░" "$((i+41))" "$((i+30))")
+  i=$((i+1))
+done
+COLORBAR=${c}$(printf "\033[37m█\033[0m▒░")
+
+age() {
+    install_sec=$(stat -c %W /)
+    if [ "$install_sec" -le 0 ]; then
+        install_sec=$(stat -c %Y /)
+    fi
+
+    now_sec=$(date +%s)
+    age_sec=$((now_sec - install_sec))
+
+    days=$((age_sec / 86400))
+    remaining_sec=$((age_sec % 86400))
+    hours=$((remaining_sec / 3600))
+    minutes=$(((remaining_sec % 3600) / 60))
+    seconds=$((remaining_sec % 60))
+
+    echo "${days} days"
+}
+
+center_text() {
+    local text="$1"
+    local width=${2:-40}
+    local len=${#text}
+    local pad=$(( (width - len) / 2 ))
+    printf "%*s%s\n" $pad "" "$text"
+}
+
+age_val=$(age)
+name=$USER
+host=$(uname -n)
+distro=$(uname -o | awk -F '"' '/PRETTY_NAME/ { print $2 }' /etc/os-release)
+# packages=$(pacman -Q | wc -l)
+packages=$(nix-store -q --references /var/run/current-system/sw | cut -d'-' -f2- | wc -l)
+wm=$(xprop -id "$(xprop -root -notype | awk '$1=="_NET_SUPPORTING_WM_CHECK:"{print $5}')" -notype -f _NET_WM_NAME 8t | grep "WM_NAME" | cut -f2 -d \")
+storage=$(df -h --output=used / | awk 'NR == 2 { print $1 }')
+term=$(ps -o sid= -p "$$" | xargs ps -o ppid= -p | xargs ps -o comm= -p)
+# uptm=$(uptime -p | sed -e 's/hour/hr/' -e 's/hours/hrs/' -e 's/minutes/mins/' -e 's/minute/min/' -e 's/up //')
+uptm=$(uptime | sed -e 's/hour/hr/' -e 's/hours/hrs/' -e 's/minutes/mins/' -e 's/minute/min/' -e 's/up //')
+c_lvl=$(printf "%.0f" "$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}')")
+CPU=$(printf "%-4s\033m%-5s%-25s \n" "${CGR}cpu${CNC} " "$c_lvl%" "$(draw "$c_lvl" 14)")
+ram_lvl=$(free | awk '/Mem:/ {print int($3/$2 * 100.0)}')
+RAM=$(printf "%-4s\033m%-5s%-25s \n" "${CGR}ram${CNC} " "$ram_lvl%" "$(draw "$ram_lvl" 14)")
+disk_lvl=$(df -h | grep '/$' | tr -s ' ' | cut -d ' ' -f5 | sed 's/%//')
+DISK=$(printf "%-4s\033m%-5s%-25s \n" "${CGR}disk${CNC} " "$disk_lvl%" "$(draw "$disk_lvl" 14)")
+
+#Cleanup first
+clear
+
+krabby random
+# kitty +kitten icat --align left --place=30x10@4x1 ~/.cache/pceww/images/arch-linux-logo.png
+printf "\n\n\n\n\n\n\n\n\n"
+# Colorbar
+printf "\033[0m\n    %s\033[0m\n\n" "$COLORBAR"
+
+# greetings
+center_text "H! $CRE$CBD$name$CNC" 53
+center_text "up $CCY$CBD$uptm$CNC" 53
+printf "\n"
+
+# environment
+printf "%s\n" "$CRE         distro $CGR  $CNC$distro"
+printf "%s\n" "$CRE            age $CGR  $CNC$age_val"
+printf "%s\n" "$CRE         kernel $CGR  $CNC$(uname -r)"
+printf "%s\n" "$CRE       packages $CGR  $CNC${packages}"
+printf "%s\n" "$CRE          shell $CGR  $CNC${SHELL##*/}"
+printf "%s\n" "$CRE           term $CGR  $CNC${term}"
+printf "%s\n" "$CRE             wm $CGR  $CNC${wm}"
+printf " %s\n" "$CNC"
+
+# CPU, RAM y DISK
+printf "        %s\n        %s\n       %s\033[0m\n" "$CPU" "$RAM" "$DISK"
+
+# hide the cursor and wait for user return input
+tput civis
+
+old_stty_cfg=$(stty -g)
+stty -icanon min 1 time 0
+# IFS= read -r char
+stty "$old_stty_cfg"
+
+# give the cursor back
+tput cnorm
