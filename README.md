@@ -20,4 +20,4 @@ You will need to clone this repo:
 
 ```git clone https://codeberg.org/wyfy/yggdrasil.git```
 
-```cd yggdrasil```
+`cd yggdrasil`
