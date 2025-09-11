@@ -22,14 +22,14 @@
                     system = "x86_64-linux";
                     modules = [
                         ./host/fenrir/configuration.nix
-                        (home-manager.nixosModules.home-manager hmOpts)
+                        home-manager.nixosModules.home-manager hmOpts
                     ];
                 };
                 jormungandr = nixpkgs.lib.nixosSystem {
                     system = "x86_64-linux";
                     modules = [
                         ./host/jormungandr/configuration.nix
-                        home-manager.nixosModules.home-manager {inherit hmOpts;}
+                        home-manager.nixosModules.home-manager hmOpts
                     ];
                 };
             };
