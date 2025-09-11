@@ -58,10 +58,20 @@ in
     })
     configs;
 
-    home.file.".config/hyfetch.json".source = dots/hyfetch.json;
-    home.file.".config/starship.toml".source = dots/starship.toml;
-    xdg.enable = true;
+    home.file.".config/hyfetch.json".source = ../../dots/hyfetch.json;
+    home.file.".config/starship.toml".source = ../../dots/starship.toml;
 
+  #   xdg.configFile."hypr/hyprland.conf" = {
+  #   enable = true;
+  #   # recursive = true;
+  #   source = ../../host/jormungandr/hypr;
+  # };
+
+  # programs.hyprland = {
+  #   enable = true;
+  #   portalPackage = pkgs.xdg-desktop-portal-hyprland;
+  #   xwayland.enable = true;
+  # };
     services.gnome-keyring.enable = true;
     
 
