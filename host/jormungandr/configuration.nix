@@ -4,6 +4,7 @@
   imports =
     [
       ./hardware-configuration.nix
+      ./hypr.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -55,11 +56,6 @@
     };
   };
 
-  programs.hyprland = {
-    enable = true;
-    portalPackage = pkgs.xdg-desktop-portal-hyprland;
-    xwayland.enable = true;
-  };
 
   fileSystems."/home" = {
     device = "dev/mapper/HOME_VG-home";

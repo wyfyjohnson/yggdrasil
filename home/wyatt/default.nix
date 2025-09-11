@@ -9,7 +9,7 @@ let
         fastfetch = "fastfetch";
         ghostty = "ghostty";
         helix = "helix";
-        hypr = "hypr";
+        # hypr = "hypr";
         kew = "kew";
         picom = "picom";
         qtile = "qtile";
