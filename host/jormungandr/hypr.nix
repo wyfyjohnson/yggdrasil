@@ -1,9 +1,9 @@
 { pkgs, ... }: {
 
-  xdg.configFile."hypr" = {
+  xdg.configFile."hypr/hyprland.conf" = {
     enable = true;
     recursive = true;
-    source = ./hypr;
+    source = ./hypr/hyprland.conf;
   };
 
   programs.hyprland = {

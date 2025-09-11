@@ -60,6 +60,7 @@ in
 
     home.file.".config/hyfetch.json".source = dots/hyfetch.json;
     home.file.".config/starship.toml".source = dots/starship.toml;
+    xdg.enable = true;
 
     services.gnome-keyring.enable = true;
     

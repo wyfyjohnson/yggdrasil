@@ -11,11 +11,13 @@
     outputs = { self, nixpkgs, home-manager,  ... }: {
         nixosConfigurations = let
             hmOpts = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "backup";
-                users.wyatt = import ./home/wyatt;
-            };
+                home-manager = {
+                    useGlobalPkgs = true;
+                    useUserPackages = true;
+                    backupFileExtension = "backup";
+                    users.wyatt = import ./home/wyatt;
+                    };
+                };
             in
             {
                 fenrir = nixpkgs.lib.nixosSystem {
