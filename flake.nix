@@ -29,7 +29,7 @@
                     system = "x86_64-linux";
                     modules = [
                         ./host/jormungandr/configuration.nix
-                        (home-manager.nixosModules.home-manager hmOpts)
+                        home-manager.nixosModules.home-manager {inherit hmOpts;}
                     ];
                 };
             };
