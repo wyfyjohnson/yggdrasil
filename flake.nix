@@ -24,6 +24,7 @@
                     system = "x86_64-linux";
                     modules = [
                         ./host/fenrir/configuration.nix
+                        # ./host/fenrir/hypr
                         home-manager.nixosModules.home-manager hmOpts
                     ];
                 };
@@ -31,41 +32,10 @@
                     system = "x86_64-linux";
                     modules = [
                         ./host/jormungandr/configuration.nix
+                        # ./host/jormungandr/hypr.nix
                         home-manager.nixosModules.home-manager hmOpts
                     ];
                 };
             };
-        # nixosConfigurations = {
-        #     fenrir = nixpkgs.lib.nixos {
-        #         system = "x86_64-linux";
-        #         modules = [
-        #             ./host/fenrir/configuration.nix
-        #             home-manager.nixosModules.home-manager
-        #             {
-        #                 home-manager = {
-        #                     useGlobalPkgs = true;
-        #                     useUserPackages = true;
-        #                     users.wyatt = import .host/fenrir/home.nix;
-        #                     backupFileExtension = "backup";
-        #                 };
-        #             }
-        #         ];
-        #     };
-        #     jormungandr = nixpkgs.lib.nixosSystem {
-        #         system = "x86_64-linux";
-        #         modules = [
-        #             ./host/jormungandr/configuration.nix
-        #             home-manager.nixosModules.home-manager
-        #             {
-        #                 home-manager = {
-        #                     useGlobalPkgs = true;
-        #                     useUserPackages = true;
-        #                     users.wyatt = import ./host/jormungandr/home.nix;
-        #                     backupFileExtension = "backup";
-        #                 };
-        #             }
-        #         ];
-        #     };
-        # };
     };
 }

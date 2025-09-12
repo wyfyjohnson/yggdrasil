@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 let
-    dots = "${config.home.homeDirectory}/yggdrasil/dots";
+    dots = "${config.home.homeDirectory}../../dots";
     create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
     configs = {
         beets = "beets";
@@ -61,17 +61,6 @@ in
     home.file.".config/hyfetch.json".source = ../../dots/hyfetch.json;
     home.file.".config/starship.toml".source = ../../dots/starship.toml;
 
-  #   xdg.configFile."hypr/hyprland.conf" = {
-  #   enable = true;
-  #   # recursive = true;
-  #   source = ../../host/jormungandr/hypr;
-  # };
-
-  # programs.hyprland = {
-  #   enable = true;
-  #   portalPackage = pkgs.xdg-desktop-portal-hyprland;
-  #   xwayland.enable = true;
-  # };
     services.gnome-keyring.enable = true;
     
 
