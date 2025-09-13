@@ -1,23 +1,23 @@
 { config, pkgs, ... }:
-let
-    dots = "${config.home.homeDirectory}../../dots";
-    create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
-    configs = {
-        beets = "beets";
-        btop = "btop";
-        cava = "cava";
-        fastfetch = "fastfetch";
-        ghostty = "ghostty";
-        helix = "helix";
-        # hypr = "hypr";
-        kew = "kew";
-        picom = "picom";
-        qtile = "qtile";
-        sysfetch = "sysfetch";
-        tut = "tut";
-        waybar = "waybar";
-    };
-in
+# let
+#     dots = "${config.home.homeDirectory}../../dots";
+#     create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
+#     configs = {
+#         beets = "beets";
+#         btop = "btop";
+#         cava = "cava";
+#         fastfetch = "fastfetch";
+#         ghostty = "ghostty";
+#         helix = "helix";
+#         # hypr = "hypr";
+#         kew = "kew";
+#         picom = "picom";
+#         qtile = "qtile";
+#         sysfetch = "sysfetch";
+#         tut = "tut";
+#         waybar = "waybar";
+#     };
+# in
 {
     home.username = "wyatt";
     home.homeDirectory = "/home/wyatt";
@@ -43,20 +43,30 @@ in
         bat = {
             enable = true;
             config.theme = "ansi";
-        };        
+        };
         git.enable = true;
         ghostty = {
             enable = true;
             enableBashIntegration = true;
             installBatSyntax = true;
         };
-        starship.enable = true;        
+        # nvf = {
+        #     enable = true;
+        #     settings = {
+        #         vim.viAlias = true;
+        #         vim.vimAlias = true;
+        #         vim.lsp = {
+        #             enable = true;
+        #         };
+        #     };
+        # };
+        starship.enable = true;
     };
-    xdg.configFile = builtins.mapAttrs (name: subpath: {
-        source = create_symlink "${dots}/${subpath}";
-        recursive = true;
-    })
-    configs;
+    # xdg.configFile = builtins.mapAttrs (name: subpath: {
+    #     source = create_symlink "${dots}/${subpath}";
+    #     recursive = true;
+    # })
+    # configs;
 
     home.file.".config/hyfetch.json".source = ../../dots/hyfetch.json;
     home.file.".config/starship.toml".source = ../../dots/starship.toml;
