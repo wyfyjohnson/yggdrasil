@@ -55,18 +55,64 @@
         #     settings = {
         #         vim.viAlias = true;
         #         vim.vimAlias = true;
-        #         vim.lsp = {
-        #             enable = true;
-        #         };
-        #         vim.languages = {
-        #             clang = true;
-        #             go = true;
-        #             html = true;
-        #             lua = true;
-        #             markdown = true;
-        #             nix = true;
-        #             rust = true;
-        #         };
+                # vim.languages = {
+                #     bash = {
+                #         enable = true;
+                #         extraDiagnostics.enable = true;
+                #         format.enable = true;
+                #         lsp.enable = true;
+                #         treesitter.enable = true;
+                #     };
+                #     clang = {
+                #         enable = true;
+                #         extraDiagnostics.enable = true;
+                #         format.enable = true;
+                #         lsp.enable = true;
+                #         treesitter.enable = true;
+                #     };
+                #     go = {
+                #         enable = true;
+                #         format.enable = true;
+                #         lsp.enable = true;
+                #         treesitter.enable = true;
+                #     };
+                #     html = {
+                #         enable = true;
+                #         extraDiagnostics.enable = true;
+                #         format.enable = true;
+                #         lsp.enable = true;
+                #         treesitter.enable = true;
+                #     };
+                #     lua = {
+                #         enable = true;
+                #         lsp.enable = true;
+                #         treesitter.enable = true;
+                #     };
+                #     markdown = {
+                #         enable = true;
+                #         lsp.enable = true;
+                #         treesitter.enable = true;
+                #     };
+                #     nix = {
+                #         enable = true;
+                #         extraDiagnostics.enable = true;
+                #         format.enable = true;
+                #         lsp.enable = true;
+                #         treesitter.enable = true;
+                #     };
+                #     python = {
+                #         enable = true;
+                #         format.enable = true;
+                #         lsp.enable = true;
+                #         treesitter.enable = true;
+                #     };
+                #     rust = {
+                #         enable = true;
+                #         format.enable = true;
+                #         lsp.enable = true;
+                #         treesitter.enable = true;
+                #     };
+                # };
         #     };
         # };
         starship.enable = true;
