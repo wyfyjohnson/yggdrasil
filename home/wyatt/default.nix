@@ -58,6 +58,15 @@
         #         vim.lsp = {
         #             enable = true;
         #         };
+        #         vim.languages = {
+        #             clang = true;
+        #             go = true;
+        #             html = true;
+        #             lua = true;
+        #             markdown = true;
+        #             nix = true;
+        #             rust = true;
+        #         };
         #     };
         # };
         starship.enable = true;
