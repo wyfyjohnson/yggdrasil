@@ -42,7 +42,7 @@
     programs = {
         bat = {
             enable = true;
-            config.theme = "ansi";
+            #config.theme = "ansi";
         };
         git.enable = true;
         ghostty = {
@@ -143,7 +143,7 @@
         gcr
         grim
         gopls
-        helix
+        evil-helix
         hyfetch
         hyprpicker
         hyprshot
