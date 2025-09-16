@@ -1,8 +1,8 @@
 { config, pkgs, ... }:
 {
-    home.username = "wyatt";
-    home.homeDirectory = "/home/wyatt";
-    home.stateVersion = "25.05";
+    #home.username = "wyatt";
+    #home.homeDirectory = "/Users/wyatt";
+    #home.stateVersion = "25.05";
     programs.bash = {
         bashrcExtra = "krabby random";
         enable = true;
@@ -98,8 +98,8 @@
         starship.enable = true;
     };
 
-    home.file.".config/hyfetch.json".source = ../../dots/hyfetch.json;
-    home.file.".config/starship.toml".source = ../../dots/starship.toml;
+    xdg.configFile.".config/hyfetch.json".source = ../../dots/hyfetch.json;
+    xdg.configFile.".config/starship.toml".source = ../../dots/starship.toml;
 
     services.gnome-keyring.enable = true;
     
