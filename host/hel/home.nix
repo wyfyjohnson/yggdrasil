@@ -1,8 +1,8 @@
 { config, pkgs, ... }:
 {
-    #home.username = "wyatt";
-    #home.homeDirectory = "/Users/wyatt";
-    #home.stateVersion = "25.05";
+    home.username = "wyatt";
+    home.homeDirectory = "/Users/wyatt";
+    home.stateVersion = "25.05";
     programs.bash = {
         bashrcExtra = "krabby random";
         enable = true;
@@ -13,7 +13,6 @@
             ff = "fastfetch --percent-type 10";
             hf = "hyfetch";
             ls = "eza -1 --icons";
-            jctl = "journalctl -p 3 -xb";
             jormungandr = "ssh wyatt@192.168.69.100";
             of = "onefetch -i ~/Pictures/fflogo.png";
             sysfetch = ".config/sysfetch/sysfetch";
@@ -101,29 +100,22 @@
     xdg.configFile.".config/hyfetch.json".source = ../../dots/hyfetch.json;
     xdg.configFile.".config/starship.toml".source = ../../dots/starship.toml;
 
-    services.gnome-keyring.enable = true;
-    
-
     home.packages = with pkgs; [
         bash-language-server
         beets-unstable
         bottom
-        btop-rocm
+        btop
         cava
         discord
-        dunst
         eza
         fastfetch
-        gcr
-        grim
         gopls
-        evil-helix
+        helix
         hyfetch
         kew
         kitty
         krabby
         marksman
-        mullvad-vpn
         nil
         nitrogen
         nixpkgs-fmt
@@ -132,13 +124,8 @@
         pyright
         ruff
         rust-analyzer
-        signal-desktop
         tut
-        upower
-        vivaldi
         vscode-langservers-extracted
-        waybar
-        webcord
         yt-dlp
     ];
 }
