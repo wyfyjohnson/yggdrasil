@@ -1,155 +1,82 @@
-{ config, pkgs, ... }:
 {
-    home.username = "wyatt";
-    home.homeDirectory = "/home/wyatt";
-    home.stateVersion = "25.05";
-    programs.bash = {
-        bashrcExtra = "krabby random";
-        enable = true;
-        shellAliases = {
-            ":q" = "exit";
-            bimp = "beet import";
-            fenrir = "ssh wyatt@192.168.69.200";
-            ff = "fastfetch --percent-type 10";
-            hf = "hyfetch";
-            ls = "eza -1 --icons";
-            jctl = "journalctl -p 3 -xb";
-            jormungandr = "ssh wyatt@192.168.69.100";
-            of = "onefetch -i ~/Pictures/fflogo.png";
-            sysfetch = ".config/sysfetch/sysfetch";
-            yt-music = "yt-dlp -x --audio-format opus --replace-in-metadata uploader ' - Topic' '' --parse-metadata '%(playlist_index)s:%(meta_track)s' --parse-metadata '%(uploader)s:%(meta_album_artist)s' --embed-metadata  --format 'bestaudio/best' --audio-quality 0 -o '~/Downloads/Music/%(uploader)s/%(album)s/%(playlist_index)s - %(title)s.%(ext)s' --print '%(uploader)s - %(album)s - %(playlist_index)s %(title)s' --no-simulate";
-        };
-    };
-    programs = {
-        bat = {
-            enable = true;
-        };
-        git.enable = true;
-        ghostty = {
-            enable = true;
-            enableBashIntegration = true;
-            installBatSyntax = true;
-        };
-        # nvf = {
-        #     enable = true;
-        #     settings = {
-        #         vim.viAlias = true;
-        #         vim.vimAlias = true;
-                # vim.languages = {
-                #     bash = {
-                #         enable = true;
-                #         extraDiagnostics.enable = true;
-                #         format.enable = true;
-                #         lsp.enable = true;
-                #         treesitter.enable = true;
-                #     };
-                #     clang = {
-                #         enable = true;
-                #         extraDiagnostics.enable = true;
-                #         format.enable = true;
-                #         lsp.enable = true;
-                #         treesitter.enable = true;
-                #     };
-                #     go = {
-                #         enable = true;
-                #         format.enable = true;
-                #         lsp.enable = true;
-                #         treesitter.enable = true;
-                #     };
-                #     html = {
-                #         enable = true;
-                #         extraDiagnostics.enable = true;
-                #         format.enable = true;
-                #         lsp.enable = true;
-                #         treesitter.enable = true;
-                #     };
-                #     lua = {
-                #         enable = true;
-                #         lsp.enable = true;
-                #         treesitter.enable = true;
-                #     };
-                #     markdown = {
-                #         enable = true;
-                #         lsp.enable = true;
-                #         treesitter.enable = true;
-                #     };
-                #     nix = {
-                #         enable = true;
-                #         extraDiagnostics.enable = true;
-                #         format.enable = true;
-                #         lsp.enable = true;
-                #         treesitter.enable = true;
-                #     };
-                #     python = {
-                #         enable = true;
-                #         format.enable = true;
-                #         lsp.enable = true;
-                #         treesitter.enable = true;
-                #     };
-                #     rust = {
-                #         enable = true;
-                #         format.enable = true;
-                #         lsp.enable = true;
-                #         treesitter.enable = true;
-                #     };
-                # };
-        #     };
-        # };
-        starship.enable = true;
-    };
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
-    home.file.".config/hyfetch.json".source = ../../dots/hyfetch.json;
-    home.file.".config/starship.toml".source = ../../dots/starship.toml;
+{
+  # Basic home manager settings
+  home = {
+    username = "wyatt";
+    homeDirectory = if pkgs.stdenv.isDarwin then "/Users/wyatt" else "/home/wyatt";
 
-    services.gnome-keyring.enable = true;
-    
+    stateVersion = "25.05";
+  };
 
-    home.packages = with pkgs; [
-        bash-language-server
-        beets-unstable
-        bottom
-        btop-rocm
-        cava
-        discord
-        dunst
-        eza
-        fastfetch
-        flameshot
-        gcr
-        grim
-        gopls
-        evil-helix
-        hyfetch
-        hyprpicker
-        hyprshot
-        kew
-        kitty
-        krabby
-        libreoffice
-        marksman
-        mullvad-vpn
-        nil
-        nitrogen
-        nixpkgs-fmt
-        nodejs
-        onefetch
-        picom
-        protonup-qt
-        pyright
-        rofi
-        ruff
-        rust-analyzer
-        signal-desktop
-        slurp
-        swww
-        tut
-        upower
-        vivaldi
-        vscode-langservers-extracted
-        waybar
-        webcord
-        wf-recorder
-        wl-clipboard-rs
-        yt-dlp
-    ];
+  # Fixed imports - no conditional logic that depends on pkgs
+  imports = [
+    ./git.nix
+    ./programs.nix
+    ./shell.nix
+    ./linux.nix
+    ../../modules/common/fonts.nix
+    # ./darwin.nix  # Comment out for now since you're testing on Linux
+  ];
+
+  # Basic programs
+  programs = {
+    home-manager.enable = true;
+  };
+
+  # Basic packages
+  home.packages = with pkgs; [
+    # Development tools
+    bash-language-server
+    git
+    nil
+    nixpkgs-fmt
+
+    # # Programming fonts
+    # fira-code
+    # nerd-fonts.fira-code
+    # jetbrains-mono
+
+    # # System fonts
+    # liberation_ttf
+    # noto-fonts
+    # noto-fonts-emoji
+
+    # # Icon fonts
+    # font-awesome
+    # material-design-icons
+
+    # Terminal utilities
+    bottom
+    curl
+    eza
+    fastfetch
+    hyfetch
+    onefetch
+    tut
+    wget
+    yazi
+    yaziPlugins.starship
+
+    # Media and utilities
+    kew
+    yt-dlp
+
+    # Programming languages and tools
+    nodejs
+    python3
+
+    # Language servers
+    gopls
+    marksman
+    pyright
+    ruff
+    rust-analyzer
+    vscode-langservers-extracted
+  ];
 }

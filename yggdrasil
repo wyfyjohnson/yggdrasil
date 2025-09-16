@@ -1,0 +1,425 @@
+#!/usr/bin/env bash
+# yggdrasil - Utility script for managing Yggdrasil Nix configurations
+# Usage: ./yggdrasil [command] [options]
+
+set -euo pipefail
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Helper functions
+log_info() {
+    echo -e "${BLUE}ℹ ${1}${NC}"
+}
+
+log_success() {
+    echo -e "${GREEN}✅ ${1}${NC}"
+}
+
+log_warn() {
+    echo -e "${YELLOW}⚠️ ${1}${NC}"
+}
+
+log_error() {
+    echo -e "${RED}❌ ${1}${NC}"
+}
+
+log_header() {
+    echo -e "${PURPLE}🌳 ${1}${NC}"
+}
+
+# Check dependencies (moved after logging functions)
+check_dependencies() {
+    local missing=()
+    
+    if ! command -v nix &> /dev/null; then
+        missing+=("nix")
+    fi
+    
+    if ! command -v jq &> /dev/null; then
+        missing+=("jq")
+    fi
+    
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        log_error "Missing dependencies: ${missing[*]}"
+        log_info "Please install: nix-shell -p ${missing[*]}"
+        exit 1
+    fi
+}
+
+# Detect platform (improved detection)
+detect_platform() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "darwin"
+    elif [[ -f /etc/NIXOS ]] || [[ -f /run/current-system/nixos-version ]] || [[ -f /etc/nixos/configuration.nix ]]; then
+        echo "nixos"
+    else
+        echo "standalone"
+    fi
+}
+
+# Get available configurations (improved error handling)
+get_nixos_configs() {
+    if [[ -f flake.nix ]]; then
+        local output
+        if output=$(nix flake show --json 2>/dev/null); then
+            echo "$output" | jq -r '.nixosConfigurations | keys[]?' 2>/dev/null || true
+        fi
+    fi
+}
+
+get_darwin_configs() {
+    if [[ -f flake.nix ]]; then
+        local output
+        if output=$(nix flake show --json 2>/dev/null); then
+            echo "$output" | jq -r '.darwinConfigurations | keys[]?' 2>/dev/null || true
+        fi
+    fi
+}
+
+get_home_configs() {
+    if [[ -f flake.nix ]]; then
+        local output
+        if output=$(nix flake show --json 2>/dev/null); then
+            echo "$output" | jq -r '.homeConfigurations | keys[]?' 2>/dev/null || true
+        fi
+    fi
+}
+
+# Build and switch functions (improved error handling)
+rebuild_nixos() {
+    local config=${1:-}
+    local action=${2:-switch}
+    
+    if [[ -z "$config" ]]; then
+        log_error "No configuration specified"
+        log_info "Available NixOS configurations:"
+        get_nixos_configs | sed 's/^/  - /'
+        exit 1
+    fi
+    
+    log_info "Building NixOS configuration: $config"
+    if sudo nixos-rebuild $action --flake ".#$config"; then
+        log_success "NixOS configuration applied successfully"
+    else
+        log_error "Failed to rebuild NixOS configuration"
+        exit 1
+    fi
+}
+
+rebuild_darwin() {
+    local config=${1:-}
+    local action=${2:-switch}
+    
+    if [[ -z "$config" ]]; then
+        log_error "No configuration specified"
+        log_info "Available Darwin configurations:"
+        get_darwin_configs | sed 's/^/  - /'
+        exit 1
+    fi
+    
+    log_info "Building Darwin configuration: $config"
+    if darwin-rebuild $action --flake ".#$config"; then
+        log_success "Darwin configuration applied successfully"
+    else
+        log_error "Failed to rebuild Darwin configuration"
+        exit 1
+    fi
+}
+
+rebuild_home() {
+    local config=${1:-}
+    local action=${2:-switch}
+    
+    if [[ -z "$config" ]]; then
+        log_error "No configuration specified"
+        log_info "Available Home Manager configurations:"
+        get_home_configs | sed 's/^/  - /'
+        exit 1
+    fi
+    
+    log_info "Building Home Manager configuration: $config"
+    if home-manager $action --flake ".#$config"; then
+        log_success "Home Manager configuration applied successfully"
+    else
+        log_error "Failed to rebuild Home Manager configuration"
+        exit 1
+    fi
+}
+
+# Utility functions
+update_flake() {
+    log_info "Updating flake inputs..."
+    if nix flake update; then
+        log_success "Flake inputs updated"
+    else
+        log_error "Failed to update flake inputs"
+        exit 1
+    fi
+}
+
+check_flake() {
+    log_info "Checking flake configuration..."
+    if nix flake check; then
+        log_success "Flake configuration is valid"
+    else
+        log_error "Flake configuration has errors"
+        exit 1
+    fi
+}
+
+format_code() {
+    log_info "Formatting Nix files..."
+    if command -v nixpkgs-fmt &> /dev/null; then
+        find . -name "*.nix" -exec nixpkgs-fmt {} \;
+        log_success "Code formatted"
+    else
+        log_warn "nixpkgs-fmt not found. Run 'nix develop' first."
+    fi
+}
+
+cleanup_generations() {
+    local platform=$(detect_platform)
+    local days=${1:-7}
+    
+    # Validate input
+    if ! [[ "$days" =~ ^[0-9]+$ ]]; then
+        log_error "Days must be a positive number"
+        exit 1
+    fi
+    
+    log_info "Cleaning up generations older than $days days..."
+    
+    case $platform in
+        nixos)
+            sudo nix-collect-garbage -d --delete-older-than "${days}d"
+            ;;
+        darwin)
+            sudo nix-collect-garbage -d --delete-older-than "${days}d"
+            ;;
+        standalone)
+            nix-collect-garbage -d --delete-older-than "${days}d"
+            ;;
+    esac
+    
+    # Clean up home-manager generations (corrected syntax)
+    if command -v home-manager &> /dev/null; then
+        home-manager expire-generations "$days days" 2>/dev/null || log_warn "Could not expire home-manager generations"
+    fi
+    
+    log_success "Cleanup completed"
+}
+
+optimize_store() {
+    log_info "Optimizing Nix store..."
+    if nix-store --optimise; then
+        log_success "Store optimized"
+    else
+        log_error "Failed to optimize store"
+        exit 1
+    fi
+}
+
+# Portable sed function
+portable_sed() {
+    local pattern="$1"
+    local file="$2"
+    
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "$pattern" "$file"
+    else
+        sed -i "$pattern" "$file"
+    fi
+}
+
+create_host() {
+    local hostname=${1:-}
+    local platform=${2:-nixos}
+    
+    if [[ -z "$hostname" ]]; then
+        log_error "Hostname required"
+        echo "Usage: $0 create-host <hostname> [nixos|darwin]"
+        exit 1
+    fi
+    
+    if [[ -d "host/$hostname" ]]; then
+        log_error "Host $hostname already exists"
+        exit 1
+    fi
+    
+    log_info "Creating new host: $hostname ($platform)"
+    
+    mkdir -p "host/$hostname"
+    
+    case $platform in
+        nixos)
+            if [[ ! -f "templates/nixos-host/configuration.nix" ]]; then
+                log_error "Template file templates/nixos-host/configuration.nix not found"
+                log_info "Please create the templates directory structure first"
+                exit 1
+            fi
+            cp "templates/nixos-host/configuration.nix" "host/$hostname/"
+            portable_sed "s/your-hostname/$hostname/g" "host/$hostname/configuration.nix"
+            log_info "Don't forget to:"
+            log_info "  1. Generate hardware-configuration.nix"
+            log_info "  2. Add $hostname to flake.nix nixosConfigurations"
+            ;;
+        darwin)
+            if [[ ! -f "templates/darwin-host/configuration.nix" ]]; then
+                log_error "Template file templates/darwin-host/configuration.nix not found"
+                log_info "Please create the templates directory structure first"
+                exit 1
+            fi
+            cp "templates/darwin-host/configuration.nix" "host/$hostname/"
+            portable_sed "s/your-hostname/$hostname/g" "host/$hostname/configuration.nix"
+            log_info "Don't forget to:"
+            log_info "  1. Add $hostname to flake.nix darwinConfigurations"
+            ;;
+        *)
+            log_error "Unknown platform: $platform"
+            exit 1
+            ;;
+    esac
+    
+    log_success "Host $hostname created successfully"
+}
+
+show_status() {
+    local platform=$(detect_platform)
+    
+    log_header "Yggdrasil Configuration Status"
+    echo
+    
+    log_info "Platform: $platform"
+    log_info "Flake location: $(pwd)"
+    
+    if [[ -f flake.lock ]]; then
+        log_info "Last flake update: $(stat -c %y flake.lock 2>/dev/null || stat -f %Sm -t %Y-%m-%d flake.lock 2>/dev/null || echo 'Unknown')"
+    fi
+    
+    echo
+    log_info "Available configurations:"
+    
+    local nixos_configs=$(get_nixos_configs)
+    if [[ -n "$nixos_configs" ]]; then
+        echo "  NixOS:"
+        echo "$nixos_configs" | sed 's/^/    - /'
+    fi
+    
+    local darwin_configs=$(get_darwin_configs)
+    if [[ -n "$darwin_configs" ]]; then
+        echo "  Darwin:"
+        echo "$darwin_configs" | sed 's/^/    - /'
+    fi
+    
+    local home_configs=$(get_home_configs)
+    if [[ -n "$home_configs" ]]; then
+        echo "  Home Manager:"
+        echo "$home_configs" | sed 's/^/    - /'
+    fi
+}
+
+show_help() {
+    cat << EOF
+🌳 Yggdrasil - Universal Nix Configuration Manager
+
+Usage: $0 [command] [options]
+
+Commands:
+  build <config> [test|switch]  Build and optionally switch configuration
+  update                        Update flake inputs
+  check                         Check flake configuration
+  format                        Format Nix code
+  cleanup [days]                Remove old generations (default: 7 days)
+  optimize                      Optimize Nix store
+  create-host <name> [platform] Create new host configuration
+  status                        Show configuration status
+  help                          Show this help message
+
+Examples:
+  $0 build fenrir               Build and switch to fenrir configuration
+  $0 build hel test             Build hel configuration for testing
+  $0 update                     Update all flake inputs
+  $0 cleanup 14                 Remove generations older than 14 days
+  $0 create-host server nixos   Create new NixOS host named 'server'
+
+Platform detection:
+  - NixOS: Detected by presence of /etc/NIXOS, /run/current-system/nixos-version, or /etc/nixos/configuration.nix
+  - Darwin: Detected by macOS operating system
+  - Standalone: Home Manager only
+
+EOF
+}
+
+# Main command dispatcher
+main() {
+    # Check dependencies first
+    check_dependencies
+    
+    local command=${1:-help}
+    
+    case $command in
+        build)
+            local config=${2:-}
+            local action=${3:-switch}
+            local platform=$(detect_platform)
+            
+            case $platform in
+                nixos)
+                    rebuild_nixos "$config" "$action"
+                    ;;
+                darwin)
+                    rebuild_darwin "$config" "$action"
+                    ;;
+                standalone)
+                    rebuild_home "$config" "$action"
+                    ;;
+            esac
+            ;;
+        update)
+            update_flake
+            ;;
+        check)
+            check_flake
+            ;;
+        format)
+            format_code
+            ;;
+        cleanup)
+            cleanup_generations ${2:-7}
+            ;;
+        optimize)
+            optimize_store
+            ;;
+        create-host)
+            create_host "$2" "${3:-nixos}"
+            ;;
+        status)
+            show_status
+            ;;
+        help|--help|-h)
+            show_help
+            ;;
+        *)
+            log_error "Unknown command: $command"
+            show_help
+            exit 1
+            ;;
+    esac
+}
+
+# Check if we're in the right directory
+if [[ ! -f flake.nix ]]; then
+    log_error "No flake.nix found in current directory"
+    log_info "Please run this script from your Yggdrasil configuration directory"
+    exit 1
+fi
+
+# Run main function with all arguments
+main "$@"

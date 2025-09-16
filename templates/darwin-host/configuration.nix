@@ -18,14 +18,12 @@
 
   # System basics
   system.stateVersion = 4;
-  ids.gids.nixbld = 350;
 
-  # Primary User
-  system.primaryUser = "wyatt";
+  # Enable Nix daemon
+  services.nix-daemon.enable = true;
 
   # Nix configuration
   nix = {
-    package = pkgs.nixVersions.latest;
     extraOptions = ''
       experimental-features = nix-command flakes
       keep-outputs = true
@@ -41,21 +39,19 @@
       options = "--delete-older-than 7d";
     };
 
-    # Opimise nix-store
-    optimise.automatic = true;
-
+    # Auto-optimize store
+    settings.auto-optimise-store = true;
   };
 
   # System packages
   environment.systemPackages = with pkgs; [
-    bottom
-    curl
-    git
-    helix
-    tree
-    unzip
     vim
     wget
+    curl
+    git
+    htop
+    tree
+    unzip
   ];
 
   # Programs
@@ -125,7 +121,6 @@
       NSNavPanelExpandedStateForSaveMode = true;
       NSNavPanelExpandedStateForSaveMode2 = true;
       _HIHideMenuBar = false;
-      AppleFontSmoothing = 1;
     };
   };
 
@@ -143,5 +138,5 @@
   };
 
   # Security settings
-  security.pam.services.sudo_local.touchIdAuth = true;
+  security.pam.enableSudoTouchIdAuth = true;
 }
