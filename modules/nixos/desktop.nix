@@ -13,8 +13,13 @@
 
     # Display manager
     displayManager = {
-      gdm.enable = true;
-      # lightdm.enable = true; # Alternative
+      # gdm.enable = true;
+      lightdm.enable = true; # Alternative
+    };
+
+    # Window manager
+    windowManager = {
+      qtile.enable = true;
     };
 
     # Desktop environment (choose one)
@@ -33,7 +38,7 @@
 
   # Wayland support (for modern compositors)
   programs.hyprland = {
-    enable = false; # Set to true if you want Hyprland
+    enable = true; # Set to true if you want Hyprland
     xwayland.enable = true;
   };
 
@@ -88,7 +93,8 @@
   # Desktop-specific packages
   environment.systemPackages = with pkgs; [
     # File managers
-    nautilus # GNOME file manager
+    nemo
+    # nautilus # GNOME file manager
     # dolphin     # KDE file manager
 
     # Image viewers
@@ -102,10 +108,10 @@
     gnome-system-monitor
 
     # Text editors
-    gnome-text-editor
+    # gnome-text-editor
 
     # Media players
-    totem # GNOME video player
+    # totem # GNOME video player
   ];
 
   # GNOME-specific configuration
@@ -116,20 +122,27 @@
   };
 
   # Exclude some default GNOME applications (optional)
-  environment.gnome.excludePackages = with pkgs; [
-    gnome-photos
-    gnome-tour
-    gnome-music
-    epiphany # GNOME web browser
-    geary # Email reader
-  ];
+  # environment.gnome.excludePackages = with pkgs; [ 
+  #   gnome-photos
+  #   gnome-tour
+  #   gnome-music
+  #   epiphany # GNOME web browser
+  #   geary # Email reader
+  # ];
 
   # Flatpak support (optional)
   services.flatpak.enable = true;
+  systemd.services.flatpak-repo = {
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.flatpak ];
+    script = ''
+      flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+    '';
+  };
 
   # AppImage support
-  programs.appimage = {
-    enable = true;
-    binfmt = true;
-  };
+  # programs.appimage = {
+  #   enable = true;
+  #   binfmt = true;
+  # };
 }

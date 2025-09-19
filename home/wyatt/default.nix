@@ -20,7 +20,6 @@
     ./programs.nix
     ./shell.nix
     ./linux.nix
-    ../../modules/common/fonts.nix
     # ./darwin.nix  # Comment out for now since you're testing on Linux
   ];
 
