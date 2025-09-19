@@ -29,7 +29,6 @@
   # Console configuration
   console = {
     font = "ter-124n";
-    keyMap = "us";
     useXkbConfig = true; # Use xkb settings in console
   };
 

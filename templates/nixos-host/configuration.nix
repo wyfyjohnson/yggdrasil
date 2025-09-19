@@ -11,18 +11,19 @@
     ./hardware-configuration.nix
 
     # Common modules
-    ../../modules/common/fonts.nix
-    ../../modules/common/locale.nix
     ../../modules/common/users.nix
 
     # NixOS-specific modules (uncomment as needed)
     # ../../modules/nixos/desktop.nix
     # ../../modules/nixos/gaming.nix
     # ../../modules/nixos/server.nix
+    # ../../modules/nixos/fonts.nix
+    # ../../modules/nixos/locale.nix
   ];
 
   # System basics
   system.stateVersion = "25.05";
+  nixpkgs.config.allowUnfree = true;
 
   # Bootloader
   boot.loader = {

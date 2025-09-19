@@ -23,6 +23,7 @@
 
   # System basics
   system.stateVersion = "25.05";
+  nixpkgs.config.allowUnfree = true;
 
   # Bootloader
   boot.loader = {
@@ -48,7 +49,7 @@
 
   # Enable flakes
   nix = {
-    package = pkgs.nixFlakes;
+    package = pkgs.nixVersions.stable;
     extraOptions = ''
       experimental-features = nix-command flakes
       keep-outputs = true
