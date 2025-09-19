@@ -15,6 +15,7 @@
     ../../modules/darwin/homebrew.nix
     ../../modules/darwin/system.nix
     ../../modules/darwin/fonts.nix
+    ../../modules/darwin/locale.nix
   ];
 
   # System basics

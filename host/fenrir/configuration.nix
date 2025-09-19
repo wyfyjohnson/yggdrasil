@@ -11,13 +11,13 @@
     ./hardware-configuration.nix
 
     # Common modules
-    ../../modules/common/locale.nix
     ../../modules/common/users.nix
 
     # NixOS-specific modules (uncomment as needed)
     ../../modules/nixos/desktop.nix
     ../../modules/nixos/fonts.nix
     ../../modules/nixos/gaming.nix
+    ../../modules/nixos/locale.nix
     # ../../modules/nixos/server.nix
   ];
 

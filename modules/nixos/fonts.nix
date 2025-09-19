@@ -9,52 +9,48 @@
     packages = with pkgs; [
       # Programming fonts
       fira-code
-      fira-code-nerdfont
       jetbrains-mono
       source-code-pro
+      maple-mono.NF
 
       # System fonts
-      inter
-      roboto
-      open-sans
       liberation_ttf
 
       # Noto fonts for better Unicode coverage
       noto-fonts
       noto-fonts-emoji
 
+      # Icon fonts
+      font-awesome
+
+      # Selective Nerd Fonts
+      nerd-fonts.fira-code
+      nerd-fonts.jetbrains-mono
+
     ];
 
-    # Font configuration
-    # fontconfig = {
-    #   enable = true;
-    #   defaultFonts = {
-    #     serif = [
-    #       "Liberation Serif"
-    #       "DejaVu Serif"
-    #     ];
-    #     sansSerif = [
-    #       "Inter"
-    #       "Liberation Sans"
-    #       "DejaVu Sans"
-    #     ];
-    #     monospace = [
-    #       "FiraCode Nerd Font"
-    #       "Liberation Mono"
-    #       "DejaVu Sans Mono"
-    #     ];
-    #   };
-
-    #   # Additional font configuration
-    #   localConf = ''
-    #     <alias>
-    #       <family>monospace</family>
-    #       <prefer>
-    #         <family>FiraCode Nerd Font</family>
-    #         <family>JetBrainsMono Nerd Font</family>
-    #       </prefer>
-    #     </alias>
-    #   '';
-    # };
+ # Font configuration - uncommented and updated for your font selection
+    fontconfig = {
+      enable = true;
+      defaultFonts = {
+        serif = [ "Liberation Serif" "Noto Serif" ];
+        sansSerif = [ "Liberation Sans" "Noto Sans" ];
+        monospace = [ "Maple Mono NF" "FiraCode Nerd Font" "JetBrainsMono Nerd Font" "Liberation Mono" ];
+        emoji = [ "Noto Color Emoji" ];
+      };
+      
+      # Font priority configuration
+      localConf = ''
+        <alias>
+          <family>monospace</family>
+          <prefer>
+            <family>Maple Mono NF</family>
+            <family>FiraCode Nerd Font</family>
+            <family>JetBrainsMono Nerd Font</family>
+            <family>Liberation Mono</family>
+          </prefer>
+        </alias>
+      '';
+    };
   };
 }

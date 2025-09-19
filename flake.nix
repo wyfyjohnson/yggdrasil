@@ -41,7 +41,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "backup";
-              home-manager.users.wyatt = ./home/wyatt;
+              home-manager.users.wyatt = ./home;
             }
           ];
         };
@@ -56,7 +56,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "backup";
-              home-manager.users.wyatt = ./home/wyatt;
+              home-manager.users.wyatt = ./home;
             }
           ];
         };
@@ -74,7 +74,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "backup";
-              home-manager.users.wyatt = ./home/wyatt;
+              home-manager.users.wyatt = ./home;
             }
           ];
         };
@@ -87,7 +87,7 @@
             system = "x86_64-linux";
             config.allowUnfree = true;
           };
-          modules = [ ./home/wyatt ];
+          modules = [ ./home ];
         };
 
         "wyatt@darwin" = home-manager.lib.homeManagerConfiguration {
@@ -95,7 +95,7 @@
             system = "aarch64-darwin";
             config.allowUnfree = true;
           };
-          modules = [ ./home/wyatt ];
+          modules = [ ./home ];
         };
       };
     };

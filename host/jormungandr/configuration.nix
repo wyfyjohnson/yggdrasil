@@ -1,62 +1,60 @@
 {
   config,
-  lib,
   pkgs,
+  lib,
+  inputs,
   ...
 }:
-
 {
-<<<<<<< HEAD
-  imports =
-    [
-      ./hardware-configuration.nix
-    ];
-=======
   imports = [
+    # Include the results of the hardware scan
     ./hardware-configuration.nix
-    # ./hypr.nix
+    # Common modules
+    ../../modules/common/users.nix
+    ../../modules/nixos/fonts.nix
+    ../../modules/nixos/locale.nix
+    # NixOS-specific modules
+    ../../modules/nixos/desktop.nix
+    ../../modules/nixos/gaming.nix
   ];
->>>>>>> 67505a7 (attempting a refactor)
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  # System basics
+  system.stateVersion = "25.05";
 
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  networking.hostName = "jormungandr";
-
-  networking.networkmanager.enable = true;
-
-  services.flatpak.enable = true;
-  systemd.services.flatpak-repo = {
-    wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.flatpak ];
-    script = ''
-      flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-    '';
+  # Bootloader
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    kernelPackages = pkgs.linuxPackages_latest;
   };
-  services.xserver.desktopManager.cinnamon.enable = true;
 
-  time.timeZone = "America/Los_Angeles";
+  # Networking
+  networking = {
+    hostName = "jormungandr";
+    networkmanager.enable = true;
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ ];
+      allowedUDPPorts = [ ];
+    };
+  };
 
-  # Enable the X11 windowing system.
-  services.xserver = {
+  # Enable flakes
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nixpkgs.config.allowUnfree = true;
+
+  # Host-specific services
+  services.openssh = {
     enable = true;
-    autoRepeatDelay = 200;
-    autoRepeatInterval = 35;
-    windowManager.qtile.enable = true;
-    #   displayManager = {
-    #     lightdm.enable = true;
-    #     setupCommands= ''
-    #       LEFT='DP-2'
-    #       RIGHT='DP-1'
-    #       ${pkgs.xorg.xrandr}/bin/xrandr --output $RIGHT --rotate normal --output $LEFT --rotate left
-    #      '';
-    # };
+    settings = {
+      PermitRootLogin = "no";
+      PasswordAuthentication = false;
+    };
   };
 
+  # Host-specific overrides for desktop.nix
   services.displayManager = {
     defaultSession = "qtile";
     sddm = {
@@ -66,74 +64,15 @@
     };
   };
 
+  # Host-specific packages
+  environment.systemPackages = with pkgs; [
+    catppuccin-sddm-corners
+    tree
+  ];
+
+  # File systems (host-specific)
   fileSystems."/home" = {
     device = "dev/mapper/HOME_VG-home";
     fsType = "ext4";
   };
-
-  services = {
-    printing = {
-      enable = true;
-      drivers = [
-        pkgs.brgenml1lpr
-        pkgs.brgenml1cupswrapper
-      ];
-    };
-    avahi = {
-      enable = true;
-      nssmdns4 = true;
-      openFirewall = true;
-    };
-    ipp-usb.enable = true;
-    system-config-printer.enable = true;
-  };
-  programs.system-config-printer.enable = true;
-
-  services.pipewire = {
-    enable = true;
-    pulse.enable = true;
-  };
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.wyatt = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ];
-    packages = with pkgs; [
-      flatpak
-      tree
-    ];
-  };
-
-  programs = {
-    firefox.enable = true;
-    kdeconnect.enable = true;
-    steam.enable = true;
-  };
-
-  programs.hyprland = {
-    enable = true;
-    portalPackage = pkgs.xdg-desktop-portal-hyprland;
-    xwayland.enable = true;
-  };
-  environment.systemPackages = with pkgs; [
-    catppuccin-sddm-corners
-  ];
-
-  fonts.packages = with pkgs; [
-    liberation_ttf
-    nerd-fonts.jetbrains-mono
-  ];
-
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-  nixpkgs.config.allowUnfree = true;
-
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
-  programs.ssh.startAgent = true;
-
-  system.stateVersion = "25.05";
-
 }
