@@ -21,14 +21,6 @@
   # System basics
   system.stateVersion = "25.05";
 
-  # Bootloader
-  boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-    kernelPackages = pkgs.linuxPackages_latest;
-  };
 
   # Networking
   networking = {

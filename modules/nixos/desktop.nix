@@ -117,8 +117,8 @@
   # GNOME-specific configuration
   services.gnome = {
     gnome-keyring.enable = true;
-    tracker-miners.enable = true;
-    tracker.enable = true;
+    tinysparql.enable = true;
+    localsearch.enable = true;
   };
 
   # Exclude some default GNOME applications (optional)
