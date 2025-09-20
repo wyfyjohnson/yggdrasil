@@ -20,6 +20,7 @@
     ./programs.nix
     ./shell.nix
     ./linux.nix
+    ./dotfiles.nix
     # ./darwin.nix  # Comment out for now since you're testing on Linux
   ];
 

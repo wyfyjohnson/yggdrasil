@@ -93,6 +93,9 @@
     eog
     file-roller
     gnome-system-monitor
+    catppuccin-sddm-corners
+    jq
+    helix
   ];
 
   # GNOME services
