@@ -8,10 +8,10 @@ let
   dotsPath = ../../dots;
   
   # Helper function to conditionally create config file
-  mkConfigFile = configPath: sourcePath:
-    lib.mkIf (builtins.pathExists sourcePath) {
-      "${configPath}".source = sourcePath;
-    };
+  # mkConfigFile = configPath: sourcePath:
+  #   lib.mkIf (builtins.pathExists sourcePath) {
+  #     "${configPath}".source = sourcePath;
+  #   };
   
   # Helper for directories
   mkConfigDir = configPath: sourcePath:
@@ -26,10 +26,7 @@ in
     # Files
     # (mkConfigFile "starship.toml" "${dotsPath}/starship.toml")
     # (mkConfigFile "hyfetch.json" "${dotsPath}/hyfetch.json")
-    {
-      "starship.toml".source = "${dotsPath}/starship.toml";
-      "hyfetch.json".source = "${dotsPath}/hyfetch.json";
-    }
+   
     
     # Directories (recursive)
     (mkConfigDir "beets" "${dotsPath}/beets")
