@@ -96,6 +96,7 @@
     catppuccin-sddm-corners
     jq
     helix
+    rofi
   ];
 
   # GNOME services

@@ -24,8 +24,12 @@ in
 {
   xdg.configFile = lib.mkMerge [
     # Files
-    (mkConfigFile "starship.toml" "${dotsPath}/starship.toml")
-    (mkConfigFile "hyfetch.json" "${dotsPath}/hyfetch.json")
+    # (mkConfigFile "starship.toml" "${dotsPath}/starship.toml")
+    # (mkConfigFile "hyfetch.json" "${dotsPath}/hyfetch.json")
+    {
+      "starship.toml".source = "${dotsPath}/starship.toml";
+      "hyfetch.json".source = "${dotsPath}/hyfetch.json";
+    }
     
     # Directories (recursive)
     (mkConfigDir "beets" "${dotsPath}/beets")
