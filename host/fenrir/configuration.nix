@@ -1,9 +1,8 @@
-{
-  config,
-  pkgs,
-  lib,
-  inputs,
-  ...
+{ config
+, pkgs
+, lib
+, inputs
+, ...
 }:
 {
   imports = [
@@ -27,7 +26,7 @@
 
   boot.initrd.luks.devices."luks-ac4dc206-5a6e-4750-81bb-7c537fa1fdc8".device =
     "/dev/disk/by-uuid/ac4dc206-5a6e-4750-81bb-7c537fa1fdc8";
-    
+
   # Networking
   networking = {
     hostName = "fenrir";
@@ -84,13 +83,13 @@
     };
 
     # Sound with PipeWire
-    
+
     # Printing support (uncomment if needed)
     printing = {
       enable = true;
       drivers = [
-    pkgs.brgenml1lpr
-    pkgs.brgenml1cupswrapper
+        pkgs.brgenml1lpr
+        pkgs.brgenml1cupswrapper
       ];
     };
     avahi = {

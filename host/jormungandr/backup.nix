@@ -1,16 +1,15 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
+{ config
+, lib
+, pkgs
+, ...
 }:
 
 {
   imports =
     [
       ./hardware-configuration.nix
-    # ./hypr.nix
-  ];
+      # ./hypr.nix
+    ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;

@@ -1,9 +1,8 @@
-{
-  config,
-  pkgs,
-  lib,
-  inputs,
-  ...
+{ config
+, pkgs
+, lib
+, inputs
+, ...
 }:
 {
   imports = [
@@ -139,6 +138,6 @@
   #   description = "Wyatt";
   #   extraGroups = [ "networkmanager" "wheel" ];
   # };
-  
+
   nixpkgs.config.allowUnfree = true;
 }

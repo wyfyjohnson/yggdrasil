@@ -11,14 +11,14 @@
       AppleTemperatureUnit = "Fahrenheit";
       AppleICUForce24HourTime = true; # Use 24-hour time
     };
-    
+
     # Regional settings
     ".GlobalPreferences" = {
       AppleLocale = "en_US";
       AppleLanguages = [ "en_US" ];
     };
   };
-  
+
   # Keyboard settings for macOS
   system.keyboard = {
     enableKeyMapping = true;

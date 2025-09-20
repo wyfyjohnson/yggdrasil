@@ -1,33 +1,32 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
+{ config
+, pkgs
+, lib
+, ...
 }:
 let
   dotsPath = ../../dots;
-  
+
   # Helper function to conditionally create config file
   # mkConfigFile = configPath: sourcePath:
   #   lib.mkIf (builtins.pathExists sourcePath) {
   #     "${configPath}".source = sourcePath;
   #   };
-  
+
   # Helper for directories
   mkConfigDir = configPath: sourcePath:
     lib.mkIf (builtins.pathExists sourcePath) {
       "${configPath}".source = sourcePath;
       "${configPath}".recursive = true;
     };
-    
+
 in
 {
   xdg.configFile = lib.mkMerge [
     # Files
     # (mkConfigFile "starship.toml" "${dotsPath}/starship.toml")
     # (mkConfigFile "hyfetch.json" "${dotsPath}/hyfetch.json")
-   
-    
+
+
     # Directories (recursive)
     (mkConfigDir "beets" "${dotsPath}/beets")
     (mkConfigDir "btop" "${dotsPath}/btop")

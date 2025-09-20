@@ -1,8 +1,7 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
+{ config
+, pkgs
+, lib
+, ...
 }:
 {
   fonts = {
@@ -29,7 +28,7 @@
 
     ];
 
- # Font configuration - uncommented and updated for your font selection
+    # Font configuration - uncommented and updated for your font selection
     fontconfig = {
       enable = true;
       defaultFonts = {
@@ -38,7 +37,7 @@
         monospace = [ "Maple Mono NF" "FiraCode Nerd Font" "JetBrainsMono Nerd Font" "Liberation Mono" ];
         emoji = [ "Noto Color Emoji" ];
       };
-      
+
       # Font priority configuration
       localConf = ''
         <alias>

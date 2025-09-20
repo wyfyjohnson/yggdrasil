@@ -1,15 +1,14 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
+{ config
+, pkgs
+, lib
+, ...
 }:
 {
   # Bootloader configuration for desktop systems
   boot.loader = {
     systemd-boot.enable = true;
     efi.canTouchEfiVariables = true;
-    grub.enable = lib.mkForce false;  # Explicitly disable GRUB
+    grub.enable = lib.mkForce false; # Explicitly disable GRUB
   };
 
   # Desktop environment configuration
@@ -29,7 +28,7 @@
       variant = "";
     };
   };
-# Display Manager - SDDM with Catppuccin theme
+  # Display Manager - SDDM with Catppuccin theme
   services.displayManager = {
     sddm = {
       enable = true;
@@ -49,12 +48,12 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    jack.enable = true;  # Optional: enable JACK support
+    jack.enable = true; # Optional: enable JACK support
   };
-  
+
   # Disable PulseAudio to avoid conflicts
   services.pulseaudio.enable = lib.mkForce false;
-  
+
   # Enable RealtimeKit for PipeWire
   security.rtkit.enable = true;
 

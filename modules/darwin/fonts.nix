@@ -1,8 +1,7 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
+{ config
+, pkgs
+, lib
+, ...
 }:
 {
   fonts = {
@@ -20,7 +19,7 @@
       noto-fonts
       noto-fonts-emoji
       noto-fonts-cjk-sans
-      
+
       # Icon fonts
       font-awesome
 

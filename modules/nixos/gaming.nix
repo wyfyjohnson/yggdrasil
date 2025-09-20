@@ -1,9 +1,8 @@
 # modules/nixos/gaming.nix
-{
-  config,
-  pkgs,
-  lib,
-  ...
+{ config
+, pkgs
+, lib
+, ...
 }:
 {
   # Gaming-related configuration

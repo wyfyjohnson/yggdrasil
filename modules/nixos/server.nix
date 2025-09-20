@@ -1,9 +1,8 @@
 # modules/nixos/server.nix
-{
-  config,
-  pkgs,
-  lib,
-  ...
+{ config
+, pkgs
+, lib
+, ...
 }:
 {
   # Server-specific configuration
