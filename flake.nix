@@ -1,82 +1,71 @@
 {
   description = "Yggdrasil - Wyfy's cross-platform Nix configuration";
-
+  
   inputs = {
-    # Use stable branches for all inputs
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
-
-    # Home Manager
+    
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Darwin support
+    
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      nixpkgs-darwin,
-      home-manager,
-      nix-darwin,
-      ...
-    }:
-    {
-      # NixOS Configurations
-      nixosConfigurations = {
-        fenrir = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            ./host/fenrir/configuration.nix
-
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
-              home-manager.users.wyatt = ./home;
-            }
-          ];
-        };
-
-        jormungandr = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            ./host/jormungandr/configuration.nix
-
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
-              home-manager.users.wyatt = ./home;
-            }
-          ];
+  outputs = { self, nixpkgs, nixpkgs-darwin, home-manager, nix-darwin, ... }:
+    let
+      # Common home-manager configuration
+      homeManagerConfig = {
+        home-manager = {
+          useGlobalPkgs = true;
+          useUserPackages = true;
+          backupFileExtension = "backup";
+          users.wyatt = ./home;
         };
       };
 
-      # Darwin Configurations (macOS)
-      darwinConfigurations = {
-        hel = nix-darwin.lib.darwinSystem {
-          system = "aarch64-darwin";
-          modules = [
-            ./host/hel/configuration.nix
+      # Helper function for NixOS systems
+      mkNixosSystem = { system, hostname }: nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./host/${hostname}/configuration.nix
+          home-manager.nixosModules.home-manager
+          homeManagerConfig
+        ];
+      };
 
-            home-manager.darwinModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
-              home-manager.users.wyatt = ./home;
-            }
-          ];
+      # Helper function for Darwin systems  
+      mkDarwinSystem = { system, hostname }: nix-darwin.lib.darwinSystem {
+        inherit system;
+        modules = [
+          ./host/${hostname}/configuration.nix
+          home-manager.darwinModules.home-manager
+          homeManagerConfig
+        ];
+      };
+    in
+    {
+      # NixOS Configurations
+      nixosConfigurations = {
+        fenrir = mkNixosSystem {
+          system = "x86_64-linux";
+          hostname = "fenrir";
+        };
+        jormungandr = mkNixosSystem {
+          system = "x86_64-linux";
+          hostname = "jormungandr";
+        };
+      };
+
+      # Darwin Configurations
+      darwinConfigurations = {
+        hel = mkDarwinSystem {
+          system = "aarch64-darwin";
+          hostname = "hel";
         };
       };
 
@@ -89,7 +78,6 @@
           };
           modules = [ ./home ];
         };
-
         "wyatt@darwin" = home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs-darwin {
             system = "aarch64-darwin";
