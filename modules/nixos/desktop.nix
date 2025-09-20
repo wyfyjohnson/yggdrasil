@@ -1,54 +1,61 @@
-{ 
+{
   config,
   pkgs,
   lib,
   ...
 }:
 {
-  # Desktop environment configuration
+  # Bootloader configuration for desktop systems
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+    grub.enable = lib.mkForce false;  # Explicitly disable GRUB
+  };
 
-  # Enable X11 windowing system
+  # Desktop environment configuration
   services.xserver = {
     enable = true;
-
-    # Display manager
     displayManager = {
-      # gdm.enable = true;
-      lightdm.enable = true; # Alternative
+      lightdm.enable = false;
     };
-
-    # Window manager
     windowManager = {
       qtile.enable = true;
     };
-
-    # Desktop environment (choose one)
     desktopManager = {
       cinnamon.enable = true;
-      # gnome.enable = true;
-      # plasma5.enable = true; # KDE Alternative
     };
-
-    # Keyboard layout
     xkb = {
       layout = "us";
       variant = "";
     };
   };
-
-  # Wayland support (for modern compositors)
+# Display Manager - SDDM with Catppuccin theme
+  services.displayManager = {
+    sddm = {
+      enable = true;
+      theme = "catppuccin-sddm-corners";
+      wayland.enable = true;
+    };
+  };
+  # Wayland support
   programs.hyprland = {
-    enable = true; # Set to true if you want Hyprland
+    enable = true;
     xwayland.enable = true;
   };
 
-  # Audio
+  # Audio - PipeWire as primary audio server
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    jack.enable = true;  # Optional: enable JACK support
   };
+  
+  # Disable PulseAudio to avoid conflicts
+  services.pulseaudio.enable = lib.mkForce false;
+  
+  # Enable RealtimeKit for PipeWire
   security.rtkit.enable = true;
 
   # Bluetooth
@@ -64,7 +71,8 @@
     drivers = with pkgs; [
       gutenprint
       hplip
-      # Add printer-specific drivers as needed
+      brgenml1lpr
+      brgenml1cupswrapper
     ];
   };
   services.avahi = {
@@ -76,61 +84,25 @@
   # Graphics drivers
   hardware.graphics = {
     enable = true;
-    enable32Bit = true; # For 32-bit applications
+    enable32Bit = true;
   };
 
-  # NVIDIA drivers (uncomment if you have NVIDIA GPU)
-  # services.xserver.videoDrivers = [ "nvidia" ];
-  # hardware.nvidia = {
-  #   modesetting.enable = true;
-  #   open = false; # Use proprietary drivers
-  #   nvidiaSettings = true;
-  # };
-
-  # AMD drivers (uncomment if you have AMD GPU)
-  # services.xserver.videoDrivers = [ "amdgpu" ];
-
-  # Desktop-specific packages
+  # Desktop packages
   environment.systemPackages = with pkgs; [
-    # File managers
     nemo
-    # nautilus # GNOME file manager
-    # dolphin     # KDE file manager
-
-    # Image viewers
-    eog # GNOME image viewer
-    # gwenview    # KDE image viewer
-
-    # Archive managers
-    file-roller # GNOME archive manager
-
-    # System monitors
+    eog
+    file-roller
     gnome-system-monitor
-
-    # Text editors
-    # gnome-text-editor
-
-    # Media players
-    # totem # GNOME video player
   ];
 
-  # GNOME-specific configuration
+  # GNOME services
   services.gnome = {
     gnome-keyring.enable = true;
     tinysparql.enable = true;
     localsearch.enable = true;
   };
 
-  # Exclude some default GNOME applications (optional)
-  # environment.gnome.excludePackages = with pkgs; [ 
-  #   gnome-photos
-  #   gnome-tour
-  #   gnome-music
-  #   epiphany # GNOME web browser
-  #   geary # Email reader
-  # ];
-
-  # Flatpak support (optional)
+  # Flatpak support
   services.flatpak.enable = true;
   systemd.services.flatpak-repo = {
     wantedBy = [ "multi-user.target" ];
@@ -139,10 +111,4 @@
       flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     '';
   };
-
-  # AppImage support
-  # programs.appimage = {
-  #   enable = true;
-  #   binfmt = true;
-  # };
 }

@@ -25,12 +25,6 @@
   system.stateVersion = "25.05";
   nixpkgs.config.allowUnfree = true;
 
-  # Bootloader
-  boot.loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
-  };
-
   boot.initrd.luks.devices."luks-ac4dc206-5a6e-4750-81bb-7c537fa1fdc8".device =
     "/dev/disk/by-uuid/ac4dc206-5a6e-4750-81bb-7c537fa1fdc8";
     
@@ -90,12 +84,6 @@
     };
 
     # Sound with PipeWire
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
     
     # Printing support (uncomment if needed)
     printing = {
@@ -115,21 +103,6 @@
   };
 
   programs.system-config-printer.enable = true;
-
-  # Hardware
-  hardware = {
-    # Enable sound
-    pulseaudio.enable = false; # Using PipeWire instead
-
-    # Enable bluetooth (uncomment if needed)
-    bluetooth.enable = true;
-  };
-
-  # Security
-  security = {
-    rtkit.enable = true; # For PipeWire
-    sudo.wheelNeedsPassword = false; # Optional: passwordless sudo for wheel group
-  };
 
   # Users (defined in modules/common/users.nix)
   # users.users.wyatt = {

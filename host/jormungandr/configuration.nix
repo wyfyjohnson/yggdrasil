@@ -46,19 +46,9 @@
     };
   };
 
-  # Host-specific overrides for desktop.nix
-  services.displayManager = {
-    defaultSession = "qtile";
-    sddm = {
-      enable = true;
-      theme = "catppuccin-sddm-corners";
-      wayland.enable = true;
-    };
-  };
 
   # Host-specific packages
   environment.systemPackages = with pkgs; [
-    catppuccin-sddm-corners
     tree
   ];
 

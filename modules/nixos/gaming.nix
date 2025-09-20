@@ -62,5 +62,5 @@
 
   # Enable 32-bit libraries for gaming
   hardware.graphics.enable32Bit = true;
-  hardware.pulseaudio.support32Bit = true;
+  services.pulseaudio.support32Bit = true;
 }
