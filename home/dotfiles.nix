@@ -24,7 +24,8 @@ let
     ]
       (name:
         lib.nameValuePair name {
-          source = "${dotsPath}/${name}";
+          source = dotsPath + "/${name}";  # Changed from string interpolation
+          # source = "${dotsPath}/${name}";
           recursive = true;
         }
       )
@@ -32,9 +33,11 @@ let
 
   # Qtile-specific files to avoid __pycache__ conflicts
   qtileFiles = {
-    "qtile/config.py".source = "${dotsPath}/qtile/config.py";
+    "qtile/config.py".source = dotsPath + "/qtile/config.py";
+    # "qtile/config.py".source = "${dotsPath}/qtile/config.py";
     "qtile/autostart.sh" = {
-      source = "${dotsPath}/qtile/autostart.sh";
+      source = dotsPath + "/qtile/autostart.sh";
+      # source = "${dotsPath}/qtile/autostart.sh";
       executable = true;
     };
     # Add any other qtile files here as needed
