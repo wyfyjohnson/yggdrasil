@@ -9,13 +9,13 @@
     # Common modules
     # ../../modules/common/users.nix
     # ../../home/dotfiles.nix
-    ../../home/default.nix
 
     # Darwin-specific modules
     ../../modules/darwin/homebrew.nix
     ../../modules/darwin/system.nix
     ../../modules/darwin/fonts.nix
     ../../modules/darwin/locale.nix
+    ../../modules/darwin/dotfiles.nix
   ];
 
   # System basics
