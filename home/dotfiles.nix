@@ -5,45 +5,57 @@
 }:
 let
   dotsPath = ../dots;
-  # Create config entries for directories that exist (excluding qtile)
+  
+  # Cross-platform configs
+  commonConfigs = [
+    "beets"
+    "btop" 
+    "fastfetch"
+    "ghostty"
+    "kew"
+    "kitty"
+    "sysfetch"
+    "tut"
+  ];
+  
+  # Linux-only configs
+  linuxConfigs = [
+    "cava"
+    "hypr"
+    "picom"
+    "waybar"
+  ];
+  
+  # Combine configs based on platform
+  configList = commonConfigs ++ (lib.optionals pkgs.stdenv.isLinux linuxConfigs);
+  
   configDirs = lib.listToAttrs (
-    lib.forEach [
-      "beets"
-      "btop"
-      "cava"
-      "fastfetch"
-      "ghostty"
-      # "helix"
-      "hypr"
-      "kew"
-      "kitty"
-      "picom"
-      "sysfetch"
-      "tut"
-      "waybar"
-    ]
+    lib.forEach configList
       (name:
         lib.nameValuePair name {
-          source = dotsPath + "/${name}";  # Changed from string interpolation
-          # source = "${dotsPath}/${name}";
+          source = dotsPath + "/${name}";
           recursive = true;
         }
       )
   );
 
-  # Qtile-specific files to avoid __pycache__ conflicts
-  qtileFiles = {
+  # Qtile files - Linux only
+  qtileFiles = lib.optionalAttrs pkgs.stdenv.isLinux {
     "qtile/config.py".source = dotsPath + "/qtile/config.py";
-    # "qtile/config.py".source = "${dotsPath}/qtile/config.py";
     "qtile/autostart.sh" = {
       source = dotsPath + "/qtile/autostart.sh";
-      # source = "${dotsPath}/qtile/autostart.sh";
       executable = true;
     };
-    # Add any other qtile files here as needed
-    # "qtile/other-script.py".source = "${dotsPath}/qtile/other-script.py";
   };
 in
 {
-  xdg.configFile = configDirs // qtileFiles;
+  # Use xdg.configFile on Linux, home.file on macOS
+  xdg.configFile = lib.mkIf pkgs.stdenv.isLinux (configDirs // qtileFiles);
+  
+  home.file = lib.mkIf pkgs.stdenv.isDarwin (
+    lib.mapAttrs' (name: value: {
+      name = ".config/${name}";
+      value = value;
+    }) configDirs
+  );
 }
