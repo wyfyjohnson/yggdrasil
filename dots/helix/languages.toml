@@ -1,1 +1,10 @@
-use-grammars = { only = ["rust", "python", "ruby", "nix", "bash", "go", "zig"] }
+# use-grammars = { only = ["rust", "python", "ruby", "nix", "bash", "go", "zig"] }
+
+[[language]]
+name = "nix"
+language-servers = ["nil"]
+formatter = { command = "nixpkgs-fmt" }
+auto-format = true
+
+[language-server.nil]
+command = "nil"

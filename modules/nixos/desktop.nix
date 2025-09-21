@@ -94,7 +94,6 @@
     gnome-system-monitor
     catppuccin-sddm-corners
     jq
-    helix
     rofi
   ];
 

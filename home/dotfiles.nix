@@ -13,7 +13,7 @@ let
       "cava"
       "fastfetch"
       "ghostty"
-      "helix"
+      # "helix"
       "hypr"
       "kew"
       "kitty"
@@ -29,7 +29,7 @@ let
         }
       )
   );
-  
+
   # Qtile-specific files to avoid __pycache__ conflicts
   qtileFiles = {
     "qtile/config.py".source = "${dotsPath}/qtile/config.py";

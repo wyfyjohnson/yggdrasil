@@ -20,6 +20,7 @@
     ./shell.nix
     ./linux.nix
     ./dotfiles.nix
+    ../modules/common/helix.nix
     # ./darwin.nix  # Comment out for now since you're testing on Linux
   ];
 
@@ -35,20 +36,6 @@
     git
     nil
     nixpkgs-fmt
-
-    # # Programming fonts
-    # fira-code
-    # nerd-fonts.fira-code
-    # jetbrains-mono
-
-    # # System fonts
-    # liberation_ttf
-    # noto-fonts
-    # noto-fonts-emoji
-
-    # # Icon fonts
-    # font-awesome
-    # material-design-icons
 
     # Terminal utilities
     bottom
