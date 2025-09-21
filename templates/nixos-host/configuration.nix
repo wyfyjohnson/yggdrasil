@@ -1,10 +1,10 @@
-{ config
-, pkgs
-, lib
-, inputs
-, ...
-}:
 {
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}: {
   imports = [
     # Include the results of the hardware scan
     ./hardware-configuration.nix
@@ -38,8 +38,8 @@
     # Firewall
     firewall = {
       enable = true;
-      allowedTCPPorts = [ ];
-      allowedUDPPorts = [ ];
+      allowedTCPPorts = [];
+      allowedUDPPorts = [];
     };
   };
 

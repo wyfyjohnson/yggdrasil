@@ -1,9 +1,9 @@
-{ config
-, pkgs
-, lib
-, ...
-}:
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   # Homebrew configuration for macOS
   homebrew = {
     enable = true;

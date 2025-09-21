@@ -16,20 +16,30 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-darwin, home-manager, nix-darwin, ... }:
-    let
-      # Common home-manager configuration
-      homeManagerConfig = {
-        home-manager = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-          backupFileExtension = "backup";
-          users.wyatt = ./home;
-        };
+  outputs = {
+    self,
+    nixpkgs,
+    nixpkgs-darwin,
+    home-manager,
+    nix-darwin,
+    ...
+  }: let
+    # Common home-manager configuration
+    homeManagerConfig = {
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        backupFileExtension = "backup";
+        users.wyatt = ./home;
       };
+    };
 
-      # Helper function for NixOS systems
-      mkNixosSystem = { system, hostname }: nixpkgs.lib.nixosSystem {
+    # Helper function for NixOS systems
+    mkNixosSystem = {
+      system,
+      hostname,
+    }:
+      nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
           ./host/${hostname}/configuration.nix
@@ -38,8 +48,12 @@
         ];
       };
 
-      # Helper function for Darwin systems  
-      mkDarwinSystem = { system, hostname }: nix-darwin.lib.darwinSystem {
+    # Helper function for Darwin systems
+    mkDarwinSystem = {
+      system,
+      hostname,
+    }:
+      nix-darwin.lib.darwinSystem {
         inherit system;
         modules = [
           ./host/${hostname}/configuration.nix
@@ -47,44 +61,43 @@
           homeManagerConfig
         ];
       };
-    in
-    {
-      # NixOS Configurations
-      nixosConfigurations = {
-        fenrir = mkNixosSystem {
-          system = "x86_64-linux";
-          hostname = "fenrir";
-        };
-        jormungandr = mkNixosSystem {
-          system = "x86_64-linux";
-          hostname = "jormungandr";
-        };
+  in {
+    # NixOS Configurations
+    nixosConfigurations = {
+      fenrir = mkNixosSystem {
+        system = "x86_64-linux";
+        hostname = "fenrir";
       };
-
-      # Darwin Configurations
-      darwinConfigurations = {
-        hel = mkDarwinSystem {
-          system = "aarch64-darwin";
-          hostname = "hel";
-        };
-      };
-
-      # Standalone Home Manager Configurations
-      homeConfigurations = {
-        "wyatt@linux" = home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs {
-            system = "x86_64-linux";
-            config.allowUnfree = true;
-          };
-          modules = [ ./home ];
-        };
-        "wyatt@darwin" = home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs-darwin {
-            system = "aarch64-darwin";
-            config.allowUnfree = true;
-          };
-          modules = [ ./home ];
-        };
+      jormungandr = mkNixosSystem {
+        system = "x86_64-linux";
+        hostname = "jormungandr";
       };
     };
+
+    # Darwin Configurations
+    darwinConfigurations = {
+      hel = mkDarwinSystem {
+        system = "aarch64-darwin";
+        hostname = "hel";
+      };
+    };
+
+    # Standalone Home Manager Configurations
+    homeConfigurations = {
+      "wyatt@linux" = home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          config.allowUnfree = true;
+        };
+        modules = [./home];
+      };
+      "wyatt@darwin" = home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs-darwin {
+          system = "aarch64-darwin";
+          config.allowUnfree = true;
+        };
+        modules = [./home];
+      };
+    };
+  };
 }

@@ -1,13 +1,12 @@
-{ config
-, pkgs
-, lib
-, ...
-}:
-let
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: let
   dotsPath = ../../dots;
   fileExists = path: builtins.pathExists path;
-in
-{
+in {
   programs = {
     starship = lib.mkMerge [
       {
@@ -35,10 +34,10 @@ in
 
     alacritty =
       lib.mkIf (fileExists "${dotsPath}/alacritty.yml" || fileExists "${dotsPath}/alacritty.toml")
-        {
-          enable = true;
-          # Config is handled by dotfiles.nix
-        };
+      {
+        enable = true;
+        # Config is handled by dotfiles.nix
+      };
 
     # Kitty terminal - merge with dotfile config
     kitty = {
@@ -139,8 +138,7 @@ in
       '';
 
       plugins = lib.mkIf (!fileExists "${dotsPath}/nvim") (
-        with pkgs.vimPlugins;
-        [
+        with pkgs.vimPlugins; [
           # Essential plugins if no custom config
           vim-sensible
           vim-surround
@@ -214,7 +212,6 @@ in
         };
       };
     };
-
   };
 
   # Services that might use dotfiles

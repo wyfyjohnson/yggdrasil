@@ -1,5 +1,4 @@
-{ pkgs, ... }: {
-
+{pkgs, ...}: {
   xdg.configFile."hypr/hyprland.conf" = {
     enable = true;
     recursive = true;

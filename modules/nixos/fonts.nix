@@ -1,9 +1,9 @@
-{ config
-, pkgs
-, lib
-, ...
-}:
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   fonts = {
     packages = with pkgs; [
       # Programming fonts
@@ -25,17 +25,16 @@
       # Selective Nerd Fonts
       nerd-fonts.fira-code
       nerd-fonts.jetbrains-mono
-
     ];
 
     # Font configuration - uncommented and updated for your font selection
     fontconfig = {
       enable = true;
       defaultFonts = {
-        serif = [ "Liberation Serif" "Noto Serif" ];
-        sansSerif = [ "Liberation Sans" "Noto Sans" ];
-        monospace = [ "Maple Mono NF" "FiraCode Nerd Font" "JetBrainsMono Nerd Font" "Liberation Mono" ];
-        emoji = [ "Noto Color Emoji" ];
+        serif = ["Liberation Serif" "Noto Serif"];
+        sansSerif = ["Liberation Sans" "Noto Sans"];
+        monospace = ["Maple Mono NF" "FiraCode Nerd Font" "JetBrainsMono Nerd Font" "Liberation Mono"];
+        emoji = ["Noto Color Emoji"];
       };
 
       # Font priority configuration

@@ -1,12 +1,19 @@
-{ config, pkgs, lib, ... }:
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   # User configuration that works across NixOS and Darwin
   users.users.wyatt = {
     description = "Wyatt";
     shell = pkgs.zsh;
 
     # Platform-specific settings using conditional logic
-    home = if pkgs.stdenv.isDarwin then "/Users/wyatt" else "/home/wyatt";
+    home =
+      if pkgs.stdenv.isDarwin
+      then "/Users/wyatt"
+      else "/home/wyatt";
 
     # NixOS-specific user settings
     isNormalUser = lib.mkIf pkgs.stdenv.isLinux true;
@@ -17,7 +24,7 @@
       "video"
     ];
 
-    # Darwin-specific settings  
+    # Darwin-specific settings
     name = lib.mkIf pkgs.stdenv.isDarwin "wyatt";
   };
 
@@ -34,7 +41,7 @@
       };
     })
 
-    # Darwin sudo configuration  
+    # Darwin sudo configuration
     (lib.mkIf pkgs.stdenv.isDarwin {
       pam.services.sudo_local.touchIdAuth = true; # Touch ID for sudo
     })

@@ -1,10 +1,10 @@
 # modules/nixos/server.nix
-{ config
-, pkgs
-, lib
-, ...
-}:
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   # Server-specific configuration
 
   # Disable GUI completely
@@ -39,7 +39,7 @@
       443 # HTTPS
       # Add other ports as needed
     ];
-    allowedUDPPorts = [ ];
+    allowedUDPPorts = [];
 
     # Log dropped packets
     logRefusedConnections = false; # Set to true for debugging
@@ -87,7 +87,7 @@
     exporters = {
       node = {
         enable = true;
-        enabledCollectors = [ "systemd" ];
+        enabledCollectors = ["systemd"];
         port = 9100;
       };
     };

@@ -1,15 +1,13 @@
-{ config
-, lib
-, pkgs
-, ...
-}:
-
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-      # ./hypr.nix
-    ];
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  imports = [
+    ./hardware-configuration.nix
+    # ./hypr.nix
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -24,8 +22,8 @@
 
   services.flatpak.enable = true;
   systemd.services.flatpak-repo = {
-    wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.flatpak ];
+    wantedBy = ["multi-user.target"];
+    path = [pkgs.flatpak];
     script = ''
       flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     '';
@@ -90,7 +88,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.wyatt = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
+    extraGroups = ["wheel"];
     packages = with pkgs; [
       flatpak
       tree
@@ -128,5 +126,4 @@
   programs.ssh.startAgent = true;
 
   system.stateVersion = "25.05";
-
 }

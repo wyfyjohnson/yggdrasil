@@ -1,10 +1,10 @@
-{ config
-, pkgs
-, lib
-, inputs
-, ...
-}:
 {
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}: {
   imports = [
     # Include the results of the hardware scan
     ./hardware-configuration.nix
@@ -24,8 +24,7 @@
   system.stateVersion = "25.05";
   nixpkgs.config.allowUnfree = true;
 
-  boot.initrd.luks.devices."luks-ac4dc206-5a6e-4750-81bb-7c537fa1fdc8".device =
-    "/dev/disk/by-uuid/ac4dc206-5a6e-4750-81bb-7c537fa1fdc8";
+  boot.initrd.luks.devices."luks-ac4dc206-5a6e-4750-81bb-7c537fa1fdc8".device = "/dev/disk/by-uuid/ac4dc206-5a6e-4750-81bb-7c537fa1fdc8";
 
   # Networking
   networking = {
@@ -35,8 +34,8 @@
     # Firewall
     firewall = {
       enable = true;
-      allowedTCPPorts = [ ];
-      allowedUDPPorts = [ ];
+      allowedTCPPorts = [];
+      allowedUDPPorts = [];
     };
   };
 

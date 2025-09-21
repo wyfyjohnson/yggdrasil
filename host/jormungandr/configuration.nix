@@ -1,10 +1,10 @@
-{ config
-, pkgs
-, lib
-, inputs
-, ...
-}:
 {
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}: {
   imports = [
     # Include the results of the hardware scan
     ./hardware-configuration.nix
@@ -20,20 +20,19 @@
   # System basics
   system.stateVersion = "25.05";
 
-
   # Networking
   networking = {
     hostName = "jormungandr";
     networkmanager.enable = true;
     firewall = {
       enable = true;
-      allowedTCPPorts = [ ];
-      allowedUDPPorts = [ ];
+      allowedTCPPorts = [];
+      allowedUDPPorts = [];
     };
   };
 
   # Enable flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = ["nix-command" "flakes"];
   nixpkgs.config.allowUnfree = true;
 
   # Host-specific services
@@ -44,7 +43,6 @@
       PasswordAuthentication = false;
     };
   };
-
 
   # Host-specific packages
   environment.systemPackages = with pkgs; [

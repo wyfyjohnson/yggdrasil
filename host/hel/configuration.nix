@@ -1,10 +1,10 @@
-{ config
-, pkgs
-, lib
-, inputs
-, ...
-}:
 {
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}: {
   imports = [
     # Common modules
     # ../../modules/common/users.nix
@@ -45,7 +45,6 @@
 
     # Opimise nix-store
     optimise.automatic = true;
-
   };
 
   # System packages

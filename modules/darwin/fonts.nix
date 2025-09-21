@@ -1,9 +1,9 @@
-{ config
-, pkgs
-, lib
-, ...
-}:
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   fonts = {
     # Font packages for macOS
     packages = with pkgs; [
@@ -26,7 +26,6 @@
       # Selective Nerd Fonts
       nerd-fonts.fira-code
       nerd-fonts.jetbrains-mono
-
     ];
   };
 

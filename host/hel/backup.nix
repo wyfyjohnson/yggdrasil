@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     discord
     helix
@@ -8,7 +8,6 @@
   services.nix-daemon.enable = true;
 
   programs.zsh.enable = true;
-
 
   nix.settings.experimental-features = "nix-command flakes";
   system.configurationRevision = self.rev or self.dirtyRev or null;
