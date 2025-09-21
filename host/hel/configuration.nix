@@ -8,7 +8,8 @@
   imports = [
     # Common modules
     # ../../modules/common/users.nix
-    ../../home/dotfiles.nix
+    # ../../home/dotfiles.nix
+    ../../home/default.nix
 
     # Darwin-specific modules
     ../../modules/darwin/homebrew.nix
