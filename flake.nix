@@ -24,7 +24,7 @@
     nix-darwin,
     ...
   }: let
-    # Common home-manager configuration
+    # home-manager configuration
     homeManagerConfig = {
       home-manager = {
         useGlobalPkgs = true;
