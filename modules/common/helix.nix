@@ -38,7 +38,7 @@
         {
           name = "nix";
           language-servers = [ "nil" ];
-          formatter = { command = "nixpkgs-fmt"; };
+          formatter = { command = "alejandra"; };
           auto-format = true;
         }
         {

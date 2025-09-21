@@ -32,10 +32,10 @@
   # Basic packages
   home.packages = with pkgs; [
     # Development tools
+    alejandra
     bash-language-server
     git
     nil
-    nixpkgs-fmt
 
     # Terminal utilities
     bottom
