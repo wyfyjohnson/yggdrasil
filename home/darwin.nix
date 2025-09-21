@@ -1,9 +1,10 @@
-{ config
-, pkgs
-, lib
-, ...
-}:
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+lib.mkIf pkgs.stdenv.isDarwin {
   # macOS-specific program configurations
   programs = {
     # macOS-specific terminal settings (basic)

@@ -1,14 +1,16 @@
-{ config
-, pkgs
-, lib
-, ...
-}:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   # Basic home manager settings
   home = {
     username = "wyatt";
-    homeDirectory = if pkgs.stdenv.isDarwin then "/Users/wyatt" else "/home/wyatt";
+    homeDirectory =
+      if pkgs.stdenv.isDarwin
+      then "/Users/wyatt"
+      else "/home/wyatt";
 
     stateVersion = "25.05";
   };
@@ -21,7 +23,7 @@
     ./linux.nix
     ./dotfiles.nix
     ../modules/common/helix.nix
-    # ./darwin.nix  # Comment out for now since you're testing on Linux
+    ./darwin.nix # Comment out for now since you're testing on Linux
   ];
 
   # Basic programs
