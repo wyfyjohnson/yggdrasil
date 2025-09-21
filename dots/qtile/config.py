@@ -8,7 +8,7 @@ from libqtile.config import Click, Drag, Group, ScratchPad, DropDown, Key, Match
 from libqtile.lazy import lazy
 
 mod = "mod4"
-terminal = "ghostty"
+terminal = "kitty"
 
 keys = [
 # Open rofi
@@ -139,11 +139,11 @@ for i in groups:
 
 # Define scratchpads
 groups.append(ScratchPad("scratchpad", [
-    DropDown("term", "ghostty --class=scratch", width=0.6, height=0.7, x=0.2, y=0.1, opacity=1),
-    DropDown("term2", "ghostty --class=scratch", width=0.8, height=0.8, x=0.1, y=0.1, opacity=1),
-    DropDown("kew", "ghostty --class=kew -e kew", width=0.8, height=0.8, x=0.1, y=0.1, opacity=0.9),
-    DropDown("ytop", "ghostty --class=btop -e btop", width=0.8, height=0.8, x=0.1, y=0.1, opacity=0.9),
-    DropDown("tut", "ghostty --class=tut -e tut", width=0.8, height=0.8, x=0.1, y=0.1, opacity=0.9),
+    DropDown("term", "kitty --class=scratch", width=0.6, height=0.7, x=0.2, y=0.1, opacity=1),
+    DropDown("term2", "kitty --class=scratch", width=0.8, height=0.8, x=0.1, y=0.1, opacity=1),
+    DropDown("kew", "kitty --class=kew -e kew", width=0.8, height=0.8, x=0.1, y=0.1, opacity=0.9),
+    DropDown("ytop", "kitty --class=btop -e btop", width=0.8, height=0.8, x=0.1, y=0.1, opacity=0.9),
+    DropDown("tut", "kitty --class=tut -e tut", width=0.8, height=0.8, x=0.1, y=0.1, opacity=0.9),
 
 ]))
 

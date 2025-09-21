@@ -11,8 +11,10 @@
         theme = "TwoDark";
       };
     };
-    bash.enable = true;
-
+    bash = {
+      enable = true;
+      enableCompletion = true;
+    };
     # Terminal emulators - basic configs
     # ghostty = {
     #   enable = true;

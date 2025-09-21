@@ -24,6 +24,7 @@
       "of" = "onefetch -i ~/Pictures/fflogo.png";
 
       "fenrir" = "ssh wyatt@192.168.69.200";
+      "hel" = "ssh wyatt@192.168.69.250";
       "jormungandr" = "ssh wyatt@192.168.69.100";
 
       "bimp" = "beet import";

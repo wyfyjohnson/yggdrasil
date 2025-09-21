@@ -56,6 +56,7 @@
     eza
     fastfetch
     hyfetch
+    krabby
     onefetch
     tut
     wget
