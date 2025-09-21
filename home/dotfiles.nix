@@ -21,7 +21,6 @@
   # Linux-only configs
   linuxConfigs = [
     "cava"
-    "hypr"
     "picom"
     "waybar"
   ];
