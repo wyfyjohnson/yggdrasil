@@ -28,6 +28,8 @@
     name = lib.mkIf pkgs.stdenv.isDarwin "wyatt";
   };
 
+  programs.zsh.enable = true;
+
   # Platform-specific sudo configuration
   security = lib.mkMerge [
     # NixOS sudo configuration
