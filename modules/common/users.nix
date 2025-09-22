@@ -28,9 +28,6 @@
     name = lib.mkIf pkgs.stdenv.isDarwin "wyatt";
   };
 
-  # Enable zsh system-wide on both platforms
-  programs.zsh.enable = true;
-
   # Platform-specific sudo configuration
   security = lib.mkMerge [
     # NixOS sudo configuration
