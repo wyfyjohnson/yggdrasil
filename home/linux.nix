@@ -3,66 +3,78 @@
   pkgs,
   lib,
   ...
-}:
-lib.mkIf pkgs.stdenv.isLinux {
-  # Linux-specific programs
-  programs = {
-    firefox = {
+}: let
+  dotsPath = ../dots;
+  fileExists = path: builtins.pathExists path;
+in
+  lib.mkIf pkgs.stdenv.isLinux {
+    # Linux-specific programs
+    programs = {
+      firefox = {
+        enable = true;
+        profiles.wyatt = lib.mkIf (fileExists "${dotsPath}/firefox") {
+          # Firefox dotfiles would be handled by dotfiles.nix
+          settings = {
+            # Basic privacy settings if no custom user.js
+            "privacy.donottrackheader.enabled" = lib.mkDefault true;
+            "privacy.trackingprotection.enabled" = lib.mkDefault true;
+            "dom.security.https_only_mode" = lib.mkDefault true;
+          };
+        };
+      };
+    };
+    # Linux-specific services
+    services = {
+      # GPG agent for key management
+      gpg-agent = {
+        enable = true;
+        enableSshSupport = true;
+        pinentry.package = pkgs.pinentry-curses;
+      };
+    };
+
+    # Linux-specific packages
+    home.packages = with pkgs; [
+      firefox
+      beets-unstable
+      cava
+      discord
+      dunst
+      gcr
+      grim
+      mullvad-vpn
+      libreoffice-fresh
+      nitrogen
+      signal-desktop
+      upower
+      vivaldi
+      waybar
+      webcord
+      # System monitoring
+      btop-rocm
+      neofetch
+      # File management
+      yazi
+    ];
+
+    # GTK theming (for GUI applications)
+    gtk = {
       enable = true;
+      theme = {
+        name = "Adwaita-dark";
+        package = pkgs.gnome-themes-extra;
+      };
     };
-  };
 
-  # Linux-specific services
-  services = {
-    # GPG agent for key management
-    gpg-agent = {
+    # Linux-specific environment variables
+    home.sessionVariables = {
+      BROWSER = "vivaldi";
+      TERMINAL = "kitty";
+    };
+
+    # XDG user directories (Linux-specific)
+    xdg.userDirs = {
       enable = true;
-      enableSshSupport = true;
-      pinentry.package = pkgs.pinentry-curses;
+      createDirectories = true;
     };
-  };
-
-  # Linux-specific packages
-  home.packages = with pkgs; [
-    firefox
-    beets-unstable
-    cava
-    discord
-    dunst
-    gcr
-    grim
-    mullvad-vpn
-    nitrogen
-    signal-desktop
-    upower
-    vivaldi
-    waybar
-    webcord
-    # System monitoring
-    btop-rocm
-    neofetch
-    # File management
-    yazi
-  ];
-
-  # GTK theming (for GUI applications)
-  gtk = {
-    enable = true;
-    theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
-    };
-  };
-
-  # Linux-specific environment variables
-  home.sessionVariables = {
-    BROWSER = "vivaldi";
-    TERMINAL = "ghostty";
-  };
-
-  # XDG user directories (Linux-specific)
-  xdg.userDirs = {
-    enable = true;
-    createDirectories = true;
-  };
-}
+  }

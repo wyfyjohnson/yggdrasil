@@ -45,6 +45,7 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
+    defaultShell = true;
     shellAliases = config.programs.bash.shellAliases;
 
     initContent = ''
