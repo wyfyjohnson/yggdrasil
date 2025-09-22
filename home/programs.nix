@@ -28,11 +28,93 @@ in {
       enableBashIntegration = true;
       enableZshIntegration = true;
     };
+    kitty = {
+      enable = true;
+      font = {
+        name = "Maple Mono NF";
+        size = 14;
+      };
 
-    # Remove kitty from here since it's handled by dotfiles.nix
-    # Keep this commented out to avoid conflicts
-    # kitty = { ... };
+      settings = lib.mkIf (!fileExists "${dotsPath}/kitty") {
+        # Official Catppuccin Mocha colors
+        foreground = "#CDD6F4";
+        background = "#1E1E2E";
+        selection_foreground = "#1E1E2E";
+        selection_background = "#F5E0DC";
 
+        # Cursor colors
+        cursor = "#F5E0DC";
+        cursor_text_color = "#1E1E2E";
+
+        # URL underline color when hovering with mouse
+        url_color = "#F5E0DC";
+
+        # Kitty window border colors
+        active_border_color = "#B4BEFE";
+        inactive_border_color = "#6C7086";
+        bell_border_color = "#F9E2AF";
+
+        # Tab colors
+        active_tab_foreground = "#11111B";
+        active_tab_background = "#CBA6F7";
+        inactive_tab_foreground = "#CDD6F4";
+        inactive_tab_background = "#181825";
+        tab_bar_background = "#11111B";
+
+        # The 16 terminal colors (official Catppuccin Mocha)
+        # black
+        color0 = "#45475A"; # Surface1
+        color8 = "#585B70"; # Surface2
+
+        # red
+        color1 = "#F38BA8"; # Red
+        color9 = "#F38BA8";
+
+        # green
+        color2 = "#A6E3A1"; # Green
+        color10 = "#A6E3A1";
+
+        # yellow
+        color3 = "#F9E2AF"; # Yellow
+        color11 = "#F9E2AF";
+
+        # blue
+        color4 = "#89B4FA"; # Blue
+        color12 = "#89B4FA";
+
+        # magenta
+        color5 = "#F5C2E7"; # Pink
+        color13 = "#F5C2E7";
+
+        # cyan
+        color6 = "#94E2D5"; # Teal
+        color14 = "#94E2D5";
+
+        # white
+        color7 = "#BAC2DE"; # Subtext1
+        color15 = "#A6ADC8"; # Subtext0
+
+        # Performance and behavior settings
+        repaint_delay = 10;
+        input_delay = 3;
+        sync_to_monitor = true;
+
+        # Window settings
+        window_padding_width = 4;
+        confirm_os_window_close = 0;
+
+        # Tab settings
+        tab_bar_edge = "top";
+        tab_bar_style = "powerline";
+        tab_powerline_style = "slanted";
+
+        # Other useful settings
+        enable_audio_bell = false;
+        visual_bell_duration = "0.0";
+        window_alert_on_bell = false;
+        bell_on_tab = false;
+      };
+    };
     neovim = {
       enable = true;
       viAlias = true;
@@ -100,9 +182,13 @@ in {
       terminal = "screen-256color";
       keyMode = "vi";
       customPaneNavigationAndResize = true;
-
       # Basic config if no dotfile
       extraConfig = lib.mkIf (!fileExists "${dotsPath}/tmux.conf") ''
+        # Terminal settings
+        set -ga update-environment TERM
+        set -ga update-environment TERM_PROGRAM
+        set-option -sa terminal-overrides ",xterm*:Tc"
+
         # Set prefix to Ctrl-a
         unbind C-b
         set -g prefix C-a
@@ -124,17 +210,56 @@ in {
         set -g base-index 1
         setw -g pane-base-index 1
 
-        # Status bar
-        set -g status-position bottom
-        set -g status-bg colour234
-        set -g status-fg colour137
-        set -g status-left ""
-        set -g status-right "#[fg=colour233,bg=colour241,bold] %d/%m #[fg=colour233,bg=colour245,bold] %H:%M:%S "
-        set -g status-right-length 50
-        set -g status-left-length 20
+        # Catppuccin Mocha theme
+        thm_bg="#1e1e2e"
+        thm_fg="#cdd6f4"
+        thm_cyan="#89dceb"
+        thm_black="#181825"
+        thm_gray="#313244"
+        thm_magenta="#cba6f7"
+        thm_pink="#f5c2e7"
+        thm_red="#f38ba8"
+        thm_green="#a6e3a1"
+        thm_yellow="#f9e2af"
+        thm_blue="#89b4fa"
+        thm_orange="#fab387"
+        thm_black4="#585b70"
 
-        setw -g window-status-current-format " #I#[fg=colour250]:#[fg=colour255]#W#[fg=colour50]#F "
-        setw -g window-status-format " #I#[fg=colour237]:#[fg=colour250]#W#[fg=colour244]#F "
+        # Status bar styling
+        set -g status-position bottom
+        set -g status-justify left
+        set -g status-style "fg=$thm_pink,bg=$thm_bg"
+        set -g status-interval 1
+
+        # Window status
+        setw -g window-status-activity-style "fg=$thm_fg,bg=$thm_bg,none"
+        setw -g window-status-separator ""
+        setw -g window-status-style "fg=$thm_fg,bg=$thm_bg,none"
+
+        # Active window
+        setw -g window-status-current-format "#[fg=$thm_bg,bg=$thm_pink] #I #[fg=$thm_fg,bg=$thm_gray] #W#[fg=$thm_gray,bg=$thm_bg]"
+
+        # Inactive windows
+        setw -g window-status-format "#[fg=$thm_bg,bg=$thm_blue] #I #[fg=$thm_fg,bg=$thm_gray] #W #[fg=$thm_gray,bg=$thm_bg]"
+
+        # Status left
+        set -g status-left-length 100
+        set -g status-left "#[fg=$thm_bg,bg=$thm_green,bold] #S #[fg=$thm_green,bg=$thm_bg]"
+
+        # Status right
+        set -g status-right-length 100
+        set -g status-right "#[fg=$thm_blue,bg=$thm_bg]#[fg=$thm_bg,bg=$thm_blue] %Y-%m-%d #[fg=$thm_pink,bg=$thm_blue]#[fg=$thm_bg,bg=$thm_pink,bold] %H:%M:%S "
+
+        # Pane borders
+        set -g pane-border-style "fg=$thm_gray"
+        set -g pane-active-border-style "fg=$thm_blue"
+
+        # Message styling
+        set -g message-style "fg=$thm_cyan,bg=$thm_gray,align=centre"
+        set -g message-command-style "fg=$thm_cyan,bg=$thm_gray,align=centre"
+
+        # Copy mode styling
+        set -g mode-style "fg=$thm_pink,bg=$thm_black4,bold"
       '';
     };
   };
