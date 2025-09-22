@@ -8,19 +8,17 @@ lib.mkIf pkgs.stdenv.isDarwin {
   # macOS-specific program configurations
   programs = {
     # macOS-specific terminal settings (basic)
-    alacritty = {
-      enable = true;
-      settings = {
-        window.decorations = "buttonless";
-        font.normal.family = "monospace";
-        font.size = 12;
+    alacritty =
+      lib.mkIf (fileExists "${dotsPath}/alacritty.yml" || fileExists "${dotsPath}/alacritty.toml")
+      {
+        enable = true;
+        # Config is handled by dotfiles.nix
       };
-    };
   };
 
   # macOS-specific home configuration
   home = {
-    # macOS-specific session variables (removed BROWSER since it's set in main config)
+    # macOS-specific session variables
     sessionVariables = {
       # Add other macOS-specific variables here if needed
     };

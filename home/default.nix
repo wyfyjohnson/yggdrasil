@@ -13,9 +13,14 @@
       else "/home/wyatt";
 
     stateVersion = "25.05";
+
+    sessionVariables = {
+      EDITOR = "hx";
+      VISUAL = "hx";
+    };
   };
 
-  # Fixed imports - no conditional logic that depends on pkgs
+  # Fixed imports
   imports = [
     ./git.nix
     ./programs.nix
@@ -23,7 +28,7 @@
     ./linux.nix
     ./dotfiles.nix
     ../modules/common/helix.nix
-    ./darwin.nix # Comment out for now since you're testing on Linux
+    ./darwin.nix
   ];
 
   # Basic programs

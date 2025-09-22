@@ -32,13 +32,6 @@ in {
       })
     ];
 
-    alacritty =
-      lib.mkIf (fileExists "${dotsPath}/alacritty.yml" || fileExists "${dotsPath}/alacritty.toml")
-      {
-        enable = true;
-        # Config is handled by dotfiles.nix
-      };
-
     # Kitty terminal - merge with dotfile config
     # kitty = {
     #   enable = true;

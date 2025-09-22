@@ -3,7 +3,10 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  dotsPath = ../dots;
+  fileExists = path: builtins.pathExists path;
+in {
   programs.bash = {
     enable = true;
     enableCompletion = true;
@@ -35,10 +38,35 @@
     };
   };
 
-  programs.starship = {
-    enable = true;
-    enableBashIntegration = true;
-  };
+  # programs.starship = {
+  #   enable = true;
+  #   enableBashIntegration = true;
+  #   enableZshIntegration = true;
+  # };
+  programs.starship = lib.mkMerge [
+    {
+      enable = true;
+      enableBashIntegration = true;
+      enableZshIntegration = true;
+    }
+    # Fallback config if no dotfiles starship.toml exists
+    (lib.mkIf (!fileExists "${dotsPath}/starship.toml") {
+      settings = {
+        format = "$all$character";
+        character = {
+          success_symbol = "[➜](bold green)";
+          error_symbol = "[➜](bold red)";
+        };
+        git_branch = {
+          symbol = " ";
+          format = "[$symbol$branch]($style) ";
+        };
+        git_status = {
+          format = "([$all_status$ahead_behind]($style) )";
+        };
+      };
+    })
+  ];
 
   programs.zsh = {
     enable = true;
