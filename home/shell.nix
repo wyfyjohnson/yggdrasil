@@ -31,6 +31,7 @@
 
       "jctl" = "journalctl -p 3 -xb";
       "sysfetch" = ".config/sysfetch/sysfetch";
+      "gp" = "git push && git push github main ";
     };
   };
 
