@@ -105,5 +105,8 @@
     starship = {
       enable = true;
     };
+    tmux = {
+      enable = true;
+    };
   };
 }
