@@ -2,18 +2,18 @@
 
 A comprehensive, cross-platform Nix configuration supporting NixOS, macOS (nix-darwin), and standalone Home Manager setups. Built for stability, modularity, and ease of maintenance.
 
-## ✨ Features
+##  Features
 
-- **🔀 Cross-platform**: Works on NixOS, macOS, and any system with Nix
-- **📦 Modular design**: Easily reusable components and configurations
-- **🔒 Stable channels**: Uses stable branches for reliability
-- **🏠 Home Manager integration**: Consistent user environment across all platforms
-- **🎯 Host-specific overrides**: Customize per-machine while sharing common configs
-- **🛠️ Development ready**: Includes dev shells and formatting tools
-- **📝 Templates**: Quick setup for new hosts
-- **🎨 Dotfiles management**: Centralized configuration files
+- ** Cross-platform**: Works on NixOS, macOS, and any system with Nix
+- ** Modular design**: Easily reusable components and configurations
+- ** Stable channels**: Uses stable branches for reliability
+- ** Home Manager integration**: Consistent user environment across all platforms
+- ** Host-specific overrides**: Customize per-machine while sharing common configs
+- ** Development ready**: Includes dev shells and formatting tools
+- ** Templates**: Quick setup for new hosts
+- ** Dotfiles management**: Centralized configuration files
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -56,14 +56,14 @@ A comprehensive, cross-platform Nix configuration supporting NixOS, macOS (nix-d
    nix run home-manager/release-25.05 -- switch --flake .#wyatt@darwin
    ```
 
-## 📁 Configuration Structure
+##  Configuration Structure
 
 ### Host Configurations
 
 Current configured hosts:
-- **fenrir**: NixOS desktop system
-- **jormungandr**: NixOS server system  
-- **hel**: macOS system (Apple Silicon)
+- **fenrir**: NixOS laptop system
+- **jormungandr**: NixOS desktop system  
+- **hel**: MacBook Air (Apple Silicon)
 
 ### Adding a New Host
 
@@ -96,7 +96,7 @@ Current configured hosts:
    - Add hardware-configuration.nix for NixOS
    - Create optional host-specific home.nix for overrides
 
-## 🏠 Home Manager Configuration
+##  Home Manager Configuration
 
 ### User Configuration Structure
 
@@ -134,7 +134,7 @@ Create `host/hostname/home.nix`:
 }
 ```
 
-## 🔧 Development
+##  Development
 
 ### Development Shell
 
@@ -171,33 +171,48 @@ darwin-rebuild check --flake .#hostname
 home-manager build --flake .#wyatt@linux
 ```
 
-## 🎛️ Customization
+##  Customization
 
 ### System Modules
 
 **Common modules** (shared across platforms):
-- `modules/common/fonts.nix` - Font configuration
-- `modules/common/locale.nix` - Localization settings
-- `modules/common/users.nix` - User account setup
+- `modules/common/helix.nix`  - Helix configuration
+- `modules/common/users.nix`  - User account setup
 
 **NixOS modules**:
 - `modules/nixos/desktop.nix` - Desktop environment setup
-- `modules/nixos/gaming.nix` - Gaming-related configuration
-- `modules/nixos/server.nix` - Server optimizations
+- `modules/nixos/fonts.nix`   - Font configuration
+- `modules/nixos/gaming.nix`  - Gaming-related configuration
+- `modules/nixos/locale.nix`  - Localization settings
+- `modules/nixos/server.nix`  - Server optimizations
 
 **macOS modules**:
+- `modules/darwin/dotfiles.nix` - Configuration File management
+- `modules/darwin/fonts.nix`    - Font configuration
 - `modules/darwin/homebrew.nix` - Homebrew package management
-- `modules/darwin/system.nix` - macOS system preferences
+- `modules/darwin/locale.nix`   - Localization settings
+- `modules/darwin/system.nix`   - macOS system preferences
 
 ### Dotfiles
 
 Store configuration files in `dots/`:
 ```
 dots/
+├── beets
+├── btop
+├── cava
+├── fastfetch
+├── ghostty
+├── helix
 ├── hyfetch.json
+├── kew
+├── kitty
+├── picom
+├── qtile
 ├── starship.toml
-├── wallpapers/
-└── scripts/
+├── sysfetch
+├── tut
+└── waybar
 ```
 
 Reference them in home configuration:
@@ -205,7 +220,7 @@ Reference them in home configuration:
 xdg.configFile."app/config.conf".source = ../../dots/app-config.conf;
 ```
 
-## 📦 Package Management
+##  Package Management
 
 ### System Packages
 
@@ -225,7 +240,7 @@ homebrew.casks = [
 ];
 ```
 
-## 🔍 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -266,7 +281,7 @@ sudo rm /etc/nix/nix.conf
 3. Browse [nix-darwin options](https://daiderd.com/nix-darwin/manual/index.html)
 4. Search [Nixpkgs](https://search.nixos.org/packages) for packages
 
-## 🔐 Security Notes
+##  Security Notes
 
 ### SSH Keys
 - Add your public keys to `modules/common/users.nix`
@@ -280,7 +295,7 @@ sudo rm /etc/nix/nix.conf
 - TouchID for sudo is enabled by default
 - Gatekeeper settings in `modules/darwin/system.nix`
 
-## 📈 Maintenance
+##  Maintenance
 
 ### Regular Updates
 
@@ -315,7 +330,7 @@ Important files to backup:
 - SSH keys and other secrets
 - Personal dotfiles in `dots/`
 
-## 🐣 Yggdrasil Shell Script
+##  Yggdrasil Shell Script
 
 ### Basic Usage
 
@@ -342,7 +357,7 @@ Important files to backup:
 ./yggdrasil create-host server nixos
 ```
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -351,12 +366,12 @@ Important files to backup:
 5. Submit a pull request
 
 ### Code Style
-- Use `nixpkgs-fmt` for formatting
+- Use `alejandra` for formatting
 - Comment complex configurations
 - Keep modules focused and reusable
 - Follow the existing directory structure
 
-## 📄 License
+##  License
 
 This configuration is released under the MIT License. Feel free to use, modify, and share.
 
