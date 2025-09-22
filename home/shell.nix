@@ -38,11 +38,6 @@ in {
     };
   };
 
-  # programs.starship = {
-  #   enable = true;
-  #   enableBashIntegration = true;
-  #   enableZshIntegration = true;
-  # };
   programs.starship = lib.mkMerge [
     {
       enable = true;
@@ -74,7 +69,6 @@ in {
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
-    defaultShell = true;
     shellAliases = config.programs.bash.shellAliases;
 
     initContent = ''
