@@ -1,0 +1,67 @@
+#!/usr/bin/env sh
+# ~/.config/yabai/yabairc
+
+# Global settings
+yabai -m config mouse_follows_focus          on
+yabai -m config focus_follows_mouse          off
+yabai -m config window_origin_display        default
+yabai -m config window_placement             second_child
+yabai -m config window_topmost               off
+
+# ==============================
+# TRANSPARENCY SETTINGS
+# ==============================
+yabai -m config window_shadow                on
+yabai -m config window_opacity               on          # Enable opacity
+yabai -m config window_opacity_duration      0.2         # Smooth transition
+yabai -m config active_window_opacity        0.95        # Active window (almost opaque)
+yabai -m config normal_window_opacity        0.75        # Inactive windows (your preference)
+
+# Optional: Window borders (looks great with transparency)
+yabai -m config window_border                on
+yabai -m config window_border_width          2
+yabai -m config active_window_border_color   0xff89b4fa  # Catppuccin blue
+yabai -m config normal_window_border_color   0xff45475a  # Catppuccin surface1
+yabai -m config insert_feedback_color        0xfff38ba8  # Catppuccin red
+
+# Layout settings
+yabai -m config layout                       bsp
+yabai -m config split_ratio                  0.50
+yabai -m config auto_balance                 off
+
+# Padding and gaps
+yabai -m config top_padding                  8
+yabai -m config bottom_padding               8
+yabai -m config left_padding                 8
+yabai -m config right_padding                8
+yabai -m config window_gap                   8
+
+# Mouse settings
+yabai -m config mouse_modifier               fn
+yabai -m config mouse_action1                move
+yabai -m config mouse_action2                resize
+yabai -m config mouse_drop_action            swap
+
+# ==============================
+# APP-SPECIFIC RULES
+# ==============================
+
+# Keep these apps floating (don't tile)
+yabai -m rule --add app="^System Preferences$" manage=off
+yabai -m rule --add app="^Archive Utility$" manage=off
+yabai -m rule --add app="^Finder$" manage=off
+yabai -m rule --add app="^Calculator$" manage=off
+yabai -m rule --add app="^Karabiner-Elements$" manage=off
+yabai -m rule --add app="^Activity Monitor$" manage=off
+
+# Special transparency rules for specific apps
+yabai -m rule --add app="^kitty$" opacity=0.8          # Your terminal preference
+yabai -m rule --add app="^Ghostty$" opacity=0.8        # If using ghostty
+yabai -m rule --add app="^Alacritty$" opacity=0.8      # If using alacritty
+yabai -m rule --add app="^Code$" opacity=0.9           # VS Code slightly more opaque
+yabai -m rule --add app="^Discord$" opacity=0.85       # Discord
+
+# You can also set per-app rules for floating
+yabai -m rule --add app="^Spotify$" opacity=0.8 manage=off
+
+echo "yabai configuration with transparency loaded!"

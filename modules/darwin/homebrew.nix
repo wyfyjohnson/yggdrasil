@@ -18,11 +18,14 @@
     # Homebrew taps
     taps = [
       # Add more taps as needed
+      "koekeishiya/formulae"
     ];
 
     # CLI tools from Homebrew (things not available in nixpkgs)
     brews = [
       # Add Homebrew formulas that aren't available in nixpkgs
+      "yabai"
+      "skhd"
     ];
 
     # GUI applications from Homebrew Cask
