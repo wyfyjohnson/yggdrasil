@@ -95,6 +95,7 @@
     catppuccin-sddm-corners
     jq
     rofi
+    flameshot
   ];
 
   # GNOME services

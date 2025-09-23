@@ -179,7 +179,7 @@ in {
 
     tmux = {
       enable = true;
-      terminal = "screen-256color";
+      terminal = "tmux-256color";
       keyMode = "vi";
       customPaneNavigationAndResize = true;
       # Basic config if no dotfile
@@ -187,7 +187,7 @@ in {
         # Terminal settings
         set -ga update-environment TERM
         set -ga update-environment TERM_PROGRAM
-        set-option -sa terminal-overrides ",xterm*:Tc"
+        set-option -sa terminal-overrides ",xterm-kitty:RGB,xterm*:Tc"
 
         # Set prefix to Ctrl-a
         unbind C-b

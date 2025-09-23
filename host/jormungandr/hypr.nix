@@ -4,5 +4,4 @@
     recursive = true;
     source = ./hypr/hyprland.conf;
   };
-
 }
