@@ -12,6 +12,10 @@ in {
     enableCompletion = true;
 
     bashrcExtra = ''
+       if [[ -z "$TMUX" && -n "$PS1" ]]; then
+        tmux new-session -A -s main
+      fi
+
       command -v krabby >/dev/null 2>&1 && krabby random
     '';
 
@@ -72,6 +76,10 @@ in {
     shellAliases = config.programs.bash.shellAliases;
 
     initContent = ''
+       if [[ -z "$TMUX" && -n "$PS1" ]]; then
+        tmux new-session -A -s main
+      fi
+
       command -v krabby >/dev/null 2>&1 && krabby random
     '';
   };
