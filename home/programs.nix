@@ -188,6 +188,7 @@ in {
         set -ga update-environment TERM
         set -ga update-environment TERM_PROGRAM
         set-option -sa terminal-overrides ",xterm-kitty:RGB,xterm*:Tc"
+        set -g allow-passthrough on
 
         # Set prefix to Ctrl-a
         unbind C-b
