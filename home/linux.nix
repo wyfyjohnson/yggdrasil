@@ -46,6 +46,7 @@ in
       libreoffice-fresh
       nitrogen
       signal-desktop
+      picom
       upower
       vivaldi
       waybar
