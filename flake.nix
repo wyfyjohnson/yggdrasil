@@ -25,11 +25,12 @@
     ...
   }: let
     # home-manager configuration
-    homeManagerConfig = {
+    homeManagerConfig = hostname: {
       home-manager = {
         useGlobalPkgs = true;
         useUserPackages = true;
         backupFileExtension = "backup";
+        extraSpecialArgs = {inherit hostname;};
         users.wyatt = ./home;
       };
     };
@@ -41,6 +42,7 @@
     }:
       nixpkgs.lib.nixosSystem {
         inherit system;
+        specialArgs = {inherit hostname;};
         modules = [
           ./host/${hostname}/configuration.nix
           home-manager.nixosModules.home-manager

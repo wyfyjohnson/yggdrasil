@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  hostname ? "unknown",
   ...
 }: let
   dotsPath = ../dots;
@@ -72,6 +73,8 @@ in
       BROWSER = "vivaldi";
       TERMINAL = "kitty";
     };
+
+    xdg.configFile."hypr/hyprland.conf".source = ../host/${hostname}/hypr/hyprland.conf;
 
     # XDG user directories (Linux-specific)
     xdg.userDirs = {
