@@ -74,8 +74,12 @@ in
       TERMINAL = "kitty";
     };
 
-    xdg.configFile."hypr/hyprland.conf".source = ../host/${hostname}/hypr/hyprland.conf;
-
+    xdg.configFile."hypr/hyprland.conf".source =
+      if hostname == "fenrir"
+      then ../host/fenrir/hypr/hyprland.conf
+      else if hostname == "jormungandr"
+      then ../host/jormungandr/hypr/hyprland.conf
+      else ../host/fenrir/hypr/hyprland.conf;
     # XDG user directories (Linux-specific)
     xdg.userDirs = {
       enable = true;
