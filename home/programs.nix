@@ -28,6 +28,11 @@ in {
       enableBashIntegration = true;
       enableZshIntegration = true;
     };
+
+    ghostty = {
+      enable = true;
+    };
+
     kitty = {
       enable = true;
       font = {

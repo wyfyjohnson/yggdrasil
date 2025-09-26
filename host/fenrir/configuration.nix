@@ -18,6 +18,7 @@
     ../../modules/nixos/gaming.nix
     ../../modules/nixos/locale.nix
     # ../../modules/nixos/server.nix
+    ./hypr.nix
   ];
 
   # System basics
