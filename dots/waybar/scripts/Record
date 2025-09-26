@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-ISRECORD="$HOME/.config/waybar/cache/isrecording"
+ISRECORD="$HOME/.local/state/waybar/isrecording"
 VIDEO_DIR="$HOME/Videos"
+
+# Create the directory if it doesn't exist
+mkdir -p "$(dirname "$ISRECORD")"
 
 monitor=$(hyprctl monitors -j | jq -r '.[] | select(.focused==true).name')
 

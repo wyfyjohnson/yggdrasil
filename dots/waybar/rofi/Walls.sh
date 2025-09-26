@@ -99,7 +99,7 @@ process_func_def='process_image() {
     md5_file="${cacheDir}/.${nombre_archivo}.md5"
     lock_file="${cacheDir}/.lock_${nombre_archivo}"
 
-    current_md5=$(xxh64sum "$imagen" | cut -d " " -f1)
+    current_md5=$(xxhsum -H1 "$imagen" | cut -d " " -f1)
 
     (
         flock -x 9

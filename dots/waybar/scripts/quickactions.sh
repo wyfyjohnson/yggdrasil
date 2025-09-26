@@ -84,7 +84,7 @@ case "$1" in
         echo "{\"text\": \" \", \"class\": \"screenshot\", \"tooltip\": \"  Screenshots | Click Select  Right Click Output\"}"
         ;;
     --record)
-        statusrecord=$(cat ~/.config/waybar/cache/isrecording 2>/dev/null | tr -d '[:space:]')
+            statusrecord=$(cat ~/.local/state/waybar/isrecording 2>/dev/null | tr -d '[:space:]')
 
             if [ "$statusrecord" = "on" ]; then
                 echo "{\"text\": \" \", \"class\": \"recordon\", \"tooltip\": \"   Recording  Right Click to stop\"}"

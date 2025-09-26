@@ -7,7 +7,7 @@ ICONS_DIR="$HOME/.config/waybar/icons/weather"
 mkdir -p "$CACHE_DIR" "$ICONS_DIR"
 
 get_city() {
-    curl -s "https://ipapi.co/city/" 2>/dev/null || echo "Machala"
+    curl -s "https://ipapi.co/city/" 2>/dev/null || echo "Carlsbad,CA"
 }
 
 fetch_weather() {

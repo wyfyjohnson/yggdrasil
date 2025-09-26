@@ -48,10 +48,19 @@ in
       nitrogen
       signal-desktop
       picom
+      hyprshot
+      wf-recorder
+      cliphist
+      wl-clipboard
+      pavucontrol
+      rofi-wayland
       upower
       vivaldi
       waybar
       webcord
+      swww
+      xxHash
+      imagemagick
       # System monitoring
       btop-rocm
       neofetch
