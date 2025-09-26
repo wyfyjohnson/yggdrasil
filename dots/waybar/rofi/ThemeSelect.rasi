@@ -28,10 +28,10 @@ mainbox {
 
 listview {
     enabled:                     true;
-    columns:                     5;
+    columns:                     4;
     lines:                       2;
-    spacing:                     17px;
-    padding:                     20px 30px;
+    spacing:                     15px;
+    padding:                     15px 20px;
     cycle:                       true;
     dynamic:                     false;
     scrollbar:                   false;
@@ -67,8 +67,8 @@ element selected.normal {
 }
 
 element-icon {
-    size:                        23%;
-	border-radius:				 20px;
+    size:                        25%;
+	border-radius:				 15px;
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;
@@ -77,7 +77,7 @@ element-icon {
 element-text {
     vertical-align:              0.5;
     horizontal-align:            0.5;
-    padding:                     10px 0px 8px 0px;
+    padding:                     8px 0px 6px 0px;
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;
