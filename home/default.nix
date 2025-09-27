@@ -72,5 +72,9 @@
     ruff
     rust-analyzer
     vscode-langservers-extracted
+
+    # AI smut for school
+    aichat
+    ollama
   ];
 }
