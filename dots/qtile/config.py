@@ -8,7 +8,7 @@ from libqtile.config import Click, Drag, Group, ScratchPad, DropDown, Key, Match
 from libqtile.lazy import lazy
 
 mod = "mod4"
-terminal = "kitty"
+terminal = "ghostty"
 
 keys = [
 # Open rofi
