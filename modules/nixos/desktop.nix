@@ -96,11 +96,9 @@
     jq
     rofi
     flameshot
+    ghostty
   ];
 
-  programs.ghostty = {
-    enable = true;
-  };
   # GNOME services
   services.gnome = {
     gnome-keyring.enable = true;
