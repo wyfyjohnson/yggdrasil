@@ -46,7 +46,8 @@
         modules = [
           ./host/${hostname}/configuration.nix
           home-manager.nixosModules.home-manager
-          homeManagerConfig
+          # homeManagerConfig
+          (homeManagerConfig hostname)
         ];
       };
 
