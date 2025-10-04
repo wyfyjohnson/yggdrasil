@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CACHE_DIR="$HOME/.config/waybar/cache"
+CACHE_DIR="$HOME/.cache/waybar"
 CACHE_FILE="$CACHE_DIR/weather-data.json"
 ICONS_DIR="$HOME/.config/waybar/icons/weather"
 

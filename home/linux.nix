@@ -38,6 +38,7 @@ in
     home.packages = with pkgs; [
       firefox
       beets-unstable
+      bluez
       cava
       discord
       dunst
@@ -48,6 +49,7 @@ in
       nitrogen
       signal-desktop
       picom
+      pamixer
       hyprshot
       wf-recorder
       cliphist
