@@ -16,6 +16,7 @@
     ../../modules/nixos/desktop.nix
     ../../modules/nixos/gaming.nix
     ./sddm.nix
+    ./hyprland.nix
   ];
 
   # System basics
