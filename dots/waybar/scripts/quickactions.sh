@@ -44,10 +44,10 @@ case "$1" in
             echo "{\"text\": \" \", \"class\": \"$class\", \"tooltip\": \"Battery | ${percent}%  $state\"}"
         ;;
     --volume)
-            volume_info=$(wpctl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}' | tr -d '%')
-            mute_status=$(wpctl get-sink-mute @DEFAULT_SINK@)
+                volume_info=$(pamixer --get-volume)
+                mute_status=$(pamixer --get-mute)
 
-                if [[ "$mute_status" == *"yes" ]]; then
+                if [[ "$mute_status" == "true" ]]; then
                     class="volmute"
                 elif (( volume_info < 33 )); then
                     class="volow"
