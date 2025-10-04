@@ -73,6 +73,8 @@ in {
 
     initContent = ''
       command -v krabby >/dev/null 2>&1 && krabby random
+      autoload -Uz compinit
+      compinit
     '';
   };
 }
