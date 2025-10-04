@@ -28,7 +28,7 @@
 
       # Core settings
       core = {
-        editor = "nvim";
+        editor = "hx";
         autocrlf = false;
         safecrlf = false;
       };
