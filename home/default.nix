@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  hostname ? "unknown",
   ...
 }: {
   # Basic home manager settings

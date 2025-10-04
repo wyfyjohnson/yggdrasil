@@ -80,7 +80,7 @@ in
     # Linux-specific environment variables
     home.sessionVariables = {
       BROWSER = "vivaldi";
-      TERMINAL = "kitty";
+      TERMINAL = "ghostty";
     };
 
     xdg.configFile."hypr/hyprland.conf".source =
