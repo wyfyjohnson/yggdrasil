@@ -18,7 +18,9 @@
       lightdm.enable = false;
     };
     windowManager = {
-      qtile.enable = true;
+      qtile = {
+        enable = true;
+      };
     };
     desktopManager = {
       cinnamon.enable = true;
@@ -40,6 +42,13 @@
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
+  };
+
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = [pkgs.xdg-desktop-portal-gtk];
+    config.common.default = "*";
   };
 
   # Audio - PipeWire as primary audio server
@@ -97,7 +106,13 @@
     rofi
     flameshot
     ghostty
+    wlr-randr
   ];
+
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+    GTK_USE_PORTAL = "0";
+  };
 
   # GNOME services
   services.gnome = {

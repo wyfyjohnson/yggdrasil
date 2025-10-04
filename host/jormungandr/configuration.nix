@@ -15,6 +15,7 @@
     # NixOS-specific modules
     ../../modules/nixos/desktop.nix
     ../../modules/nixos/gaming.nix
+    ./sddm.nix
   ];
 
   # System basics
