@@ -44,8 +44,8 @@ case "$1" in
             echo "{\"text\": \" \", \"class\": \"$class\", \"tooltip\": \"Battery | ${percent}%  $state\"}"
         ;;
     --volume)
-            volume_info=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}' | tr -d '%')
-            mute_status=$(pactl get-sink-mute @DEFAULT_SINK@)
+            volume_info=$(wpctl get-sink-volume @DEFAULT_SINK@ | awk '{print $5}' | tr -d '%')
+            mute_status=$(wpctl get-sink-mute @DEFAULT_SINK@)
 
                 if [[ "$mute_status" == *"yes" ]]; then
                     class="volmute"
