@@ -106,7 +106,6 @@
     rofi
     flameshot
     ghostty
-    wlr-randr
   ];
 
   environment.sessionVariables = {

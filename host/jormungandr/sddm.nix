@@ -8,11 +8,15 @@
   services.displayManager.sddm.settings = {
     Wayland = {
       EnableHiDPI = true;
-      SessionCommand = "${pkgs.wlr-randr}/bin/wlr-randr --output DP-2 --transform 270";
+      SessionCommand = "${pkgs.wlr-randr}/bin/wlr-randr --output DP-1 --mode 3840x2160@144 --pos 1920,0 --output DP-2 --mode 1920x1080@165 --pos 0,0 --transform 90";
     };
     X11 = {
       ServerArguments = "-nolisten tcp -dpi 96";
       DisplayCommand = "${pkgs.xorg.xrandr}/bin/xrandr --output DP-1 --primary --mode 3840x2160 --pos 1080x0 --rotate normal --output DP-2 --mode 1920x1080 --pos 0x0 --rotate left";
     };
   };
+
+  environment.systemPackages = with pkgs; [
+    wlr-randr
+  ];
 }

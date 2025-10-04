@@ -344,19 +344,19 @@ def autostart():
    home = os.path.expanduser('~/.config/qtile/autostart.sh')
    subprocess.run([home])
 
-# Wayland-specific configuration
 wl_input_rules = None
+    
 
 # Configure monitor outputs for Wayland
 wl_output_rules = {
     "DP-2": {
         "mode": {"width": 1920, "height": 1080},
         "pos": {"x": 0, "y": 0},
-        "transform": 270,  # Rotate left (portrait mode)
+        "transform": 90,
     },
     "DP-1": {
         "mode": {"width": 3840, "height": 2160},
-        "pos": {"x": 1080, "y": 0},  # Positioned to the right of rotated DP-2
+        "pos": {"x": 1080, "y": 0}
     },
 }
 dgroups_key_binder = None
