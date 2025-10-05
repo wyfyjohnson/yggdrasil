@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs-unstable = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
 
     home-manager = {
@@ -19,6 +20,7 @@
   outputs = {
     self,
     nixpkgs,
+    nixpkgs-unstable,
     nixpkgs-darwin,
     home-manager,
     nix-darwin,
@@ -42,7 +44,13 @@
     }:
       nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = {inherit hostname;};
+        specialArgs = {
+          inherit hostname;
+          unstable = import nixpkgs-unstable {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        };
         modules = [
           ./host/${hostname}/configuration.nix
           home-manager.nixosModules.home-manager

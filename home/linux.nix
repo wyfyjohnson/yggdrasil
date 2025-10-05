@@ -3,6 +3,7 @@
   pkgs,
   lib,
   hostname ? "unknown",
+  unstable,
   ...
 }: let
   dotsPath = ../dots;
@@ -60,7 +61,7 @@ in
       vivaldi
       waybar
       webcord
-      swww
+      unstable.swww
       xxHash
       imagemagick
       # System monitoring
