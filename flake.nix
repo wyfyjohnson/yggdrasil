@@ -6,6 +6,8 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
 
+    wfetch.url = "github:iynaix/wfetch";
+
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -24,6 +26,7 @@
     nixpkgs-darwin,
     home-manager,
     nix-darwin,
+    wfetch,
     ...
   }: let
     # home-manager configuration
@@ -34,6 +37,7 @@
         backupFileExtension = "backup";
         extraSpecialArgs = {
           inherit hostname;
+          inherit wfetch;
           unstable = import nixpkgs-unstable {
             inherit system;
             config.allowUnfree = true;

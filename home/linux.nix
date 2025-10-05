@@ -4,6 +4,7 @@
   lib,
   hostname ? "unknown",
   unstable,
+  wfetch,
   ...
 }: let
   dotsPath = ../dots;
@@ -61,6 +62,7 @@ in
       vivaldi
       waybar
       webcord
+      wfetch.packages.${pkgs.system}.default
       unstable.swww
       xxHash
       imagemagick

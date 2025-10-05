@@ -3,3 +3,7 @@ import:
 plugins: fetchart thumbnails
 fetchart:
     auto: yes
+    incremental: yes
+    quiet_fallback: skip
+    timid: yes
+    resume: yes

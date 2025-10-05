@@ -176,6 +176,20 @@ in {
 
     ssh = {
       enable = true;
+      matchBlocks = {
+        "fenrir" = {
+          hostname = "192.168.69.200";
+          user = "wyatt";
+        };
+        "hel" = {
+          hostname = "192.168.69.250";
+          user = "wyatt";
+        };
+        "jormungandr" = {
+          hostname = "192.168.69.100";
+          user = "wyatt";
+        };
+      };
     };
 
     tmux = {
