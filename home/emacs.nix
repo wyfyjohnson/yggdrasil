@@ -441,9 +441,9 @@ in {
       ;;; Tools
 
       ${optionalString cfg.emacs.modules.tools.magit ''
-        ;; Magit
+        ;; Magit - force latest from main branch
         (use-package magit
-          :ensure t
+          :ensure (:host github :repo "magit/magit" :branch "main")
           :bind ("C-x g" . magit-status))
       ''}
 
