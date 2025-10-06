@@ -99,8 +99,8 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages = with pkgs;
-      [
+    home.packages = let
+      basePackages = with pkgs; [
         # Emacs
         cfg.package
 
@@ -109,21 +109,21 @@ in {
         fd
         imagemagick
         zstd
+      ];
 
-        # Language servers (based on enabled languages)
-        (mkIf cfg.emacs.modules.tools.lsp [
-          (mkIf cfg.emacs.modules.lang.nix nil)
-          (mkIf cfg.emacs.modules.lang.python python3Packages.python-lsp-server)
-          (mkIf cfg.emacs.modules.lang.rust rust-analyzer)
-          (mkIf cfg.emacs.modules.lang.typescript nodePackages.typescript-language-server)
-          (mkIf cfg.emacs.modules.lang.go gopls)
-        ])
+      lspPackages = lib.optionals cfg.emacs.modules.tools.lsp (
+        lib.optional cfg.emacs.modules.lang.nix pkgs.nil
+        ++ lib.optional cfg.emacs.modules.lang.python pkgs.python3Packages.python-lsp-server
+        ++ lib.optional cfg.emacs.modules.lang.rust pkgs.rust-analyzer
+        ++ lib.optional cfg.emacs.modules.lang.typescript pkgs.nodePackages.typescript-language-server
+        ++ lib.optional cfg.emacs.modules.lang.go pkgs.gopls
+      );
 
-        # Additional tools
-        (mkIf cfg.emacs.modules.tools.editorconfig editorconfig-core-c)
-        (mkIf cfg.emacs.modules.lang.markdown pandoc)
-      ]
-      ++ cfg.extraPackages;
+      additionalPackages =
+        lib.optional cfg.emacs.modules.tools.editorconfig pkgs.editorconfig-core-c
+        ++ lib.optional cfg.emacs.modules.lang.markdown pkgs.pandoc;
+    in
+      basePackages ++ lspPackages ++ additionalPackages ++ cfg.extraPackages;
 
     home.file.".emacs.d/early-init.el".text = ''
       ;;; early-init.el --- Early Init File -*- lexical-binding: t -*-
