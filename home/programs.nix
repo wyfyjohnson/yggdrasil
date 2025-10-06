@@ -14,26 +14,36 @@ in {
         theme = "TwoDark";
       };
     };
+
+    direnv = {
+      enable = true;
+      enableBashIntegration = true;
+      enableZshIntegration = true;
+      nix-direnv.enable = true;
+    };
+
+    fzf = {
+      enable = true;
+      enableBashIntegration = true;
+      enableZshIntegration = true;
+    };
+
     gnu-emacs = {
       enable = true;
       package = pkgs.emacs29-pgtk;
 
-      # UI Configuration
       emacs.ui = {
         theme = "catppuccin-mocha";
-        font = "JetBrains Mono";
+        font = "Maple Mono NF";
         fontSize = 14;
       };
 
-      # Module Configuration
       emacs.modules = {
-        # Completion framework
         completion = {
-          vertico = true; # Modern completion UI
-          corfu = true; # Inline completion
+          vertico = true;
+          corfu = true;
         };
 
-        # UI enhancements
         ui = {
           modeline = true;
           hl-todo = true;
@@ -44,7 +54,6 @@ in {
           which-key = true;
         };
 
-        # Editor features
         editor = {
           evil = true;
           file-templates = true;
@@ -53,7 +62,6 @@ in {
           snippets = true;
         };
 
-        # Base Emacs enhancements
         base = {
           dired = true;
           electric = true;
@@ -61,7 +69,6 @@ in {
           vc = true;
         };
 
-        # Development tools
         tools = {
           debugger = true;
           direnv = true;
@@ -71,7 +78,6 @@ in {
           tree-sitter = true;
         };
 
-        # Language support - Enable what you need
         lang = {
           nix = true;
           python = true;
@@ -85,198 +91,150 @@ in {
         };
       };
 
-      # Additional system packages needed by Emacs
       extraPackages = with pkgs; [
         sqlite
         graphviz
       ];
     };
 
-    # Install fonts for better Emacs appearance
-    fonts.fontconfig.enable = true;
-    home.packages = with pkgs; [
-      (nerdfonts.override {fonts = ["JetBrainsMono"];})
-    ];
-  };
-  direnv = {
-    enable = true;
-    enableBashIntegration = true;
-    enableZshIntegration = true;
-    nix-direnv.enable = true;
-  };
+    kitty = {
+      enable = true;
+      font = {
+        name = "Maple Mono NF";
+        size = 14;
+      };
 
-  fzf = {
-    enable = true;
-    enableBashIntegration = true;
-    enableZshIntegration = true;
-  };
+      settings = lib.mkIf (!fileExists "${dotsPath}/kitty") {
+        foreground = "#CDD6F4";
+        background = "#1E1E2E";
+        selection_foreground = "#1E1E2E";
+        selection_background = "#F5E0DC";
 
-  kitty = {
-    enable = true;
-    font = {
-      name = "Maple Mono NF";
-      size = 14;
+        cursor = "#F5E0DC";
+        cursor_text_color = "#1E1E2E";
+
+        url_color = "#F5E0DC";
+
+        active_border_color = "#B4BEFE";
+        inactive_border_color = "#6C7086";
+        bell_border_color = "#F9E2AF";
+
+        active_tab_foreground = "#11111B";
+        active_tab_background = "#CBA6F7";
+        inactive_tab_foreground = "#CDD6F4";
+        inactive_tab_background = "#181825";
+        tab_bar_background = "#11111B";
+
+        color0 = "#45475A";
+        color8 = "#585B70";
+        color1 = "#F38BA8";
+        color9 = "#F38BA8";
+        color2 = "#A6E3A1";
+        color10 = "#A6E3A1";
+        color3 = "#F9E2AF";
+        color11 = "#F9E2AF";
+        color4 = "#89B4FA";
+        color12 = "#89B4FA";
+        color5 = "#F5C2E7";
+        color13 = "#F5C2E7";
+        color6 = "#94E2D5";
+        color14 = "#94E2D5";
+        color7 = "#BAC2DE";
+        color15 = "#A6ADC8";
+
+        repaint_delay = 10;
+        input_delay = 3;
+        sync_to_monitor = true;
+
+        window_padding_width = 4;
+        confirm_os_window_close = 0;
+
+        tab_bar_edge = "top";
+        tab_bar_style = "powerline";
+        tab_powerline_style = "slanted";
+
+        enable_audio_bell = false;
+        visual_bell_duration = "0.0";
+        window_alert_on_bell = false;
+        bell_on_tab = false;
+      };
     };
 
-    settings = lib.mkIf (!fileExists "${dotsPath}/kitty") {
-      # Official Catppuccin Mocha colors
-      foreground = "#CDD6F4";
-      background = "#1E1E2E";
-      selection_foreground = "#1E1E2E";
-      selection_background = "#F5E0DC";
+    neovim = {
+      enable = true;
+      viAlias = true;
+      vimAlias = true;
+      vimdiffAlias = true;
 
-      # Cursor colors
-      cursor = "#F5E0DC";
-      cursor_text_color = "#1E1E2E";
+      extraConfig = lib.mkIf (!fileExists "${dotsPath}/nvim") ''
+        set number
+        set relativenumber
+        set tabstop=2
+        set shiftwidth=2
+        set expandtab
+        set smartindent
+        set wrap
+        set smartcase
+        set noswapfile
+        set nobackup
+        set undofile
+        set incsearch
+        set termguicolors
+        set scrolloff=8
+        set sidescrolloff=8
+        set mouse=a
 
-      # URL underline color when hovering with mouse
-      url_color = "#F5E0DC";
+        " Basic key mappings
+        nnoremap <Space> <Nop>
+        let mapleader = " "
 
-      # Kitty window border colors
-      active_border_color = "#B4BEFE";
-      inactive_border_color = "#6C7086";
-      bell_border_color = "#F9E2AF";
+        " Save file
+        nnoremap <leader>w :w<CR>
+        nnoremap <leader>q :q<CR>
 
-      # Tab colors
-      active_tab_foreground = "#11111B";
-      active_tab_background = "#CBA6F7";
-      inactive_tab_foreground = "#CDD6F4";
-      inactive_tab_background = "#181825";
-      tab_bar_background = "#11111B";
+        " Split navigation
+        nnoremap <C-h> <C-w>h
+        nnoremap <C-j> <C-w>j
+        nnoremap <C-k> <C-w>k
+        nnoremap <C-l> <C-w>l
+      '';
 
-      # The 16 terminal colors (official Catppuccin Mocha)
-      # black
-      color0 = "#45475A"; # Surface1
-      color8 = "#585B70"; # Surface2
-
-      # red
-      color1 = "#F38BA8"; # Red
-      color9 = "#F38BA8";
-
-      # green
-      color2 = "#A6E3A1"; # Green
-      color10 = "#A6E3A1";
-
-      # yellow
-      color3 = "#F9E2AF"; # Yellow
-      color11 = "#F9E2AF";
-
-      # blue
-      color4 = "#89B4FA"; # Blue
-      color12 = "#89B4FA";
-
-      # magenta
-      color5 = "#F5C2E7"; # Pink
-      color13 = "#F5C2E7";
-
-      # cyan
-      color6 = "#94E2D5"; # Teal
-      color14 = "#94E2D5";
-
-      # white
-      color7 = "#BAC2DE"; # Subtext1
-      color15 = "#A6ADC8"; # Subtext0
-
-      # Performance and behavior settings
-      repaint_delay = 10;
-      input_delay = 3;
-      sync_to_monitor = true;
-
-      # Window settings
-      window_padding_width = 4;
-      confirm_os_window_close = 0;
-
-      # Tab settings
-      tab_bar_edge = "top";
-      tab_bar_style = "powerline";
-      tab_powerline_style = "slanted";
-
-      # Other useful settings
-      enable_audio_bell = false;
-      visual_bell_duration = "0.0";
-      window_alert_on_bell = false;
-      bell_on_tab = false;
+      plugins = lib.mkIf (!fileExists "${dotsPath}/nvim") (
+        with pkgs.vimPlugins; [
+          vim-sensible
+          vim-surround
+          vim-commentary
+          fzf-vim
+          lightline-vim
+          vim-nix
+          vim-markdown
+          vim-javascript
+          vim-json
+        ]
+      );
     };
-  };
-  neovim = {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-    vimdiffAlias = true;
 
-    # Basic config if no dotfiles
-    extraConfig = lib.mkIf (!fileExists "${dotsPath}/nvim") ''
-      set number
-      set relativenumber
-      set tabstop=2
-      set shiftwidth=2
-      set expandtab
-      set smartindent
-      set wrap
-      set smartcase
-      set noswapfile
-      set nobackup
-      set undofile
-      set incsearch
-      set termguicolors
-      set scrolloff=8
-      set sidescrolloff=8
-      set mouse=a
-
-      " Basic key mappings
-      nnoremap <Space> <Nop>
-      let mapleader = " "
-
-      " Save file
-      nnoremap <leader>w :w<CR>
-      nnoremap <leader>q :q<CR>
-
-      " Split navigation
-      nnoremap <C-h> <C-w>h
-      nnoremap <C-j> <C-w>j
-      nnoremap <C-k> <C-w>k
-      nnoremap <C-l> <C-w>l
-    '';
-
-    plugins = lib.mkIf (!fileExists "${dotsPath}/nvim") (
-      with pkgs.vimPlugins; [
-        # Essential plugins if no custom config
-        vim-sensible
-        vim-surround
-        vim-commentary
-        fzf-vim
-        lightline-vim
-
-        # Syntax highlighting
-        vim-nix
-        vim-markdown
-        vim-javascript
-        vim-json
-      ]
-    );
-  };
-
-  ssh = {
-    enable = true;
-    matchBlocks = {
-      "fenrir" = {
-        hostname = "192.168.69.200";
-        user = "wyatt";
-      };
-      "hel" = {
-        hostname = "192.168.69.250";
-        user = "wyatt";
-      };
-      "jormungandr" = {
-        hostname = "192.168.69.100";
-        user = "wyatt";
+    ssh = {
+      enable = true;
+      matchBlocks = {
+        "fenrir" = {
+          hostname = "192.168.69.200";
+          user = "wyatt";
+        };
+        "hel" = {
+          hostname = "192.168.69.250";
+          user = "wyatt";
+        };
+        "jormungandr" = {
+          hostname = "192.168.69.100";
+          user = "wyatt";
+        };
       };
     };
   };
 
   # Services (Linux-only)
   services = lib.mkIf pkgs.stdenv.isLinux {
-    # Dunst notification daemon (moved from app-configs.nix)
     dunst = lib.mkIf (!fileExists "${dotsPath}/dunstrc") {
       enable = true;
       settings = {
