@@ -12,7 +12,7 @@ in {
 
     package = mkOption {
       type = types.package;
-      default = pkgs.emacs29-pgtk;
+      default = pkgs.emacs;
       description = "Emacs package to use";
     };
 

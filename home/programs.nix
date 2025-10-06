@@ -30,7 +30,7 @@ in {
 
     gnu-emacs = {
       enable = true;
-      package = pkgs.emacs29-pgtk;
+      package = pkgs.emacs;
 
       emacs.ui = {
         theme = "catppuccin-mocha";
