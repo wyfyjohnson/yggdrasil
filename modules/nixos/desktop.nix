@@ -106,6 +106,8 @@
     rofi
     flameshot
     ghostty
+    hypridle
+    hyprlock
   ];
 
   environment.sessionVariables = {

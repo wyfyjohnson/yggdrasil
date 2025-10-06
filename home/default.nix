@@ -23,6 +23,7 @@
 
   # Fixed imports
   imports = [
+    ./emacs.nix
     ./git.nix
     ./programs.nix
     ./shell.nix
