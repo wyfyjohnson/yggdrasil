@@ -268,11 +268,18 @@ in {
       (setq recentf-save-file (expand-file-name "tempDir/recentf" user-emacs-directory)
             recentf-max-saved-items 50
             recentf-max-menu-items 15
-            recentf-auto-cleanup 'never)
+            recentf-auto-cleanup 'never
+            recentf-exclude '("/tmp/" "/ssh:" "\\.?undo-tree" "tempDir"))
       (recentf-mode 1)
 
-      ;; Save recentf list periodically
+      ;; Save recentf list when switching buffers and periodically
+      (add-hook 'kill-buffer-hook 'recentf-save-list)
+      (add-hook 'after-save-hook 'recentf-save-list)
       (run-at-time nil (* 5 60) 'recentf-save-list)
+
+      ;; Load existing recent files on startup
+      (when (file-exists-p recentf-save-file)
+        (recentf-load-list))
 
       ;;; UI Configuration
 
@@ -442,7 +449,14 @@ in {
           ;; Undo Tree
           (require 'undo-tree)
           (global-undo-tree-mode)
-          (setq evil-undo-system 'undo-tree)
+          (setq evil-undo-system 'undo-tree
+                ;; Save undo history to tempDir
+                undo-tree-auto-save-history t
+                undo-tree-history-directory-alist
+                `(("." . ,(expand-file-name "tempDir/undo-tree/" user-emacs-directory))))
+          ;; Create undo-tree directory if it doesn't exist
+          (unless (file-exists-p (expand-file-name "tempDir/undo-tree/" user-emacs-directory))
+            (make-directory (expand-file-name "tempDir/undo-tree/" user-emacs-directory) t))
         ''}
 
         (evil-mode 1)
