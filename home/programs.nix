@@ -36,6 +36,7 @@ in {
         theme = "catppuccin-mocha";
         font = "Maple Mono NF";
         fontSize = 14;
+        transparency = 90;
       };
 
       emacs.modules = {

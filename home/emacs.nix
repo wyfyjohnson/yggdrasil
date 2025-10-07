@@ -41,6 +41,12 @@ in {
           default = "Maple Mono NF";
           description = "Default font family";
         };
+
+        transparency = mkOption {
+          type = types.int;
+          default = 90;
+          description = "Transparency level (0-100, where 100 is opaque)";
+        };
       };
 
       modules = {
@@ -93,6 +99,9 @@ in {
           markdown = mkEnableOption "Markdown support" // {default = true;};
           org = mkEnableOption "Org mode enhancements" // {default = true;};
           latex = mkEnableOption "LaTeX support" // {default = false;};
+          web = mkEnableOption "HTML/CSS/Web support" // {default = true;};
+          yaml = mkEnableOption "YAML support" // {default = true;};
+          toml = mkEnableOption "TOML support" // {default = true;};
         };
       };
     };
@@ -136,6 +145,9 @@ in {
             evil-lion
             evil-matchit
             evil-snipe
+            evil-goggles
+            avy
+            evil-easymotion
           ]
           ++ optional cfg.emacs.modules.editor.multiple-cursors evil-multiedit
           ++ optionals cfg.emacs.modules.editor.snippets [yasnippet yasnippet-snippets]
@@ -154,7 +166,10 @@ in {
           ++ optional cfg.emacs.modules.lang.typescript typescript-mode
           ++ optional cfg.emacs.modules.lang.go go-mode
           ++ optional cfg.emacs.modules.lang.markdown markdown-mode
-          ++ optionals cfg.emacs.modules.lang.org [org-bullets];
+          ++ optionals cfg.emacs.modules.lang.org [org-bullets]
+          ++ optionals cfg.emacs.modules.lang.web [web-mode emmet-mode]
+          ++ optional cfg.emacs.modules.lang.yaml yaml-mode
+          ++ optional cfg.emacs.modules.lang.toml toml-mode;
     };
 
     # System packages for Emacs
@@ -163,6 +178,15 @@ in {
         # Tools that Emacs needs
         (ripgrep.override {withPCRE2 = true;})
         fd
+
+        # Formatters for various languages
+        nixpkgs-fmt # Nix formatter (or use alejandra)
+        black # Python formatter
+        python3Packages.isort # Python import sorter
+        rustfmt # Rust formatter
+        nodePackages.prettier # JS/TS/JSON/CSS/HTML/Markdown formatter
+        shfmt # Shell script formatter
+        go-tools # Includes gofmt, goimports
 
         # LSP servers
       ]
@@ -268,6 +292,27 @@ in {
       (show-paren-mode 1)
       (setq show-paren-delay 0)
 
+      ;; Transparency settings
+      (defun set-transparency (value)
+        "Set the transparency of the frame window. 0=transparent/100=opaque"
+        (interactive "nTransparency Value (0-100): ")
+        (set-frame-parameter nil 'alpha-background value))
+
+      ;; Set initial transparency
+      (set-frame-parameter nil 'alpha-background ${toString cfg.emacs.ui.transparency})
+
+      ;; For daemon mode - apply to all new frames
+      (add-to-list 'default-frame-alist '(alpha-background . ${toString cfg.emacs.ui.transparency}))
+
+      ;; Toggle transparency function
+      (defun toggle-transparency ()
+        "Toggle between transparent and opaque."
+        (interactive)
+        (let ((alpha (frame-parameter nil 'alpha-background)))
+          (if (and alpha (< alpha 100))
+              (set-frame-parameter nil 'alpha-background 100)
+            (set-frame-parameter nil 'alpha-background ${toString cfg.emacs.ui.transparency}))))
+
       ;; Theme
       (require 'catppuccin-theme)
       (setq catppuccin-flavor '${replaceStrings ["catppuccin-"] [""] cfg.emacs.ui.theme})
@@ -286,7 +331,7 @@ in {
             dashboard-items '((recents  . 5)
                               (bookmarks . 5))
             dashboard-footer-messages
-            '("Wyfy's Custom Config"
+            '("Wyfy's Cross-Platform Nix Configuration"
               "Powered by Nix + Home Manager + Emacs")
             dashboard-footer-icon "")
 
@@ -457,6 +502,27 @@ in {
               evil-snipe-repeat-scope 'visible
               evil-snipe-char-fold t)
 
+        ;; Evil Goggles - visual feedback for operations
+        (require 'evil-goggles)
+        (evil-goggles-mode)
+        (setq evil-goggles-duration 0.100) ;; 100ms flash
+
+        ;; Avy - jump to any visible position
+        (require 'avy)
+        (setq avy-all-windows t
+              avy-background t
+              avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?q ?w ?e ?r ?u ?i ?o ?p))
+
+        ;; Evil Easymotion - vim-easymotion for Emacs
+        (require 'evil-easymotion)
+        (evilem-default-keybindings "gs")
+
+        ;; Additional vim-like search motions
+        (define-key evil-normal-state-map (kbd "*") 'evil-search-word-forward)
+        (define-key evil-normal-state-map (kbd "#") 'evil-search-word-backward)
+        (define-key evil-normal-state-map (kbd "n") 'evil-search-next)
+        (define-key evil-normal-state-map (kbd "N") 'evil-search-previous)
+
         ;; Custom keybindings (Doom Emacs style with SPC leader)
         (evil-set-leader 'normal (kbd "SPC"))
         (evil-set-leader 'visual (kbd "SPC"))
@@ -488,11 +554,19 @@ in {
         (evil-define-key 'normal 'global (kbd "<leader>ss") 'consult-line)
         (evil-define-key 'normal 'global (kbd "<leader>sp") 'consult-ripgrep)
         (evil-define-key 'normal 'global (kbd "<leader>sb") 'consult-buffer)
+        (evil-define-key 'normal 'global (kbd "<leader>si") 'consult-imenu)
+
+        ;; Jump operations (avy/easymotion)
+        (evil-define-key 'normal 'global (kbd "<leader>jj") 'avy-goto-char-2)
+        (evil-define-key 'normal 'global (kbd "<leader>jl") 'avy-goto-line)
+        (evil-define-key 'normal 'global (kbd "<leader>jw") 'avy-goto-word-1)
+        (evil-define-key 'normal 'global (kbd "<leader>jc") 'avy-goto-char-timer)
 
         ;; Toggle operations
         (evil-define-key 'normal 'global (kbd "<leader>tn") 'display-line-numbers-mode)
         (evil-define-key 'normal 'global (kbd "<leader>tr") 'read-only-mode)
         (evil-define-key 'normal 'global (kbd "<leader>tw") 'whitespace-mode)
+        (evil-define-key 'normal 'global (kbd "<leader>tt") 'toggle-transparency)
 
         ;; Git operations (if magit is enabled)
         ${optionalString cfg.emacs.modules.tools.magit ''
@@ -647,6 +721,50 @@ in {
         ;; Markdown
         (require 'markdown-mode)
         (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+        (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+
+        ;; Hugo integration
+        (setq markdown-command "pandoc")
+      ''}
+
+      ${optionalString cfg.emacs.modules.lang.web ''
+        ;; Web Mode - for HTML templates (Hugo uses Go templates)
+        (require 'web-mode)
+        (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+        (add-to-list 'auto-mode-alist '("\\.htm\\'" . web-mode))
+        (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
+        (add-to-list 'auto-mode-alist '("\\.gohtml\\'" . web-mode))
+
+        (setq web-mode-engines-alist
+              '(("go" . "\\.gohtml\\'")))
+
+        (setq web-mode-markup-indent-offset 2
+              web-mode-css-indent-offset 2
+              web-mode-code-indent-offset 2
+              web-mode-enable-auto-pairing t
+              web-mode-enable-css-colorization t
+              web-mode-enable-current-element-highlight t)
+
+        ;; Emmet mode for HTML expansion
+        (require 'emmet-mode)
+        (add-hook 'web-mode-hook 'emmet-mode)
+        (add-hook 'html-mode-hook 'emmet-mode)
+        (add-hook 'css-mode-hook 'emmet-mode)
+      ''}
+
+      ${optionalString cfg.emacs.modules.lang.yaml ''
+        ;; YAML
+        (require 'yaml-mode)
+        (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+        (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+      ''}
+
+      ${optionalString cfg.emacs.modules.lang.toml ''
+        ;; TOML
+        (require 'toml-mode)
+        (add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-mode))
+        ;; Hugo config files
+        (add-to-list 'auto-mode-alist '("hugo\\.toml\\'" . toml-mode))
       ''}
 
       ${optionalString cfg.emacs.modules.lang.org ''
