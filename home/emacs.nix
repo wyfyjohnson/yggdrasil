@@ -194,9 +194,11 @@ in {
        tab-width 4
        fill-column 80
        require-final-newline t
-       scroll-margin 0
-       scroll-conservatively 101
+       scroll-margin 8                      ;; Keep 8 lines visible above/below cursor
+       scroll-step 1                        ;; Scroll one line at a time
+       scroll-conservatively 10000          ;; Never recenter point
        scroll-preserve-screen-position t
+       auto-window-vscroll nil              ;; Improve scrolling performance
        ring-bell-function 'ignore
        inhibit-startup-screen t
        initial-scratch-message nil
@@ -215,8 +217,8 @@ in {
       (setq split-width-threshold 160
             split-height-threshold nil)
 
-      ;; Backup and auto-save
-      (setq backup-directory-alist `(("." . ,(expand-file-name "backup" user-emacs-directory)))
+      ;; Backup and auto-save - all temp files go to ~/.emacs.d/tempDir/
+      (setq backup-directory-alist `(("." . ,(expand-file-name "tempDir" user-emacs-directory)))
             backup-by-copying t
             version-control t
             delete-old-versions t
@@ -226,12 +228,27 @@ in {
             auto-save-timeout 30
             auto-save-interval 200
             auto-save-file-name-transforms
-            `((".*" ,(expand-file-name "auto-save/" user-emacs-directory) t)))
+            `((".*" ,(expand-file-name "tempDir/" user-emacs-directory) t))
+            ;; Also save lock files to tempDir
+            lock-file-name-transforms
+            `((".*" ,(expand-file-name "tempDir/" user-emacs-directory) t))
+            create-lockfiles t)
 
-      ;; Custom file
-      (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+      ;; Custom file - also save to tempDir to avoid clutter
+      (setq custom-file (expand-file-name "tempDir/custom.el" user-emacs-directory))
       (when (file-exists-p custom-file)
         (load custom-file))
+
+      ;; Recent files configuration - enable recentf mode
+      (require 'recentf)
+      (setq recentf-save-file (expand-file-name "tempDir/recentf" user-emacs-directory)
+            recentf-max-saved-items 50
+            recentf-max-menu-items 15
+            recentf-auto-cleanup 'never)
+      (recentf-mode 1)
+
+      ;; Save recentf list periodically
+      (run-at-time nil (* 5 60) 'recentf-save-list)
 
       ;;; UI Configuration
 
@@ -258,45 +275,26 @@ in {
 
       ;;; Dashboard (Doom-style splash screen)
       (require 'dashboard)
+
+      ;; Dashboard configuration - set BEFORE setup-startup-hook
+      (setq dashboard-banner-logo-title "Y G G D R A S I L"
+            dashboard-startup-banner 'logo
+            dashboard-center-content t
+            dashboard-show-shortcuts nil
+            dashboard-set-heading-icons nil  ;; Disable icons for reliability
+            dashboard-set-file-icons nil
+            dashboard-items '((recents  . 5)
+                              (bookmarks . 5))
+            dashboard-footer-messages
+            '("Wyfy's Custom Config"
+              "Powered by Nix + Home Manager + Emacs")
+            dashboard-footer-icon "")
+
+      ;; Setup dashboard
       (dashboard-setup-startup-hook)
 
-      ;; Dashboard configuration
-      (setq dashboard-banner-logo-title "Y G G D R A S I L")
-      (setq dashboard-startup-banner 'logo)
-      (setq dashboard-center-content t)
-      (setq dashboard-show-shortcuts nil)
-      (setq dashboard-set-navigator t)
-      (setq dashboard-set-heading-icons t)
-      (setq dashboard-set-file-icons t)
-
-      (setq dashboard-items '((recents  . 5)
-                              (projects . 5)
-                              (bookmarks . 5)))
-
-      ;; Custom footer
-      (setq dashboard-footer-messages
-            '("Wyfy's Cross-Platform Nix Configuration"
-              "Powered by Nix + Home Manager + Emacs"))
-      (setq dashboard-footer-icon
-            (nerd-icons-mdicon "nf-md-tree"
-                               :height 1.1
-                               :v-adjust -0.05
-                               :face 'font-lock-keyword-face))
-
-      ;; Navigator configuration
-      (setq dashboard-navigator-buttons
-            `(((,(nerd-icons-mdicon "nf-md-github" :height 1.1 :v-adjust 0.0)
-                "GitHub"
-                "Browse GitHub"
-                (lambda (&rest _) (browse-url "https://github.com")))
-               (,(nerd-icons-mdicon "nf-md-cog" :height 1.1 :v-adjust 0.0)
-                "Settings"
-                "Open settings"
-                (lambda (&rest _) (find-file user-init-file)))
-               (,(nerd-icons-mdicon "nf-md-refresh" :height 1.1 :v-adjust 0.0)
-                "Reload"
-                "Reload configuration"
-                (lambda (&rest _) (load-file user-init-file))))))
+      ;; Force dashboard to show on startup
+      (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 
       ${optionalString cfg.emacs.modules.ui.modeline ''
         ;; Doom Modeline
