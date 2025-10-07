@@ -69,12 +69,9 @@ in {
           nix = true;
           python = true;
           rust = false;
-          javascript = false;
-          typescript = false;
           go = false;
           markdown = true;
           org = true;
-          latex = false;
         };
       };
 
