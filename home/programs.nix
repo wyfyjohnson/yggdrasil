@@ -48,34 +48,21 @@ in {
           modeline = true;
           hl-todo = true;
           indent-guides = true;
-          ligatures = true;
-          minimap = false;
           treemacs = true;
           which-key = true;
         };
 
         editor = {
           evil = true;
-          file-templates = true;
-          fold = true;
           multiple-cursors = true;
           snippets = true;
         };
 
-        base = {
-          dired = true;
-          electric = true;
-          undo = true;
-          vc = true;
-        };
-
         tools = {
-          debugger = true;
           direnv = true;
           editorconfig = true;
           magit = true;
           lsp = true;
-          tree-sitter = true;
         };
 
         lang = {
