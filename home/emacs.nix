@@ -16,6 +16,12 @@ in {
       description = "Emacs package to use";
     };
 
+    extraPackages = mkOption {
+      type = types.listOf types.package;
+      default = [];
+      description = "Extra system packages (like sqlite, graphviz)";
+    };
+
     emacs = {
       ui = {
         theme = mkOption {
@@ -47,29 +53,46 @@ in {
           modeline = mkEnableOption "Doom modeline" // {default = true;};
           hl-todo = mkEnableOption "Highlight TODOs" // {default = true;};
           indent-guides = mkEnableOption "Indent guides" // {default = true;};
+          ligatures = mkEnableOption "Ligature support" // {default = true;};
+          minimap = mkEnableOption "Minimap sidebar" // {default = false;};
           treemacs = mkEnableOption "Treemacs file explorer" // {default = true;};
           which-key = mkEnableOption "Which-key" // {default = true;};
         };
 
         editor = {
           evil = mkEnableOption "Evil mode" // {default = true;};
+          file-templates = mkEnableOption "File templates" // {default = true;};
+          fold = mkEnableOption "Code folding" // {default = true;};
           multiple-cursors = mkEnableOption "Multiple cursors" // {default = true;};
           snippets = mkEnableOption "Yasnippet" // {default = true;};
         };
 
+        base = {
+          dired = mkEnableOption "Dired enhancements" // {default = true;};
+          electric = mkEnableOption "Electric indent" // {default = true;};
+          undo = mkEnableOption "Undo tree" // {default = true;};
+          vc = mkEnableOption "Version control" // {default = true;};
+        };
+
         tools = {
+          debugger = mkEnableOption "DAP debugger" // {default = true;};
           direnv = mkEnableOption "Direnv integration" // {default = true;};
           editorconfig = mkEnableOption "EditorConfig" // {default = true;};
           magit = mkEnableOption "Magit" // {default = true;};
           lsp = mkEnableOption "LSP mode" // {default = true;};
+          tree-sitter = mkEnableOption "Tree-sitter" // {default = true;};
         };
 
         lang = {
           nix = mkEnableOption "Nix support" // {default = true;};
-          python = mkEnableOption "Python support" // {default = true;};
+          python = mkEnableOption "Python support" // {default = false;};
           rust = mkEnableOption "Rust support" // {default = false;};
+          javascript = mkEnableOption "JavaScript support" // {default = false;};
+          typescript = mkEnableOption "TypeScript support" // {default = false;};
+          go = mkEnableOption "Go support" // {default = false;};
           markdown = mkEnableOption "Markdown support" // {default = true;};
           org = mkEnableOption "Org mode enhancements" // {default = true;};
+          latex = mkEnableOption "LaTeX support" // {default = false;};
         };
       };
     };
@@ -106,10 +129,14 @@ in {
           ++ optional cfg.emacs.modules.tools.direnv envrc
           ++ optional cfg.emacs.modules.tools.editorconfig editorconfig
           ++ optionals cfg.emacs.modules.tools.lsp [lsp-mode lsp-ui]
+          ++ optionals cfg.emacs.modules.tools.tree-sitter [tree-sitter tree-sitter-langs]
           # Languages
           ++ optional cfg.emacs.modules.lang.nix nix-mode
           ++ optional cfg.emacs.modules.lang.python python-mode
           ++ optional cfg.emacs.modules.lang.rust rust-mode
+          ++ optional cfg.emacs.modules.lang.javascript js2-mode
+          ++ optional cfg.emacs.modules.lang.typescript typescript-mode
+          ++ optional cfg.emacs.modules.lang.go go-mode
           ++ optional cfg.emacs.modules.lang.markdown markdown-mode
           ++ optionals cfg.emacs.modules.lang.org [org-bullets];
     };
@@ -121,15 +148,19 @@ in {
         (ripgrep.override {withPCRE2 = true;})
         fd
 
-        # LSP servers
+        # LSP servers - just enable the language in modules and the LSP is automatically added
       ]
       ++ optionals cfg.emacs.modules.tools.lsp (
         optional cfg.emacs.modules.lang.nix nil
         ++ optional cfg.emacs.modules.lang.python python3Packages.python-lsp-server
         ++ optional cfg.emacs.modules.lang.rust rust-analyzer
+        ++ optional cfg.emacs.modules.lang.typescript nodePackages.typescript-language-server
+        ++ optional cfg.emacs.modules.lang.go gopls
+        ++ optional cfg.emacs.modules.lang.javascript nodePackages.typescript-language-server
       )
       ++ optional cfg.emacs.modules.tools.editorconfig editorconfig-core-c
-      ++ optional cfg.emacs.modules.lang.markdown pandoc;
+      ++ optional cfg.emacs.modules.lang.markdown pandoc
+      ++ cfg.extraPackages; # Your custom packages like sqlite, graphviz
 
     # Emacs configuration file
     home.file.".emacs.d/init.el".text = ''
@@ -343,6 +374,15 @@ in {
               lsp-ui-sideline-enable t)
       ''}
 
+      ${optionalString cfg.emacs.modules.tools.tree-sitter ''
+        ;; Tree-sitter
+        (require 'tree-sitter)
+        (global-tree-sitter-mode)
+        (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+
+        (require 'tree-sitter-langs)
+      ''}
+
       ${optionalString cfg.emacs.modules.tools.direnv ''
         ;; Direnv
         (require 'envrc)
@@ -374,6 +414,27 @@ in {
         ;; Rust
         (require 'rust-mode)
         ${optionalString cfg.emacs.modules.tools.lsp "(add-hook 'rust-mode-hook #'lsp-deferred)"}
+      ''}
+
+      ${optionalString cfg.emacs.modules.lang.javascript ''
+        ;; JavaScript
+        (require 'js2-mode)
+        (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+        ${optionalString cfg.emacs.modules.tools.lsp "(add-hook 'js2-mode-hook #'lsp-deferred)"}
+      ''}
+
+      ${optionalString cfg.emacs.modules.lang.typescript ''
+        ;; TypeScript
+        (require 'typescript-mode)
+        (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+        ${optionalString cfg.emacs.modules.tools.lsp "(add-hook 'typescript-mode-hook #'lsp-deferred)"}
+      ''}
+
+      ${optionalString cfg.emacs.modules.lang.go ''
+        ;; Go
+        (require 'go-mode)
+        (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+        ${optionalString cfg.emacs.modules.tools.lsp "(add-hook 'go-mode-hook #'lsp-deferred)"}
       ''}
 
       ${optionalString cfg.emacs.modules.lang.markdown ''

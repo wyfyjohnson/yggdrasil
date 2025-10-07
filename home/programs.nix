@@ -68,17 +68,12 @@ in {
         lang = {
           nix = true;
           python = true;
-          rust = false;
-          go = false;
+          rust = true;
           markdown = true;
           org = true;
+          go = true;
         };
       };
-
-      extraPackages = with pkgs; [
-        sqlite
-        graphviz
-      ];
     };
 
     kitty = {
