@@ -108,9 +108,11 @@ in {
           [
             # Theme
             catppuccin-theme
+            # Dashboard for splash screen
+            dashboard
+            nerd-icons
           ]
           ++ optional cfg.emacs.modules.ui.modeline doom-modeline
-          ++ optional cfg.emacs.modules.ui.modeline nerd-icons
           ++ optional cfg.emacs.modules.ui.which-key which-key
           ++ optional cfg.emacs.modules.ui.hl-todo hl-todo
           ++ optional cfg.emacs.modules.ui.indent-guides highlight-indent-guides
@@ -120,10 +122,24 @@ in {
           # Completion
           ++ optionals cfg.emacs.modules.completion.vertico [vertico orderless marginalia consult]
           ++ optionals cfg.emacs.modules.completion.corfu [corfu cape]
-          # Editor
-          ++ optionals cfg.emacs.modules.editor.evil [evil evil-collection evil-surround evil-commentary]
+          # Editor - Enhanced Evil mode with more packages
+          ++ optionals cfg.emacs.modules.editor.evil [
+            evil
+            evil-collection
+            evil-surround
+            evil-commentary
+            evil-numbers
+            evil-exchange
+            evil-args
+            evil-indent-plus
+            evil-visualstar
+            evil-lion
+            evil-matchit
+            evil-snipe
+          ]
           ++ optional cfg.emacs.modules.editor.multiple-cursors evil-multiedit
           ++ optionals cfg.emacs.modules.editor.snippets [yasnippet yasnippet-snippets]
+          ++ optional cfg.emacs.modules.base.undo undo-tree
           # Tools
           ++ optional cfg.emacs.modules.tools.magit magit
           ++ optional cfg.emacs.modules.tools.direnv envrc
@@ -148,7 +164,7 @@ in {
         (ripgrep.override {withPCRE2 = true;})
         fd
 
-        # LSP servers - just enable the language in modules and the LSP is automatically added
+        # LSP servers
       ]
       ++ optionals cfg.emacs.modules.tools.lsp (
         optional cfg.emacs.modules.lang.nix nil
@@ -160,11 +176,11 @@ in {
       )
       ++ optional cfg.emacs.modules.tools.editorconfig editorconfig-core-c
       ++ optional cfg.emacs.modules.lang.markdown pandoc
-      ++ cfg.extraPackages; # Your custom packages like sqlite, graphviz
+      ++ cfg.extraPackages;
 
     # Emacs configuration file
     home.file.".emacs.d/init.el".text = ''
-      ;;; init.el --- Emacs Configuration -*- lexical-binding: t -*-
+      ;;; init.el --- Yggdrasil Emacs Configuration -*- lexical-binding: t -*-
 
       ;;; Startup optimization
       (setq gc-cons-threshold most-positive-fixnum)
@@ -239,6 +255,48 @@ in {
       (require 'catppuccin-theme)
       (setq catppuccin-flavor '${replaceStrings ["catppuccin-"] [""] cfg.emacs.ui.theme})
       (load-theme 'catppuccin t)
+
+      ;;; Dashboard (Doom-style splash screen)
+      (require 'dashboard)
+      (dashboard-setup-startup-hook)
+
+      ;; Dashboard configuration
+      (setq dashboard-banner-logo-title "Y G G D R A S I L")
+      (setq dashboard-startup-banner 'logo)
+      (setq dashboard-center-content t)
+      (setq dashboard-show-shortcuts nil)
+      (setq dashboard-set-navigator t)
+      (setq dashboard-set-heading-icons t)
+      (setq dashboard-set-file-icons t)
+
+      (setq dashboard-items '((recents  . 5)
+                              (projects . 5)
+                              (bookmarks . 5)))
+
+      ;; Custom footer
+      (setq dashboard-footer-messages
+            '("Wyfy's Cross-Platform Nix Configuration"
+              "Powered by Nix + Home Manager + Emacs"))
+      (setq dashboard-footer-icon
+            (nerd-icons-mdicon "nf-md-tree"
+                               :height 1.1
+                               :v-adjust -0.05
+                               :face 'font-lock-keyword-face))
+
+      ;; Navigator configuration
+      (setq dashboard-navigator-buttons
+            `(((,(nerd-icons-mdicon "nf-md-github" :height 1.1 :v-adjust 0.0)
+                "GitHub"
+                "Browse GitHub"
+                (lambda (&rest _) (browse-url "https://github.com")))
+               (,(nerd-icons-mdicon "nf-md-cog" :height 1.1 :v-adjust 0.0)
+                "Settings"
+                "Open settings"
+                (lambda (&rest _) (find-file user-init-file)))
+               (,(nerd-icons-mdicon "nf-md-refresh" :height 1.1 :v-adjust 0.0)
+                "Reload"
+                "Reload configuration"
+                (lambda (&rest _) (load-file user-init-file))))))
 
       ${optionalString cfg.emacs.modules.ui.modeline ''
         ;; Doom Modeline
@@ -318,26 +376,176 @@ in {
         (add-to-list 'completion-at-point-functions #'cape-file)
       ''}
 
-      ;;; Editor
+      ;;; Editor - Evil Mode with Full Vim Keybindings
 
       ${optionalString cfg.emacs.modules.editor.evil ''
-        ;; Evil
+        ;; Evil Mode - Core Configuration
         (require 'evil)
         (setq evil-want-integration t
               evil-want-keybinding nil
               evil-want-C-u-scroll t
               evil-want-C-d-scroll t
-              evil-undo-system 'undo-redo)
+              evil-want-C-i-jump nil
+              evil-respect-visual-line-mode t
+              evil-undo-system 'undo-redo
+              evil-search-module 'evil-search
+              evil-ex-complete-emacs-commands nil
+              evil-vsplit-window-right t
+              evil-split-window-below t
+              evil-shift-round nil
+              evil-want-C-w-in-emacs-state nil)
+
+        ${optionalString cfg.emacs.modules.base.undo ''
+          ;; Undo Tree
+          (require 'undo-tree)
+          (global-undo-tree-mode)
+          (setq evil-undo-system 'undo-tree)
+        ''}
+
         (evil-mode 1)
 
+        ;; Evil Collection - Vim keybindings everywhere
         (require 'evil-collection)
         (evil-collection-init)
 
+        ;; Evil Surround - cs, ds, ys commands
         (require 'evil-surround)
         (global-evil-surround-mode 1)
 
+        ;; Evil Commentary - gc commands
         (require 'evil-commentary)
         (evil-commentary-mode)
+
+        ;; Evil Numbers - C-a/C-x to increment/decrement
+        (require 'evil-numbers)
+        (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
+        (define-key evil-normal-state-map (kbd "C-x") 'evil-numbers/dec-at-pt)
+        (define-key evil-visual-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
+        (define-key evil-visual-state-map (kbd "C-x") 'evil-numbers/dec-at-pt)
+        (define-key evil-normal-state-map (kbd "g C-a") 'evil-numbers/inc-at-pt-incremental)
+        (define-key evil-normal-state-map (kbd "g C-x") 'evil-numbers/dec-at-pt-incremental)
+
+        ;; Evil Exchange - gx to exchange text
+        (require 'evil-exchange)
+        (evil-exchange-install)
+
+        ;; Evil Args - text objects for arguments
+        (require 'evil-args)
+        (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
+        (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
+
+        ;; Evil Indent Plus - text objects for indentation
+        (require 'evil-indent-plus)
+        (evil-indent-plus-default-bindings)
+
+        ;; Evil Visualstar - * and # in visual mode
+        (require 'evil-visualstar)
+        (global-evil-visualstar-mode)
+
+        ;; Evil Lion - gl and gL for alignment
+        (require 'evil-lion)
+        (evil-lion-mode)
+
+        ;; Evil Matchit - % for matching tags/brackets
+        (require 'evil-matchit)
+        (global-evil-matchit-mode 1)
+
+        ;; Evil Snipe - improved f/F/t/T motions
+        (require 'evil-snipe)
+        (evil-snipe-mode +1)
+        (evil-snipe-override-mode +1)
+        (setq evil-snipe-smart-case t
+              evil-snipe-scope 'whole-visible
+              evil-snipe-repeat-scope 'visible
+              evil-snipe-char-fold t)
+
+        ;; Custom keybindings (Doom Emacs style with SPC leader)
+        (evil-set-leader 'normal (kbd "SPC"))
+        (evil-set-leader 'visual (kbd "SPC"))
+
+        ;; File operations
+        (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
+        (evil-define-key 'normal 'global (kbd "<leader>fs") 'save-buffer)
+        (evil-define-key 'normal 'global (kbd "<leader>fr") 'consult-recent-file)
+        (evil-define-key 'normal 'global (kbd "<leader>fD") 'delete-file)
+
+        ;; Buffer operations
+        (evil-define-key 'normal 'global (kbd "<leader>bb") 'consult-buffer)
+        (evil-define-key 'normal 'global (kbd "<leader>bd") 'kill-current-buffer)
+        (evil-define-key 'normal 'global (kbd "<leader>bn") 'next-buffer)
+        (evil-define-key 'normal 'global (kbd "<leader>bp") 'previous-buffer)
+        (evil-define-key 'normal 'global (kbd "<leader>bR") 'revert-buffer)
+
+        ;; Window operations
+        (evil-define-key 'normal 'global (kbd "<leader>wv") 'evil-window-vsplit)
+        (evil-define-key 'normal 'global (kbd "<leader>ws") 'evil-window-split)
+        (evil-define-key 'normal 'global (kbd "<leader>wd") 'evil-window-delete)
+        (evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
+        (evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-down)
+        (evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
+        (evil-define-key 'normal 'global (kbd "<leader>wl") 'evil-window-right)
+        (evil-define-key 'normal 'global (kbd "<leader>w=") 'balance-windows)
+
+        ;; Search operations
+        (evil-define-key 'normal 'global (kbd "<leader>ss") 'consult-line)
+        (evil-define-key 'normal 'global (kbd "<leader>sp") 'consult-ripgrep)
+        (evil-define-key 'normal 'global (kbd "<leader>sb") 'consult-buffer)
+
+        ;; Toggle operations
+        (evil-define-key 'normal 'global (kbd "<leader>tn") 'display-line-numbers-mode)
+        (evil-define-key 'normal 'global (kbd "<leader>tr") 'read-only-mode)
+        (evil-define-key 'normal 'global (kbd "<leader>tw") 'whitespace-mode)
+
+        ;; Git operations (if magit is enabled)
+        ${optionalString cfg.emacs.modules.tools.magit ''
+          (evil-define-key 'normal 'global (kbd "<leader>gg") 'magit-status)
+          (evil-define-key 'normal 'global (kbd "<leader>gd") 'magit-diff-unstaged)
+          (evil-define-key 'normal 'global (kbd "<leader>gc") 'magit-commit)
+          (evil-define-key 'normal 'global (kbd "<leader>gp") 'magit-push)
+          (evil-define-key 'normal 'global (kbd "<leader>gl") 'magit-log)
+        ''}
+
+        ;; Code operations (if LSP is enabled)
+        ${optionalString cfg.emacs.modules.tools.lsp ''
+          (evil-define-key 'normal 'global (kbd "<leader>ca") 'lsp-execute-code-action)
+          (evil-define-key 'normal 'global (kbd "<leader>cr") 'lsp-rename)
+          (evil-define-key 'normal 'global (kbd "<leader>cf") 'lsp-format-buffer)
+          (evil-define-key 'normal 'global (kbd "<leader>cd") 'lsp-find-definition)
+          (evil-define-key 'normal 'global (kbd "<leader>cD") 'lsp-find-declaration)
+          (evil-define-key 'normal 'global (kbd "<leader>ci") 'lsp-find-implementation)
+          (evil-define-key 'normal 'global (kbd "<leader>ct") 'lsp-find-type-definition)
+          (evil-define-key 'normal 'global (kbd "<leader>cR") 'lsp-find-references)
+        ''}
+
+        ;; Help/Documentation
+        (evil-define-key 'normal 'global (kbd "<leader>hf") 'describe-function)
+        (evil-define-key 'normal 'global (kbd "<leader>hv") 'describe-variable)
+        (evil-define-key 'normal 'global (kbd "<leader>hk") 'describe-key)
+        (evil-define-key 'normal 'global (kbd "<leader>hm") 'describe-mode)
+
+        ;; Quick actions
+        (evil-define-key 'normal 'global (kbd "<leader>qq") 'save-buffers-kill-terminal)
+        (evil-define-key 'normal 'global (kbd "<leader>qr") 'restart-emacs)
+
+        ;; Additional vim-like improvements
+        (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+        (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+        (define-key evil-normal-state-map (kbd "gj") 'evil-next-line)
+        (define-key evil-normal-state-map (kbd "gk") 'evil-previous-line)
+        (define-key evil-normal-state-map (kbd "Y") (kbd "y$"))
+        (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
+        (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
+        (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
+        (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
+
+        ;; ESC to quit things
+        (define-key evil-normal-state-map [escape] 'keyboard-quit)
+        (define-key evil-visual-state-map [escape] 'keyboard-quit)
+        (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+        (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+        (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+        (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+        (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
       ''}
 
       ${optionalString cfg.emacs.modules.editor.multiple-cursors ''
