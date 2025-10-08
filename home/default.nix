@@ -23,13 +23,14 @@
 
   # Fixed imports
   imports = [
-    ./emacs.nix
     ./git.nix
     ./programs.nix
     ./shell.nix
     ./linux.nix
     ./dotfiles.nix
     ../modules/common/helix.nix
+    ../modules/common/nh.nix
+    ../modules/common/emacs.nix
     ./darwin.nix
   ];
 
