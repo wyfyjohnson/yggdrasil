@@ -11,7 +11,7 @@ GREEN='\033[38;2;166;227;161m'
 YELLOW='\033[38;2;249;226;175m'
 BLUE='\033[38;2;137;180;250m'
 MAUVE='\033[38;2;203;166;247m'
-CYAN='\033[0;36m'
+# CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # NF Icons
@@ -24,7 +24,6 @@ NC='\033[0m' # No Color
   UPDATE="󱍸"
   LIST="󱃔"
   HOME="󱅚"
-
 
 # Helper functions
 log_info() {
@@ -130,11 +129,8 @@ rebuild_nixos() {
     
     log_info "Building NixOS configuration: $config (action: $action)"
     
-    # Use nh os with appropriate subcommand
-    local nh_cmd="nh os $action"
-    [[ -f flake.nix ]] && nh_cmd+=" --hostname $config"
-    
-    if $nh_cmd; then
+    # Correct nh syntax: nh os <action> <flake-path>
+    if nh os "$action" ".#$config"; then
         log_success "NixOS configuration applied successfully"
     else
         log_error "Failed to rebuild NixOS configuration"
@@ -160,11 +156,8 @@ rebuild_darwin() {
     
     log_info "Building Darwin configuration: $config (action: $action)"
     
-    # Use nh darwin with appropriate subcommand
-    local nh_cmd="nh darwin $action"
-    [[ -f flake.nix ]] && nh_cmd+=" --hostname $config"
-    
-    if $nh_cmd; then
+    # Correct nh syntax: nh darwin <action> <flake-path>
+    if nh darwin "$action" ".#$config"; then
         log_success "Darwin configuration applied successfully"
     else
         log_error "Failed to rebuild Darwin configuration"
@@ -190,11 +183,8 @@ rebuild_home() {
     
     log_info "Building Home Manager configuration: $config (action: $action)"
     
-    # Use nh home with appropriate subcommand
-    local nh_cmd="nh home $action"
-    [[ -f flake.nix ]] && nh_cmd+=" --configuration $config"
-    
-    if $nh_cmd; then
+    # Correct nh syntax: nh home <action> <flake-path>
+    if nh home "$action" ".#$config"; then
         log_success "Home Manager configuration applied successfully"
     else
         log_error "Failed to rebuild Home Manager configuration"
@@ -206,14 +196,13 @@ rebuild_home() {
 update_flake() {
     if command -v nh &> /dev/null; then
         log_info "Updating flake inputs using nh..."
-        # nh supports --update flag for rebuild commands
         local platform=$(detect_platform)
         case $platform in
             nixos)
-                nh os switch --update
+                nh os switch --update .
                 ;;
             darwin)
-                nh darwin switch --update
+                nh darwin switch --update .
                 ;;
             standalone)
                 log_info "Updating flake inputs..."
@@ -250,14 +239,13 @@ format_code() {
         find . -name "*.nix" -exec alejandra {} \;
         log_success "Code formatted with alejandra"
     else
-        log_warn "No formatter found (nixpkgs-fmt or alejandra). Run 'nix develop' first."
+        log_warn "No formatter found (nixpkgs-fmt or alejandra)"
     fi
 }
 
 cleanup_generations() {
     local days=${1:-7}
     
-    # Validate input
     if ! [[ "$days" =~ ^[0-9]+$ ]]; then
         log_error "Days must be a positive number"
         exit 1
@@ -265,7 +253,6 @@ cleanup_generations() {
     
     if command -v nh &> /dev/null; then
         log_info "Cleaning up using nh (keeping last $days days)..."
-        # nh clean supports multiple targets
         local platform=$(detect_platform)
         case $platform in
             nixos)
@@ -280,7 +267,7 @@ cleanup_generations() {
         esac
         log_success "Cleanup completed with nh"
     else
-        log_info "Cleaning up generations older than $days days (fallback)..."
+        log_info "Cleaning up generations older than $days days..."
         local platform=$(detect_platform)
         
         case $platform in
@@ -294,11 +281,6 @@ cleanup_generations() {
                 nix-collect-garbage -d --delete-older-than "${days}d"
                 ;;
         esac
-        
-        # Clean up home-manager generations
-        if command -v home-manager &> /dev/null; then
-            home-manager expire-generations "$days days" 2>/dev/null || log_warn "Could not expire home-manager generations"
-        fi
         
         log_success "Cleanup completed"
     fi
@@ -318,20 +300,19 @@ list_generations() {
     local platform=$(detect_platform)
     
     if command -v nh &> /dev/null; then
-        log_info "Listing system generations with nh..."
+        log_info "Listing system generations..."
         case $platform in
             nixos)
-                nh os info
+                nix-env --list-generations --profile /nix/var/nix/profiles/system
                 ;;
             darwin)
-                nh darwin info
+                nix-env --list-generations --profile /nix/var/nix/profiles/system
                 ;;
             standalone)
-                nh home info
+                nix-env --list-generations
                 ;;
         esac
     else
-        log_warn "nh not available, using nix-env..."
         case $platform in
             nixos)
                 sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
@@ -350,33 +331,30 @@ rollback_generation() {
     local generation=${1:-}
     local platform=$(detect_platform)
     
-    if command -v nh &> /dev/null; then
-        log_info "Rolling back using nh..."
-        case $platform in
-            nixos)
-                if [[ -n "$generation" ]]; then
-                    nh os rollback "$generation"
-                else
-                    nh os rollback
-                fi
-                ;;
-            darwin)
-                if [[ -n "$generation" ]]; then
-                    nh darwin rollback "$generation"
-                else
-                    nh darwin rollback
-                fi
-                ;;
-            standalone)
-                log_error "Rollback not supported for standalone home-manager via nh"
-                exit 1
-                ;;
-        esac
-        log_success "Rolled back successfully"
-    else
-        log_error "nh is required for rollback functionality"
-        exit 1
-    fi
+    log_info "Rolling back to previous generation..."
+    
+    case $platform in
+        nixos)
+            if [[ -n "$generation" ]]; then
+                sudo nixos-rebuild switch --rollback --flake ".#$generation"
+            else
+                sudo nixos-rebuild switch --rollback
+            fi
+            ;;
+        darwin)
+            if [[ -n "$generation" ]]; then
+                darwin-rebuild switch --rollback --flake ".#$generation"
+            else
+                darwin-rebuild switch --rollback
+            fi
+            ;;
+        standalone)
+            log_error "Rollback not directly supported for standalone home-manager"
+            log_info "Use: home-manager generations"
+            exit 1
+            ;;
+    esac
+    log_success "Rolled back successfully"
 }
 
 # Portable sed function
@@ -412,52 +390,50 @@ create_host() {
     
     case $platform in
         nixos)
-            if [[ ! -f "templates/nixos-host/configuration.nix" ]]; then
-                log_warn "Template file not found, creating minimal configuration"
-                cat > "host/$hostname/configuration.nix" << 'EOF'
-{ config, pkgs, ... }:
+            cat > "host/$hostname/configuration.nix" << 'EOF'
+{ config, pkgs, lib, ... }:
 
 {
+  imports = [
+    ./hardware-configuration.nix
+    ../../modules/common/users.nix
+    ../../modules/nixos/desktop.nix
+    ../../modules/nixos/fonts.nix
+    ../../modules/nixos/locale.nix
+  ];
+
   networking.hostName = "HOSTNAME";
   
-  # Import hardware configuration
-  imports = [ ./hardware-configuration.nix ];
-  
-  # Add your configuration here
-  
   system.stateVersion = "25.05";
+  nixpkgs.config.allowUnfree = true;
+  
+  nix.settings.experimental-features = ["nix-command" "flakes"];
 }
 EOF
-                portable_sed "s/HOSTNAME/$hostname/g" "host/$hostname/configuration.nix"
-            else
-                cp "templates/nixos-host/configuration.nix" "host/$hostname/"
-                portable_sed "s/your-hostname/$hostname/g" "host/$hostname/configuration.nix"
-            fi
+            portable_sed "s/HOSTNAME/$hostname/g" "host/$hostname/configuration.nix"
             log_info "Don't forget to:"
-            log_info "  1. Generate hardware-configuration.nix with: nixos-generate-config --dir host/$hostname"
+            log_info "  1. Generate hardware-configuration.nix with: sudo nixos-generate-config --dir host/$hostname"
             log_info "  2. Add $hostname to flake.nix nixosConfigurations"
             ;;
         darwin)
-            if [[ ! -f "templates/darwin-host/configuration.nix" ]]; then
-                log_warn "Template file not found, creating minimal configuration"
-                cat > "host/$hostname/configuration.nix" << 'EOF'
-{ config, pkgs, ... }:
+            cat > "host/$hostname/configuration.nix" << 'EOF'
+{ config, pkgs, lib, ... }:
 
 {
+  imports = [
+    ../../modules/darwin/system.nix
+    ../../modules/darwin/fonts.nix
+    ../../modules/darwin/locale.nix
+  ];
+
   networking.hostName = "HOSTNAME";
   
-  # Add your Darwin configuration here
-  
   system.stateVersion = 5;
+  nix.settings.experimental-features = ["nix-command" "flakes"];
 }
 EOF
-                portable_sed "s/HOSTNAME/$hostname/g" "host/$hostname/configuration.nix"
-            else
-                cp "templates/darwin-host/configuration.nix" "host/$hostname/"
-                portable_sed "s/your-hostname/$hostname/g" "host/$hostname/configuration.nix"
-            fi
-            log_info "Don't forget to:"
-            log_info "  1. Add $hostname to flake.nix darwinConfigurations"
+            portable_sed "s/HOSTNAME/$hostname/g" "host/$hostname/configuration.nix"
+            log_info "Don't forget to add $hostname to flake.nix darwinConfigurations"
             ;;
         *)
             log_error "Unknown platform: $platform"
@@ -480,7 +456,7 @@ search_packages() {
         log_info "Searching packages with nh..."
         nh search "$query"
     else
-        log_info "Searching packages with nix search..."
+        log_info "Searching packages..."
         nix search nixpkgs "$query"
     fi
 }
@@ -519,12 +495,6 @@ show_status() {
         echo "  Home Manager:"
         echo "$home_configs" | sed 's/^/    - /'
     fi
-    
-    echo
-    if command -v nh &> /dev/null; then
-        log_info "Recent generations:"
-        list_generations 2>/dev/null | head -n 10 || true
-    fi
 }
 
 show_help() {
@@ -534,18 +504,18 @@ show_help() {
 
 Usage: $0 [command] [options]
 
-Build Commands (uses nh):
+Build Commands:
   build <config> [test|switch|boot]  Build and switch configuration
   update                             Update flake and rebuild
-  rollback [generation]              Rollback to previous/specific generation
+  rollback [generation]              Rollback to previous generation
   
-Maintenance Commands (uses nh):
+Maintenance Commands:
   cleanup [days]                     Remove old generations (default: 7 days)
   optimize                           Optimize Nix store
   list                               List system generations
   
 Utility Commands:
-  search <query>                     Search for packages (uses nh)
+  search <query>                     Search for packages
   check                              Check flake configuration
   format                             Format Nix code
   status                             Show configuration status
@@ -555,23 +525,13 @@ Yggdrasil-Specific Commands:
   help                               Show this help message
 
 Examples:
-  $0 build fenrir                    Build and switch to fenrir (auto-detects platform)
+  $0 build fenrir                    Build and switch to fenrir
   $0 build hel test                  Build hel configuration for testing
   $0 update                          Update flake inputs and rebuild
   $0 cleanup 14                      Remove generations older than 14 days
   $0 rollback                        Rollback to previous generation
   $0 search firefox                  Search for firefox package
-  $0 create-host server nixos        Create new NixOS host named 'server'
-
-Features:
-  ✨ Uses 'nh' for modern, fast rebuilds with diff preview
-  🔄 Auto-detects platform (NixOS/Darwin/Standalone)
-  🎯 Smart flake-based configuration management
-  🧹 Enhanced garbage collection with generation management
-  📊 Beautiful build output and change tracking
-
-Note: Most commands require 'nh' to be installed.
-      Install with: programs.nh.enable = true;
+  $0 create-host server nixos        Create new NixOS host
 
 EOF
 }
@@ -650,4 +610,3 @@ fi
 
 # Run main function with all arguments
 main "$@"
-
