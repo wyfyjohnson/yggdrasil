@@ -4,14 +4,14 @@ A comprehensive, cross-platform Nix configuration supporting NixOS, macOS (nix-d
 
 ##  Features
 
-- ** Cross-platform**: Works on NixOS, macOS, and any system with Nix
-- ** Modular design**: Easily reusable components and configurations
-- ** Stable channels**: Uses stable branches for reliability
-- ** Home Manager integration**: Consistent user environment across all platforms
-- ** Host-specific overrides**: Customize per-machine while sharing common configs
-- ** Development ready**: Includes dev shells and formatting tools
-- ** Templates**: Quick setup for new hosts
-- ** Dotfiles management**: Centralized configuration files
+- **Cross-platform**: Works on NixOS, macOS, and any system with Nix
+- **Modular design**: Easily reusable components and configurations
+- **Stable channels**: Uses stable branches for reliability
+- **Home Manager integration**: Consistent user environment across all platforms
+- **Host-specific overrides**: Customize per-machine while sharing common configs
+- **Development ready**: Includes dev shells and formatting tools
+- **Templates**: Quick setup for new hosts
+- **Dotfiles management**: Centralized configuration files
 
 ##  Quick Start
 
@@ -101,13 +101,14 @@ Current configured hosts:
 ### User Configuration Structure
 
 ```
-home/wyatt/
+home/
+├── darwin.nix     # macOS-specific settings
 ├── default.nix    # Main configuration, imports others
-├── programs.nix   # Application configurations
-├── shell.nix      # Shell setup (bash/zsh)
+├── dotfiles.nix   # Declare how to handle dotfiles
 ├── git.nix        # Git configuration
 ├── linux.nix      # Linux-specific settings
-└── darwin.nix     # macOS-specific settings
+├── programs.nix   # Application configurations
+└── shell.nix      # Shell setup (bash/zsh)
 ```
 
 ### Adding Programs
@@ -146,7 +147,7 @@ nix-shell
 ```
 
 This provides tools for working with the configuration:
-- `nixpkgs-fmt` for formatting
+- `alejandra` for formatting
 - `nil` for Nix language server
 - Host-specific rebuild commands
 
@@ -154,7 +155,7 @@ This provides tools for working with the configuration:
 
 Format all Nix files:
 ```bash
-nixpkgs-fmt **/*.nix
+alejandra **/*.nix
 ```
 
 ### Testing Changes
@@ -176,6 +177,7 @@ home-manager build --flake .#wyatt@linux
 ### System Modules
 
 **Common modules** (shared across platforms):
+- `modules/common/emacs.nix`  - GNU Emacs configuration
 - `modules/common/helix.nix`  - Helix configuration
 - `modules/common/users.nix`  - User account setup
 
@@ -228,7 +230,7 @@ Add to `environment.systemPackages` in host configurations or modules.
 
 ### User Packages  
 
-Add to `home.packages` in `home/wyatt/default.nix` or platform-specific files.
+Add to `home.packages` in `home/default.nix` or platform-specific files.
 
 ### macOS Applications
 
