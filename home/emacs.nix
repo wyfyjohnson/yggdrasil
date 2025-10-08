@@ -430,7 +430,7 @@ in {
 
       ${optionalString cfg.emacs.modules.editor.evil ''
         ;; Evil Mode - Core Configuration
-        (require 'evil)
+        ;; IMPORTANT: Set these BEFORE loading evil
         (setq evil-want-integration t
               evil-want-keybinding nil
               evil-want-C-u-scroll t
@@ -444,6 +444,9 @@ in {
               evil-split-window-below t
               evil-shift-round nil
               evil-want-C-w-in-emacs-state nil)
+
+        ;; Now load evil
+        (require 'evil)
 
         ${optionalString cfg.emacs.modules.base.undo ''
           ;; Undo Tree
