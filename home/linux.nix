@@ -49,7 +49,7 @@ in
       mullvad-vpn
       libreoffice-fresh
       nitrogen
-      signal-desktop
+      # signal-desktop
       picom
       pamixer
       hyprshot
