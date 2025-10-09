@@ -369,15 +369,16 @@ in {
         (which-key-mode)
         (setq which-key-idle-delay 0.3)
       ''}
- ${optionalString cfg.emacs.modules.editor.evil ''
+${optionalString cfg.emacs.modules.editor.evil ''
         ;; Evil Mode - Core Configuration
-        ;; CRITICAL: Set these BEFORE requiring evil or evil-collection
+        ;; CRITICAL: Set these BEFORE requiring evil
         (setq evil-want-integration t
-              evil-want-keybinding nil  ;; Must be set BEFORE loading evil
+              evil-want-keybinding nil
               evil-want-C-u-scroll t
               evil-want-C-d-scroll t
               evil-want-C-i-jump nil
               evil-respect-visual-line-mode t
+              evil-undo-system 'undo-redo
               evil-search-module 'evil-search
               evil-ex-complete-emacs-commands nil
               evil-vsplit-window-right t
@@ -386,25 +387,24 @@ in {
               evil-want-C-w-in-emacs-state nil)
 
         ${optionalString cfg.emacs.modules.base.undo ''
-          ;; Undo Tree - configure before evil
-          (setq undo-tree-auto-save-history t
+          ;; Undo Tree
+          (require 'undo-tree)
+          (global-undo-tree-mode)
+          (setq evil-undo-system 'undo-tree
+                ;; Save undo history to tempDir
+                undo-tree-auto-save-history t
                 undo-tree-history-directory-alist
                 `(("." . ,(expand-file-name "tempDir/undo-tree/" user-emacs-directory))))
-          
           ;; Create undo-tree directory if it doesn't exist
           (unless (file-exists-p (expand-file-name "tempDir/undo-tree/" user-emacs-directory))
             (make-directory (expand-file-name "tempDir/undo-tree/" user-emacs-directory) t))
-          
-          (require 'undo-tree)
-          (global-undo-tree-mode)
-          (setq evil-undo-system 'undo-tree)
         ''}
 
-        ;; NOW load evil mode
+        ;; Now load evil AFTER setting evil-want-* variables
         (require 'evil)
         (evil-mode 1)
 
-        ;; Evil Collection - load AFTER evil
+        ;; Evil Collection - Vim keybindings everywhere
         (require 'evil-collection)
         (evil-collection-init)
 
@@ -462,7 +462,7 @@ in {
         ;; Evil Goggles - visual feedback for operations
         (require 'evil-goggles)
         (evil-goggles-mode)
-        (setq evil-goggles-duration 0.100) ;; 100ms flash
+        (setq evil-goggles-duration 0.100)
 
         ;; Avy - jump to any visible position
         (require 'avy)
@@ -525,8 +525,8 @@ in {
         (evil-define-key 'normal 'global (kbd "<leader>tw") 'whitespace-mode)
         (evil-define-key 'normal 'global (kbd "<leader>tt") 'toggle-transparency)
 
-        ;; Git operations (if magit is enabled)
         ${optionalString cfg.emacs.modules.tools.magit ''
+          ;; Git operations (if magit is enabled)
           (evil-define-key 'normal 'global (kbd "<leader>gg") 'magit-status)
           (evil-define-key 'normal 'global (kbd "<leader>gd") 'magit-diff-unstaged)
           (evil-define-key 'normal 'global (kbd "<leader>gc") 'magit-commit)
@@ -534,8 +534,8 @@ in {
           (evil-define-key 'normal 'global (kbd "<leader>gl") 'magit-log)
         ''}
 
-        ;; Code operations (if LSP is enabled)
         ${optionalString cfg.emacs.modules.tools.lsp ''
+          ;; Code operations (if LSP is enabled)
           (evil-define-key 'normal 'global (kbd "<leader>ca") 'lsp-execute-code-action)
           (evil-define-key 'normal 'global (kbd "<leader>cr") 'lsp-rename)
           (evil-define-key 'normal 'global (kbd "<leader>cf") 'lsp-format-buffer)
@@ -576,63 +576,6 @@ in {
         (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
         (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
       ''}
-        (evil-define-key 'normal 'global (kbd "<leader>tn") 'display-line-numbers-mode)
-        (evil-define-key 'normal 'global (kbd "<leader>tr") 'read-only-mode)
-        (evil-define-key 'normal 'global (kbd "<leader>tw") 'whitespace-mode)
-        (evil-define-key 'normal 'global (kbd "<leader>tt") 'toggle-transparency)
-
-        ;; Git operations (if magit is enabled)
-        ${optionalString cfg.emacs.modules.tools.magit ''
-          (evil-define-key 'normal 'global (kbd "<leader>gg") 'magit-status)
-          (evil-define-key 'normal 'global (kbd "<leader>gd") 'magit-diff-unstaged)
-          (evil-define-key 'normal 'global (kbd "<leader>gc") 'magit-commit)
-          (evil-define-key 'normal 'global (kbd "<leader>gp") 'magit-push)
-          (evil-define-key 'normal 'global (kbd "<leader>gl") 'magit-log)
-        ''}
-
-        ;; Code operations (if LSP is enabled)
-        ${optionalString cfg.emacs.modules.tools.lsp ''
-          (evil-define-key 'normal 'global (kbd "<leader>ca") 'lsp-execute-code-action)
-          (evil-define-key 'normal 'global (kbd "<leader>cr") 'lsp-rename)
-          (evil-define-key 'normal 'global (kbd "<leader>cf") 'lsp-format-buffer)
-          (evil-define-key 'normal 'global (kbd "<leader>cd") 'lsp-find-definition)
-          (evil-define-key 'normal 'global (kbd "<leader>cD") 'lsp-find-declaration)
-          (evil-define-key 'normal 'global (kbd "<leader>ci") 'lsp-find-implementation)
-          (evil-define-key 'normal 'global (kbd "<leader>ct") 'lsp-find-type-definition)
-          (evil-define-key 'normal 'global (kbd "<leader>cR") 'lsp-find-references)
-        ''}
-
-        ;; Help/Documentation
-        (evil-define-key 'normal 'global (kbd "<leader>hf") 'describe-function)
-        (evil-define-key 'normal 'global (kbd "<leader>hv") 'describe-variable)
-        (evil-define-key 'normal 'global (kbd "<leader>hk") 'describe-key)
-        (evil-define-key 'normal 'global (kbd "<leader>hm") 'describe-mode)
-
-        ;; Quick actions
-        (evil-define-key 'normal 'global (kbd "<leader>qq") 'save-buffers-kill-terminal)
-        (evil-define-key 'normal 'global (kbd "<leader>qr") 'restart-emacs)
-
-        ;; Additional vim-like improvements
-        (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-        (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-        (define-key evil-normal-state-map (kbd "gj") 'evil-next-line)
-        (define-key evil-normal-state-map (kbd "gk") 'evil-previous-line)
-        (define-key evil-normal-state-map (kbd "Y") (kbd "y$"))
-        (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
-        (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
-        (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
-        (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
-
-        ;; ESC to quit things
-        (define-key evil-normal-state-map [escape] 'keyboard-quit)
-        (define-key evil-visual-state-map [escape] 'keyboard-quit)
-        (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-        (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-        (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-        (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-        (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
-      ''}
-
       ${optionalString cfg.emacs.modules.editor.multiple-cursors ''
         ;; Multiple Cursors
         (require 'evil-multiedit)
