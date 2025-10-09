@@ -44,7 +44,7 @@ in {
 
         transparency = mkOption {
           type = types.int;
-          default = 90;
+          default = 85;
           description = "Transparency level (0-100, where 100 is opaque)";
         };
       };
@@ -87,6 +87,7 @@ in {
           magit = mkEnableOption "Magit" // {default = true;};
           lsp = mkEnableOption "LSP mode" // {default = true;};
           tree-sitter = mkEnableOption "Tree-sitter" // {default = true;};
+          emms = mkEnableOption "EMMS (music player)" // {default = true;};
         };
 
         lang = {
@@ -158,6 +159,7 @@ in {
           ++ optional cfg.emacs.modules.tools.editorconfig editorconfig
           ++ optionals cfg.emacs.modules.tools.lsp [lsp-mode lsp-ui]
           ++ optionals cfg.emacs.modules.tools.tree-sitter [tree-sitter tree-sitter-langs]
+          ++ optional cfg.emacs.modules.tools.emms emms
           # Languages
           ++ optional cfg.emacs.modules.lang.nix nix-mode
           ++ optional cfg.emacs.modules.lang.python python-mode
@@ -200,6 +202,7 @@ in {
       )
       ++ optional cfg.emacs.modules.tools.editorconfig editorconfig-core-c
       ++ optional cfg.emacs.modules.lang.markdown pandoc
+      ++ optional cfg.emacs.modules.tools.emms mpv
       ++ cfg.extraPackages;
 
     # Emacs configuration file
@@ -684,6 +687,43 @@ in {
         (require 'editorconfig)
         (editorconfig-mode 1)
       ''}
+
+      ${optionalString cfg.emacs.modules.tools.emms ''
+        ;; EMMS - Emacs MultiMedia System
+        (require 'editorconfig)
+        (editorconfig-mode 1)
+        ''}
+        ;; Use mpv as the player
+  (require 'emms-player-mpv)
+  (add-to-list 'emms-player-list 'emms-player-mpv)
+  
+  ;; Set music directory
+  (setq emms-source-file-default-directory "~/Music/")
+  
+  ;; Enable info display
+  (require 'emms-mode-line)
+  (emms-mode-line 1)
+  (require 'emms-playing-time)
+  (emms-playing-time 1)
+  
+  ;; Key bindings
+  (global-set-key (kbd "C-c m p") 'emms-pause)
+  (global-set-key (kbd "C-c m s") 'emms-stop)
+  (global-set-key (kbd "C-c m n") 'emms-next)
+  (global-set-key (kbd "C-c m r") 'emms-previous)
+  (global-set-key (kbd "C-c m b") 'emms-smart-browse)
+  (global-set-key (kbd "C-c m l") 'emms-playlist-mode-go)
+  
+  ;; Evil keybindings (if evil is enabled)
+  ${optionalString cfg.emacs.modules.editor.evil ''
+    (evil-define-key 'normal 'global (kbd "<leader>mp") 'emms-pause)
+    (evil-define-key 'normal 'global (kbd "<leader>ms") 'emms-stop)
+    (evil-define-key 'normal 'global (kbd "<leader>mn") 'emms-next)
+    (evil-define-key 'normal 'global (kbd "<leader>mr") 'emms-previous)
+    (evil-define-key 'normal 'global (kbd "<leader>mb") 'emms-smart-browse)
+    (evil-define-key 'normal 'global (kbd "<leader>ml") 'emms-playlist-mode-go)
+  ''}
+''}
 
       ;;; Languages
 
