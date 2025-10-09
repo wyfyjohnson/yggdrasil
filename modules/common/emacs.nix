@@ -207,151 +207,151 @@ in {
 
     # Emacs configuration file
     home.file.".emacs.d/init.el".text = ''
-      ;;; init.el --- Yggdrasil Emacs Configuration -*- lexical-binding: t -*-
+            ;;; init.el --- Yggdrasil Emacs Configuration -*- lexical-binding: t -*-
 
-      ;;; Startup optimization
-      (setq gc-cons-threshold most-positive-fixnum)
-      (add-hook 'emacs-startup-hook
-                (lambda ()
-                  (setq gc-cons-threshold (* 16 1024 1024))))
+            ;;; Startup optimization
+            (setq gc-cons-threshold most-positive-fixnum)
+            (add-hook 'emacs-startup-hook
+                      (lambda ()
+                        (setq gc-cons-threshold (* 16 1024 1024))))
 
-      ;;; Better defaults
-      (setq-default
-       indent-tabs-mode nil
-       tab-width 4
-       fill-column 80
-       require-final-newline t
-       scroll-margin 8                      ;; Keep 8 lines visible above/below cursor
-       scroll-step 1                        ;; Scroll one line at a time
-       scroll-conservatively 10000          ;; Never recenter point
-       scroll-preserve-screen-position t
-       auto-window-vscroll nil              ;; Improve scrolling performance
-       ring-bell-function 'ignore
-       inhibit-startup-screen t
-       initial-scratch-message nil
-       read-process-output-max (* 1024 1024))
+            ;;; Better defaults
+            (setq-default
+             indent-tabs-mode nil
+             tab-width 4
+             fill-column 80
+             require-final-newline t
+             scroll-margin 8                      ;; Keep 8 lines visible above/below cursor
+             scroll-step 1                        ;; Scroll one line at a time
+             scroll-conservatively 10000          ;; Never recenter point
+             scroll-preserve-screen-position t
+             auto-window-vscroll nil              ;; Improve scrolling performance
+             ring-bell-function 'ignore
+             inhibit-startup-screen t
+             initial-scratch-message nil
+             read-process-output-max (* 1024 1024))
 
-      ;; UTF-8 everywhere
-      (set-default-coding-systems 'utf-8)
-      (prefer-coding-system 'utf-8)
+            ;; UTF-8 everywhere
+            (set-default-coding-systems 'utf-8)
+            (prefer-coding-system 'utf-8)
 
-      ;; UI cleanup
-      (menu-bar-mode -1)
-      (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-      (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+            ;; UI cleanup
+            (menu-bar-mode -1)
+            (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+            (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-      ;; Better window management
-      (setq split-width-threshold 160
-            split-height-threshold nil)
+            ;; Better window management
+            (setq split-width-threshold 160
+                  split-height-threshold nil)
 
-      ;; Backup and auto-save - all temp files go to ~/.emacs.d/tempDir/
-      (setq backup-directory-alist `(("." . ,(expand-file-name "tempDir" user-emacs-directory)))
-            backup-by-copying t
-            version-control t
-            delete-old-versions t
-            kept-new-versions 6
-            kept-old-versions 2
-            auto-save-default t
-            auto-save-timeout 30
-            auto-save-interval 200
-            auto-save-file-name-transforms
-            `((".*" ,(expand-file-name "tempDir/" user-emacs-directory) t))
-            ;; Also save lock files to tempDir
-            lock-file-name-transforms
-            `((".*" ,(expand-file-name "tempDir/" user-emacs-directory) t))
-            create-lockfiles t)
+            ;; Backup and auto-save - all temp files go to ~/.emacs.d/tempDir/
+            (setq backup-directory-alist `(("." . ,(expand-file-name "tempDir" user-emacs-directory)))
+                  backup-by-copying t
+                  version-control t
+                  delete-old-versions t
+                  kept-new-versions 6
+                  kept-old-versions 2
+                  auto-save-default t
+                  auto-save-timeout 30
+                  auto-save-interval 200
+                  auto-save-file-name-transforms
+                  `((".*" ,(expand-file-name "tempDir/" user-emacs-directory) t))
+                  ;; Also save lock files to tempDir
+                  lock-file-name-transforms
+                  `((".*" ,(expand-file-name "tempDir/" user-emacs-directory) t))
+                  create-lockfiles t)
 
-      ;; Custom file - also save to tempDir to avoid clutter
-      (setq custom-file (expand-file-name "tempDir/custom.el" user-emacs-directory))
-      (when (file-exists-p custom-file)
-        (load custom-file))
+            ;; Custom file - also save to tempDir to avoid clutter
+            (setq custom-file (expand-file-name "tempDir/custom.el" user-emacs-directory))
+            (when (file-exists-p custom-file)
+              (load custom-file))
 
-      ;; Recent files configuration - enable recentf mode
-      (require 'recentf)
-      (setq recentf-save-file (expand-file-name "tempDir/recentf" user-emacs-directory)
-            recentf-max-saved-items 50
-            recentf-max-menu-items 15
-            recentf-auto-cleanup 'never
-            recentf-exclude '("/tmp/" "/ssh:" "\\.?undo-tree" "tempDir"))
-      (recentf-mode 1)
+            ;; Recent files configuration - enable recentf mode
+            (require 'recentf)
+            (setq recentf-save-file (expand-file-name "tempDir/recentf" user-emacs-directory)
+                  recentf-max-saved-items 50
+                  recentf-max-menu-items 15
+                  recentf-auto-cleanup 'never
+                  recentf-exclude '("/tmp/" "/ssh:" "\\.?undo-tree" "tempDir"))
+            (recentf-mode 1)
 
-      ;; Save recentf list when switching buffers and periodically
-      (add-hook 'kill-buffer-hook 'recentf-save-list)
-      (add-hook 'after-save-hook 'recentf-save-list)
-      (run-at-time nil (* 5 60) 'recentf-save-list)
+            ;; Save recentf list when switching buffers and periodically
+            (add-hook 'kill-buffer-hook 'recentf-save-list)
+            (add-hook 'after-save-hook 'recentf-save-list)
+            (run-at-time nil (* 5 60) 'recentf-save-list)
 
-      ;; Load existing recent files on startup
-      (when (file-exists-p recentf-save-file)
-        (recentf-load-list))
+            ;; Load existing recent files on startup
+            (when (file-exists-p recentf-save-file)
+              (recentf-load-list))
 
-      ;;; UI Configuration
+            ;;; UI Configuration
 
-      ;; Font
-      (set-face-attribute 'default nil
-                          :family "${cfg.emacs.ui.font}"
-                          :height (* ${toString cfg.emacs.ui.fontSize} 10))
+            ;; Font
+            (set-face-attribute 'default nil
+                                :family "${cfg.emacs.ui.font}"
+                                :height (* ${toString cfg.emacs.ui.fontSize} 10))
 
-      ;; Line numbers
-      (global-display-line-numbers-mode 1)
-      (setq display-line-numbers-type 'relative)
+            ;; Line numbers
+            (global-display-line-numbers-mode 1)
+            (setq display-line-numbers-type 'relative)
 
-      ;; Highlight current line
-      (global-hl-line-mode 1)
+            ;; Highlight current line
+            (global-hl-line-mode 1)
 
-      ;; Show matching parens
-      (show-paren-mode 1)
-      (setq show-paren-delay 0)
+            ;; Show matching parens
+            (show-paren-mode 1)
+            (setq show-paren-delay 0)
 
-      ;; Transparency settings
-      (defun set-transparency (value)
-        "Set the transparency of the frame window. 0=transparent/100=opaque"
-        (interactive "nTransparency Value (0-100): ")
-        (set-frame-parameter nil 'alpha-background value))
+            ;; Transparency settings
+            (defun set-transparency (value)
+              "Set the transparency of the frame window. 0=transparent/100=opaque"
+              (interactive "nTransparency Value (0-100): ")
+              (set-frame-parameter nil 'alpha-background value))
 
-      ;; Set initial transparency
-      (set-frame-parameter nil 'alpha-background ${toString cfg.emacs.ui.transparency})
+            ;; Set initial transparency
+            (set-frame-parameter nil 'alpha-background ${toString cfg.emacs.ui.transparency})
 
-      ;; For daemon mode - apply to all new frames
-      (add-to-list 'default-frame-alist '(alpha-background . ${toString cfg.emacs.ui.transparency}))
+            ;; For daemon mode - apply to all new frames
+            (add-to-list 'default-frame-alist '(alpha-background . ${toString cfg.emacs.ui.transparency}))
 
-      ;; Toggle transparency function
-      (defun toggle-transparency ()
-        "Toggle between transparent and opaque."
-        (interactive)
-        (let ((alpha (frame-parameter nil 'alpha-background)))
-          (if (and alpha (< alpha 100))
-              (set-frame-parameter nil 'alpha-background 100)
-            (set-frame-parameter nil 'alpha-background ${toString cfg.emacs.ui.transparency}))))
+            ;; Toggle transparency function
+            (defun toggle-transparency ()
+              "Toggle between transparent and opaque."
+              (interactive)
+              (let ((alpha (frame-parameter nil 'alpha-background)))
+                (if (and alpha (< alpha 100))
+                    (set-frame-parameter nil 'alpha-background 100)
+                  (set-frame-parameter nil 'alpha-background ${toString cfg.emacs.ui.transparency}))))
 
-      ;; Theme
-      (require 'catppuccin-theme)
-      (setq catppuccin-flavor '${replaceStrings ["catppuccin-"] [""] cfg.emacs.ui.theme})
-      (load-theme 'catppuccin t)
+            ;; Theme
+            (require 'catppuccin-theme)
+            (setq catppuccin-flavor '${replaceStrings ["catppuccin-"] [""] cfg.emacs.ui.theme})
+            (load-theme 'catppuccin t)
 
-      ;;; Dashboard (Doom-style splash screen)
-      (require 'dashboard)
+            ;;; Dashboard (Doom-style splash screen)
+            (require 'dashboard)
 
-      ;; Dashboard configuration - set BEFORE setup-startup-hook
-      (setq dashboard-banner-logo-title "Y G G D R A S I L"
-            dashboard-startup-banner 'logo
-            dashboard-center-content t
-            dashboard-show-shortcuts nil
-            dashboard-set-heading-icons nil  ;; Disable icons for reliability
-            dashboard-set-file-icons nil
-            dashboard-items '((recents  . 5)
-                              (bookmarks . 5))
-            dashboard-footer-messages
-            '("Wyfy's Cross-Platform Nix Configuration"
-              "Powered by Nix + Home Manager + Emacs")
-            dashboard-footer-icon "")
+            ;; Dashboard configuration - set BEFORE setup-startup-hook
+            (setq dashboard-banner-logo-title "Y G G D R A S I L"
+                  dashboard-startup-banner 'logo
+                  dashboard-center-content t
+                  dashboard-show-shortcuts nil
+                  dashboard-set-heading-icons nil  ;; Disable icons for reliability
+                  dashboard-set-file-icons nil
+                  dashboard-items '((recents  . 5)
+                                    (bookmarks . 5))
+                  dashboard-footer-messages
+                  '("Wyfy's Cross-Platform Nix Configuration"
+                    "Powered by Nix + Home Manager + Emacs")
+                  dashboard-footer-icon "")
 
-      ;; Setup dashboard
-      (dashboard-setup-startup-hook)
+            ;; Setup dashboard
+            (dashboard-setup-startup-hook)
 
-      ;; Force dashboard to show on startup
-      (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+            ;; Force dashboard to show on startup
+            (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 
-      ${optionalString cfg.emacs.modules.ui.modeline ''
+            ${optionalString cfg.emacs.modules.ui.modeline ''
         ;; Doom Modeline
         (require 'doom-modeline)
         (doom-modeline-mode 1)
@@ -363,13 +363,13 @@ in {
               doom-modeline-major-mode-color-icon t)
       ''}
 
-      ${optionalString cfg.emacs.modules.ui.which-key ''
+            ${optionalString cfg.emacs.modules.ui.which-key ''
         ;; Which Key
         (require 'which-key)
         (which-key-mode)
         (setq which-key-idle-delay 0.3)
       ''}
-${optionalString cfg.emacs.modules.editor.evil ''
+      ${optionalString cfg.emacs.modules.editor.evil ''
         ;; Evil Mode - Core Configuration
         ;; CRITICAL: Set these BEFORE requiring evil
         (setq evil-want-integration t
@@ -576,27 +576,27 @@ ${optionalString cfg.emacs.modules.editor.evil ''
         (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
         (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
       ''}
-      ${optionalString cfg.emacs.modules.editor.multiple-cursors ''
+            ${optionalString cfg.emacs.modules.editor.multiple-cursors ''
         ;; Multiple Cursors
         (require 'evil-multiedit)
         (evil-multiedit-default-keybinds)
       ''}
 
-      ${optionalString cfg.emacs.modules.editor.snippets ''
+            ${optionalString cfg.emacs.modules.editor.snippets ''
         ;; Yasnippet
         (require 'yasnippet)
         (yas-global-mode 1)
       ''}
 
-      ;;; Tools
+            ;;; Tools
 
-      ${optionalString cfg.emacs.modules.tools.magit ''
+            ${optionalString cfg.emacs.modules.tools.magit ''
         ;; Magit
         (require 'magit)
         (global-set-key (kbd "C-x g") 'magit-status)
       ''}
 
-      ${optionalString cfg.emacs.modules.tools.lsp ''
+            ${optionalString cfg.emacs.modules.tools.lsp ''
         ;; LSP Mode
         (require 'lsp-mode)
         (setq lsp-keymap-prefix "C-c l"
@@ -610,7 +610,7 @@ ${optionalString cfg.emacs.modules.editor.evil ''
               lsp-ui-sideline-enable t)
       ''}
 
-      ${optionalString cfg.emacs.modules.tools.tree-sitter ''
+            ${optionalString cfg.emacs.modules.tools.tree-sitter ''
         ;; Tree-sitter
         (require 'tree-sitter)
         (global-tree-sitter-mode)
@@ -619,13 +619,13 @@ ${optionalString cfg.emacs.modules.editor.evil ''
         (require 'tree-sitter-langs)
       ''}
 
-      ${optionalString cfg.emacs.modules.tools.direnv ''
+            ${optionalString cfg.emacs.modules.tools.direnv ''
         ;; Direnv
         (require 'envrc)
         (envrc-global-mode)
       ''}
 
-      ${optionalString cfg.emacs.modules.tools.editorconfig ''
+            ${optionalString cfg.emacs.modules.tools.editorconfig ''
         ;; EditorConfig
         (require 'editorconfig)
         (editorconfig-mode 1)
@@ -633,84 +633,84 @@ ${optionalString cfg.emacs.modules.editor.evil ''
 
       ${optionalString cfg.emacs.modules.tools.emms ''
         ;; EMMS - Emacs MultiMedia System
-        (require 'editorconfig)
-        (editorconfig-mode 1)
-        ''}
+        (require 'emms-setup)
+        (emms-all)
+        (emms-default-players)
+
         ;; Use mpv as the player
-  (require 'emms-player-mpv)
-  (add-to-list 'emms-player-list 'emms-player-mpv)
-  
-  ;; Set music directory
-  (setq emms-source-file-default-directory "~/Music/")
-  
-  ;; Enable info display
-  (require 'emms-mode-line)
-  (emms-mode-line 1)
-  (require 'emms-playing-time)
-  (emms-playing-time 1)
-  
-  ;; Key bindings
-  (global-set-key (kbd "C-c m p") 'emms-pause)
-  (global-set-key (kbd "C-c m s") 'emms-stop)
-  (global-set-key (kbd "C-c m n") 'emms-next)
-  (global-set-key (kbd "C-c m r") 'emms-previous)
-  (global-set-key (kbd "C-c m b") 'emms-smart-browse)
-  (global-set-key (kbd "C-c m l") 'emms-playlist-mode-go)
-  
-  ;; Evil keybindings (if evil is enabled)
-  ${optionalString cfg.emacs.modules.editor.evil ''
-    (evil-define-key 'normal 'global (kbd "<leader>mp") 'emms-pause)
-    (evil-define-key 'normal 'global (kbd "<leader>ms") 'emms-stop)
-    (evil-define-key 'normal 'global (kbd "<leader>mn") 'emms-next)
-    (evil-define-key 'normal 'global (kbd "<leader>mr") 'emms-previous)
-    (evil-define-key 'normal 'global (kbd "<leader>mb") 'emms-smart-browse)
-    (evil-define-key 'normal 'global (kbd "<leader>ml") 'emms-playlist-mode-go)
-  ''}
-''}
+        (require 'emms-player-mpv)
+        (add-to-list 'emms-player-list 'emms-player-mpv)
 
-      ;;; Languages
+        ;; Set music directory
+        (setq emms-source-file-default-directory "~/Music/")
 
-      ${optionalString cfg.emacs.modules.lang.nix ''
+        ;; Enable info display
+        (require 'emms-mode-line)
+        (emms-mode-line 1)
+        (require 'emms-playing-time)
+        (emms-playing-time 1)
+
+        ;; Key bindings
+        (global-set-key (kbd "C-c m p") 'emms-pause)
+        (global-set-key (kbd "C-c m s") 'emms-stop)
+        (global-set-key (kbd "C-c m n") 'emms-next)
+        (global-set-key (kbd "C-c m r") 'emms-previous)
+        (global-set-key (kbd "C-c m b") 'emms-smart-browse)
+        (global-set-key (kbd "C-c m l") 'emms-playlist-mode-go)
+
+        ${optionalString cfg.emacs.modules.editor.evil ''
+          ;; Evil keybindings for EMMS
+          (evil-define-key 'normal 'global (kbd "<leader>mp") 'emms-pause)
+          (evil-define-key 'normal 'global (kbd "<leader>ms") 'emms-stop)
+          (evil-define-key 'normal 'global (kbd "<leader>mn") 'emms-next)
+          (evil-define-key 'normal 'global (kbd "<leader>mr") 'emms-previous)
+          (evil-define-key 'normal 'global (kbd "<leader>mb") 'emms-smart-browse)
+          (evil-define-key 'normal 'global (kbd "<leader>ml") 'emms-playlist-mode-go)
+        ''}
+      ''}
+            ;;; Languages
+
+            ${optionalString cfg.emacs.modules.lang.nix ''
         ;; Nix
         (require 'nix-mode)
         (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
         ${optionalString cfg.emacs.modules.tools.lsp "(add-hook 'nix-mode-hook #'lsp-deferred)"}
       ''}
 
-      ${optionalString cfg.emacs.modules.lang.python ''
+            ${optionalString cfg.emacs.modules.lang.python ''
         ;; Python
         (require 'python-mode)
         ${optionalString cfg.emacs.modules.tools.lsp "(add-hook 'python-mode-hook #'lsp-deferred)"}
       ''}
 
-      ${optionalString cfg.emacs.modules.lang.rust ''
+            ${optionalString cfg.emacs.modules.lang.rust ''
         ;; Rust
         (require 'rust-mode)
         ${optionalString cfg.emacs.modules.tools.lsp "(add-hook 'rust-mode-hook #'lsp-deferred)"}
       ''}
 
-      ${optionalString cfg.emacs.modules.lang.javascript ''
+            ${optionalString cfg.emacs.modules.lang.javascript ''
         ;; JavaScript
         (require 'js2-mode)
         (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
         ${optionalString cfg.emacs.modules.tools.lsp "(add-hook 'js2-mode-hook #'lsp-deferred)"}
       ''}
 
-      ${optionalString cfg.emacs.modules.lang.typescript ''
+            ${optionalString cfg.emacs.modules.lang.typescript ''
         ;; TypeScript
         (require 'typescript-mode)
         (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
         ${optionalString cfg.emacs.modules.tools.lsp "(add-hook 'typescript-mode-hook #'lsp-deferred)"}
       ''}
 
-      ${optionalString cfg.emacs.modules.lang.go ''
+            ${optionalString cfg.emacs.modules.lang.go ''
         ;; Go
         (require 'go-mode)
         (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
         ${optionalString cfg.emacs.modules.tools.lsp "(add-hook 'go-mode-hook #'lsp-deferred)"}
       ''}
 
-      ${optionalString cfg.emacs.modules.lang.markdown ''
+            ${optionalString cfg.emacs.modules.lang.markdown ''
         ;; Markdown
         (require 'markdown-mode)
         (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
@@ -720,7 +720,7 @@ ${optionalString cfg.emacs.modules.editor.evil ''
         (setq markdown-command "pandoc")
       ''}
 
-      ${optionalString cfg.emacs.modules.lang.web ''
+            ${optionalString cfg.emacs.modules.lang.web ''
         ;; Web Mode - for HTML templates (Hugo uses Go templates)
         (require 'web-mode)
         (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
@@ -745,14 +745,14 @@ ${optionalString cfg.emacs.modules.editor.evil ''
         (add-hook 'css-mode-hook 'emmet-mode)
       ''}
 
-      ${optionalString cfg.emacs.modules.lang.yaml ''
+            ${optionalString cfg.emacs.modules.lang.yaml ''
         ;; YAML
         (require 'yaml-mode)
         (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
         (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
       ''}
 
-      ${optionalString cfg.emacs.modules.lang.toml ''
+            ${optionalString cfg.emacs.modules.lang.toml ''
         ;; TOML
         (require 'toml-mode)
         (add-to-list 'auto-mode-alist '("\\.toml\\'" . toml-mode))
@@ -760,7 +760,7 @@ ${optionalString cfg.emacs.modules.editor.evil ''
         (add-to-list 'auto-mode-alist '("hugo\\.toml\\'" . toml-mode))
       ''}
 
-      ${optionalString cfg.emacs.modules.lang.org ''
+            ${optionalString cfg.emacs.modules.lang.org ''
         ;; Org Mode
         (require 'org)
         (setq org-startup-indented t
@@ -772,7 +772,7 @@ ${optionalString cfg.emacs.modules.editor.evil ''
         (add-hook 'org-mode-hook 'org-bullets-mode)
       ''}
 
-      ;;; init.el ends here
+            ;;; init.el ends here
     '';
   };
 }
