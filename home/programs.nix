@@ -194,10 +194,6 @@ in {
       );
     };
 
-    signal-desktop = {
-      enable = true;
-    };
-
     ssh = {
       enable = true;
       matchBlocks = {

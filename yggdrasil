@@ -15,382 +15,344 @@ MAUVE='\033[38;2;203;166;247m'
 NC='\033[0m' # No Color
 
 # NF Icons
-  TREE=""
-  SUCCESS=""
-  ERROR=""
-  INFO="󰈙"
-  WARNING=""
-  BUILD="󱌢"
-  UPDATE="󱍸"
-  LIST="󱃔"
-  HOME="󱅚"
+TREE=""
+SUCCESS=""
+ERROR=""
+INFO="󰈙"
+WARNING=""
+BUILD="󱌢"
+UPDATE="󱍸"
+LIST="󱃔"
+HOME="󱅚"
 
 # Helper functions
 log_info() {
-    echo -e "${BLUE}${INFO} ${1}${NC}"
+  echo -e "${BLUE}${INFO} ${1}${NC}"
 }
 
 log_success() {
-    echo -e "${GREEN}${SUCCESS} ${1}${NC}"
+  echo -e "${GREEN}${SUCCESS} ${1}${NC}"
 }
 
 log_warn() {
-    echo -e "${YELLOW}${WARNING} ${1}${NC}"
+  echo -e "${YELLOW}${WARNING} ${1}${NC}"
 }
 
 log_error() {
-    echo -e "${RED}${ERROR} ${1}${NC}"
+  echo -e "${RED}${ERROR} ${1}${NC}"
 }
 
 log_header() {
-    echo -e "${MAUVE}${TREE} ${1}${NC}"
+  echo -e "${MAUVE}${TREE} ${1}${NC}"
 }
 
 # Check dependencies
 check_dependencies() {
-    local missing=()
-    
-    if ! command -v nix &> /dev/null; then
-        missing+=("nix")
-    fi
-    
-    if ! command -v nh &> /dev/null; then
-        log_warn "nh not found - some features will be limited"
-        log_info "Install with: nix-env -iA nixpkgs.nh"
-        log_info "Or add 'programs.nh.enable = true;' to your config"
-    fi
-    
-    if ! command -v jq &> /dev/null; then
-        missing+=("jq")
-    fi
-    
-    if [[ ${#missing[@]} -gt 0 ]]; then
-        log_error "Missing critical dependencies: ${missing[*]}"
-        log_info "Please install: nix-shell -p ${missing[*]}"
-        exit 1
-    fi
+  local missing=()
+
+  if ! command -v nix &>/dev/null; then
+    missing+=("nix")
+  fi
+
+  if ! command -v nh &>/dev/null; then
+    log_warn "nh not found - some features will be limited"
+    log_info "Install with: nix-env -iA nixpkgs.nh"
+    log_info "Or add 'programs.nh.enable = true;' to your config"
+  fi
+
+  if ! command -v jq &>/dev/null; then
+    missing+=("jq")
+  fi
+
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    log_error "Missing critical dependencies: ${missing[*]}"
+    log_info "Please install: nix-shell -p ${missing[*]}"
+    exit 1
+  fi
 }
 
 # Detect platform
 detect_platform() {
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "darwin"
-    elif [[ -f /etc/NIXOS ]] || [[ -f /run/current-system/nixos-version ]] || [[ -f /etc/nixos/configuration.nix ]]; then
-        echo "nixos"
-    else
-        echo "standalone"
-    fi
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "darwin"
+  elif [[ -f /etc/NIXOS ]] || [[ -f /run/current-system/nixos-version ]] || [[ -f /etc/nixos/configuration.nix ]]; then
+    echo "nixos"
+  else
+    echo "standalone"
+  fi
 }
 
 # Get available configurations
 get_nixos_configs() {
-    if [[ -f flake.nix ]]; then
-        local output
-        if output=$(nix flake show --json 2>/dev/null); then
-            echo "$output" | jq -r '.nixosConfigurations | keys[]?' 2>/dev/null || true
-        fi
+  if [[ -f flake.nix ]]; then
+    local output
+    if output=$(nix flake show --json 2>/dev/null); then
+      echo "$output" | jq -r '.nixosConfigurations | keys[]?' 2>/dev/null || true
     fi
+  fi
 }
 
 get_darwin_configs() {
-    if [[ -f flake.nix ]]; then
-        local output
-        if output=$(nix flake show --json 2>/dev/null); then
-            echo "$output" | jq -r '.darwinConfigurations | keys[]?' 2>/dev/null || true
-        fi
+  if [[ -f flake.nix ]]; then
+    local output
+    if output=$(nix flake show --json 2>/dev/null); then
+      echo "$output" | jq -r '.darwinConfigurations | keys[]?' 2>/dev/null || true
     fi
+  fi
 }
 
 get_home_configs() {
-    if [[ -f flake.nix ]]; then
-        local output
-        if output=$(nix flake show --json 2>/dev/null); then
-            echo "$output" | jq -r '.homeConfigurations | keys[]?' 2>/dev/null || true
-        fi
+  if [[ -f flake.nix ]]; then
+    local output
+    if output=$(nix flake show --json 2>/dev/null); then
+      echo "$output" | jq -r '.homeConfigurations | keys[]?' 2>/dev/null || true
     fi
+  fi
 }
 
 # Build and switch functions using nh
 rebuild_nixos() {
-    local config=${1:-}
-    local action=${2:-switch}
-    
-    if ! command -v nh &> /dev/null; then
-        log_error "nh is required for this operation"
-        exit 1
-    fi
-    
-    if [[ -z "$config" ]]; then
-        log_error "No configuration specified"
-        log_info "Available NixOS configurations:"
-        get_nixos_configs | sed 's/^/  - /'
-        exit 1
-    fi
-    
-    log_info "Building NixOS configuration: $config (action: $action)"
-    
-    # Correct nh syntax: nh os <action> <flake-path>
-    if nh os "$action" ".#$config"; then
-        log_success "NixOS configuration applied successfully"
-    else
-        log_error "Failed to rebuild NixOS configuration"
-        exit 1
-    fi
+  local config=${1:-}
+  local action=${2:-switch}
+
+  log_info "Building NixOS configuration (action: $action)"
+
+  # nh os automatically detects the hostname from the system
+  if nh os "$action" .; then
+    log_success "NixOS configuration applied successfully"
+  else
+    log_error "Failed to rebuild NixOS configuration"
+    exit 1
+  fi
 }
 
 rebuild_darwin() {
-    local config=${1:-}
+   local config=${1:-}
     local action=${2:-switch}
     
-    if ! command -v nh &> /dev/null; then
-        log_error "nh is required for this operation"
-        exit 1
-    fi
+    log_info "Building Darwin configuration (action: $action)"
     
-    if [[ -z "$config" ]]; then
-        log_error "No configuration specified"
-        log_info "Available Darwin configurations:"
-        get_darwin_configs | sed 's/^/  - /'
-        exit 1
-    fi
-    
-    log_info "Building Darwin configuration: $config (action: $action)"
-    
-    # Correct nh syntax: nh darwin <action> <flake-path>
-    if nh darwin "$action" ".#$config"; then
+    # nh os automatically detects the hostname from the system
+    if nh os "$action" .; then
         log_success "Darwin configuration applied successfully"
     else
         log_error "Failed to rebuild Darwin configuration"
         exit 1
-    fi
-}
+    fi}
 
 rebuild_home() {
-    local config=${1:-}
+   local config=${1:-}
     local action=${2:-switch}
     
-    if ! command -v nh &> /dev/null; then
-        log_error "nh is required for this operation"
-        exit 1
-    fi
+    log_info "Building Home configuration (action: $action)"
     
-    if [[ -z "$config" ]]; then
-        log_error "No configuration specified"
-        log_info "Available Home Manager configurations:"
-        get_home_configs | sed 's/^/  - /'
-        exit 1
-    fi
-    
-    log_info "Building Home Manager configuration: $config (action: $action)"
-    
-    # Correct nh syntax: nh home <action> <flake-path>
-    if nh home "$action" ".#$config"; then
-        log_success "Home Manager configuration applied successfully"
+    # nh os automatically detects the hostname from the system
+    if nh os "$action" .; then
+        log_success "Home-Manager configuration applied successfully"
     else
-        log_error "Failed to rebuild Home Manager configuration"
+        log_error "Failed to rebuild Home-Manager configuration"
         exit 1
-    fi
-}
+    fi}
 
 # Utility functions
 update_flake() {
-    if command -v nh &> /dev/null; then
-        log_info "Updating flake inputs using nh..."
-        local platform=$(detect_platform)
-        case $platform in
-            nixos)
-                nh os switch --update .
-                ;;
-            darwin)
-                nh darwin switch --update .
-                ;;
-            standalone)
-                log_info "Updating flake inputs..."
-                nix flake update
-                ;;
-        esac
+  if command -v nh &>/dev/null; then
+    log_info "Updating flake inputs using nh..."
+    local platform=$(detect_platform)
+    case $platform in
+    nixos)
+      nh os switch --update .
+      ;;
+    darwin)
+      nh darwin switch --update .
+      ;;
+    standalone)
+      log_info "Updating flake inputs..."
+      nix flake update
+      ;;
+    esac
+  else
+    log_info "Updating flake inputs..."
+    if nix flake update; then
+      log_success "Flake inputs updated"
     else
-        log_info "Updating flake inputs..."
-        if nix flake update; then
-            log_success "Flake inputs updated"
-        else
-            log_error "Failed to update flake inputs"
-            exit 1
-        fi
+      log_error "Failed to update flake inputs"
+      exit 1
     fi
+  fi
 }
 
 check_flake() {
-    log_info "Checking flake configuration..."
-    if nix flake check; then
-        log_success "Flake configuration is valid"
-    else
-        log_error "Flake configuration has errors"
-        exit 1
-    fi
+  log_info "Checking flake configuration..."
+  if nix flake check; then
+    log_success "Flake configuration is valid"
+  else
+    log_error "Flake configuration has errors"
+    exit 1
+  fi
 }
 
 format_code() {
-    log_info "Formatting Nix files..."
-    if command -v nixpkgs-fmt &> /dev/null; then
-        find . -name "*.nix" -exec nixpkgs-fmt {} \;
-        log_success "Code formatted"
-    elif command -v alejandra &> /dev/null; then
-        find . -name "*.nix" -exec alejandra {} \;
-        log_success "Code formatted with alejandra"
-    else
-        log_warn "No formatter found (nixpkgs-fmt or alejandra)"
-    fi
+  log_info "Formatting Nix files..."
+  if command -v nixpkgs-fmt &>/dev/null; then
+    find . -name "*.nix" -exec nixpkgs-fmt {} \;
+    log_success "Code formatted"
+  elif command -v alejandra &>/dev/null; then
+    find . -name "*.nix" -exec alejandra {} \;
+    log_success "Code formatted with alejandra"
+  else
+    log_warn "No formatter found (nixpkgs-fmt or alejandra)"
+  fi
 }
 
 cleanup_generations() {
-    local days=${1:-7}
-    
-    if ! [[ "$days" =~ ^[0-9]+$ ]]; then
-        log_error "Days must be a positive number"
-        exit 1
-    fi
-    
-    if command -v nh &> /dev/null; then
-        log_info "Cleaning up using nh (keeping last $days days)..."
-        local platform=$(detect_platform)
-        case $platform in
-            nixos)
-                nh clean all --keep $days
-                ;;
-            darwin)
-                nh clean all --keep $days
-                ;;
-            standalone)
-                nh clean user --keep $days
-                ;;
-        esac
-        log_success "Cleanup completed with nh"
-    else
-        log_info "Cleaning up generations older than $days days..."
-        local platform=$(detect_platform)
-        
-        case $platform in
-            nixos)
-                sudo nix-collect-garbage -d --delete-older-than "${days}d"
-                ;;
-            darwin)
-                sudo nix-collect-garbage -d --delete-older-than "${days}d"
-                ;;
-            standalone)
-                nix-collect-garbage -d --delete-older-than "${days}d"
-                ;;
-        esac
-        
-        log_success "Cleanup completed"
-    fi
+  local days=${1:-7}
+
+  if ! [[ "$days" =~ ^[0-9]+$ ]]; then
+    log_error "Days must be a positive number"
+    exit 1
+  fi
+
+  if command -v nh &>/dev/null; then
+    log_info "Cleaning up using nh (keeping last $days days)..."
+    local platform=$(detect_platform)
+    case $platform in
+    nixos)
+      nh clean all --keep $days
+      ;;
+    darwin)
+      nh clean all --keep $days
+      ;;
+    standalone)
+      nh clean user --keep $days
+      ;;
+    esac
+    log_success "Cleanup completed with nh"
+  else
+    log_info "Cleaning up generations older than $days days..."
+    local platform=$(detect_platform)
+
+    case $platform in
+    nixos)
+      sudo nix-collect-garbage -d --delete-older-than "${days}d"
+      ;;
+    darwin)
+      sudo nix-collect-garbage -d --delete-older-than "${days}d"
+      ;;
+    standalone)
+      nix-collect-garbage -d --delete-older-than "${days}d"
+      ;;
+    esac
+
+    log_success "Cleanup completed"
+  fi
 }
 
 optimize_store() {
-    log_info "Optimizing Nix store..."
-    if nix-store --optimise; then
-        log_success "Store optimized"
-    else
-        log_error "Failed to optimize store"
-        exit 1
-    fi
+  log_info "Optimizing Nix store..."
+  if nix-store --optimise; then
+    log_success "Store optimized"
+  else
+    log_error "Failed to optimize store"
+    exit 1
+  fi
 }
 
 list_generations() {
-    local platform=$(detect_platform)
-    
-    if command -v nh &> /dev/null; then
-        log_info "Listing system generations..."
-        case $platform in
-            nixos)
-                nix-env --list-generations --profile /nix/var/nix/profiles/system
-                ;;
-            darwin)
-                nix-env --list-generations --profile /nix/var/nix/profiles/system
-                ;;
-            standalone)
-                nix-env --list-generations
-                ;;
-        esac
-    else
-        case $platform in
-            nixos)
-                sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
-                ;;
-            darwin)
-                sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
-                ;;
-            standalone)
-                nix-env --list-generations
-                ;;
-        esac
-    fi
+  local platform=$(detect_platform)
+
+  if command -v nh &>/dev/null; then
+    log_info "Listing system generations..."
+    case $platform in
+    nixos)
+      nix-env --list-generations --profile /nix/var/nix/profiles/system
+      ;;
+    darwin)
+      nix-env --list-generations --profile /nix/var/nix/profiles/system
+      ;;
+    standalone)
+      nix-env --list-generations
+      ;;
+    esac
+  else
+    case $platform in
+    nixos)
+      sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
+      ;;
+    darwin)
+      sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
+      ;;
+    standalone)
+      nix-env --list-generations
+      ;;
+    esac
+  fi
 }
 
 rollback_generation() {
-    local generation=${1:-}
-    local platform=$(detect_platform)
-    
-    log_info "Rolling back to previous generation..."
-    
-    case $platform in
-        nixos)
-            if [[ -n "$generation" ]]; then
-                sudo nixos-rebuild switch --rollback --flake ".#$generation"
-            else
-                sudo nixos-rebuild switch --rollback
-            fi
-            ;;
-        darwin)
-            if [[ -n "$generation" ]]; then
-                darwin-rebuild switch --rollback --flake ".#$generation"
-            else
-                darwin-rebuild switch --rollback
-            fi
-            ;;
-        standalone)
-            log_error "Rollback not directly supported for standalone home-manager"
-            log_info "Use: home-manager generations"
-            exit 1
-            ;;
-    esac
-    log_success "Rolled back successfully"
+  local generation=${1:-}
+  local platform=$(detect_platform)
+
+  log_info "Rolling back to previous generation..."
+
+  case $platform in
+  nixos)
+    if [[ -n "$generation" ]]; then
+      sudo nixos-rebuild switch --rollback --flake ".#$generation"
+    else
+      sudo nixos-rebuild switch --rollback
+    fi
+    ;;
+  darwin)
+    if [[ -n "$generation" ]]; then
+      darwin-rebuild switch --rollback --flake ".#$generation"
+    else
+      darwin-rebuild switch --rollback
+    fi
+    ;;
+  standalone)
+    log_error "Rollback not directly supported for standalone home-manager"
+    log_info "Use: home-manager generations"
+    exit 1
+    ;;
+  esac
+  log_success "Rolled back successfully"
 }
 
 # Portable sed function
 portable_sed() {
-    local pattern="$1"
-    local file="$2"
-    
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' "$pattern" "$file"
-    else
-        sed -i "$pattern" "$file"
-    fi
+  local pattern="$1"
+  local file="$2"
+
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "$pattern" "$file"
+  else
+    sed -i "$pattern" "$file"
+  fi
 }
 
 create_host() {
-    local hostname=${1:-}
-    local platform=${2:-nixos}
-    
-    if [[ -z "$hostname" ]]; then
-        log_error "Hostname required"
-        echo "Usage: $0 create-host <hostname> [nixos|darwin]"
-        exit 1
-    fi
-    
-    if [[ -d "host/$hostname" ]]; then
-        log_error "Host $hostname already exists"
-        exit 1
-    fi
-    
-    log_info "Creating new host: $hostname ($platform)"
-    
-    mkdir -p "host/$hostname"
-    
-    case $platform in
-        nixos)
-            cat > "host/$hostname/configuration.nix" << 'EOF'
+  local hostname=${1:-}
+  local platform=${2:-nixos}
+
+  if [[ -z "$hostname" ]]; then
+    log_error "Hostname required"
+    echo "Usage: $0 create-host <hostname> [nixos|darwin]"
+    exit 1
+  fi
+
+  if [[ -d "host/$hostname" ]]; then
+    log_error "Host $hostname already exists"
+    exit 1
+  fi
+
+  log_info "Creating new host: $hostname ($platform)"
+
+  mkdir -p "host/$hostname"
+
+  case $platform in
+  nixos)
+    cat >"host/$hostname/configuration.nix" <<'EOF'
 { config, pkgs, lib, ... }:
 
 {
@@ -410,13 +372,13 @@ create_host() {
   nix.settings.experimental-features = ["nix-command" "flakes"];
 }
 EOF
-            portable_sed "s/HOSTNAME/$hostname/g" "host/$hostname/configuration.nix"
-            log_info "Don't forget to:"
-            log_info "  1. Generate hardware-configuration.nix with: sudo nixos-generate-config --dir host/$hostname"
-            log_info "  2. Add $hostname to flake.nix nixosConfigurations"
-            ;;
-        darwin)
-            cat > "host/$hostname/configuration.nix" << 'EOF'
+    portable_sed "s/HOSTNAME/$hostname/g" "host/$hostname/configuration.nix"
+    log_info "Don't forget to:"
+    log_info "  1. Generate hardware-configuration.nix with: sudo nixos-generate-config --dir host/$hostname"
+    log_info "  2. Add $hostname to flake.nix nixosConfigurations"
+    ;;
+  darwin)
+    cat >"host/$hostname/configuration.nix" <<'EOF'
 { config, pkgs, lib, ... }:
 
 {
@@ -432,73 +394,73 @@ EOF
   nix.settings.experimental-features = ["nix-command" "flakes"];
 }
 EOF
-            portable_sed "s/HOSTNAME/$hostname/g" "host/$hostname/configuration.nix"
-            log_info "Don't forget to add $hostname to flake.nix darwinConfigurations"
-            ;;
-        *)
-            log_error "Unknown platform: $platform"
-            exit 1
-            ;;
-    esac
-    
-    log_success "Host $hostname created successfully"
+    portable_sed "s/HOSTNAME/$hostname/g" "host/$hostname/configuration.nix"
+    log_info "Don't forget to add $hostname to flake.nix darwinConfigurations"
+    ;;
+  *)
+    log_error "Unknown platform: $platform"
+    exit 1
+    ;;
+  esac
+
+  log_success "Host $hostname created successfully"
 }
 
 search_packages() {
-    local query=${1:-}
-    
-    if [[ -z "$query" ]]; then
-        log_error "Search query required"
-        exit 1
-    fi
-    
-    if command -v nh &> /dev/null; then
-        log_info "Searching packages with nh..."
-        nh search "$query"
-    else
-        log_info "Searching packages..."
-        nix search nixpkgs "$query"
-    fi
+  local query=${1:-}
+
+  if [[ -z "$query" ]]; then
+    log_error "Search query required"
+    exit 1
+  fi
+
+  if command -v nh &>/dev/null; then
+    log_info "Searching packages with nh..."
+    nh search "$query"
+  else
+    log_info "Searching packages..."
+    nix search nixpkgs "$query"
+  fi
 }
 
 show_status() {
-    local platform=$(detect_platform)
-    
-    log_header "Yggdrasil Configuration Status"
-    echo
-    
-    log_info "Platform: $platform"
-    log_info "Flake location: $(pwd)"
-    log_info "nh available: $(command -v nh &> /dev/null && echo 'yes' || echo 'no')"
-    
-    if [[ -f flake.lock ]]; then
-        log_info "Last flake update: $(stat -c %y flake.lock 2>/dev/null || stat -f %Sm -t %Y-%m-%d flake.lock 2>/dev/null || echo 'Unknown')"
-    fi
-    
-    echo
-    log_info "Available configurations:"
-    
-    local nixos_configs=$(get_nixos_configs)
-    if [[ -n "$nixos_configs" ]]; then
-        echo "  NixOS:"
-        echo "$nixos_configs" | sed 's/^/    - /'
-    fi
-    
-    local darwin_configs=$(get_darwin_configs)
-    if [[ -n "$darwin_configs" ]]; then
-        echo "  Darwin:"
-        echo "$darwin_configs" | sed 's/^/    - /'
-    fi
-    
-    local home_configs=$(get_home_configs)
-    if [[ -n "$home_configs" ]]; then
-        echo "  Home Manager:"
-        echo "$home_configs" | sed 's/^/    - /'
-    fi
+  local platform=$(detect_platform)
+
+  log_header "Yggdrasil Configuration Status"
+  echo
+
+  log_info "Platform: $platform"
+  log_info "Flake location: $(pwd)"
+  log_info "nh available: $(command -v nh &>/dev/null && echo 'yes' || echo 'no')"
+
+  if [[ -f flake.lock ]]; then
+    log_info "Last flake update: $(stat -c %y flake.lock 2>/dev/null || stat -f %Sm -t %Y-%m-%d flake.lock 2>/dev/null || echo 'Unknown')"
+  fi
+
+  echo
+  log_info "Available configurations:"
+
+  local nixos_configs=$(get_nixos_configs)
+  if [[ -n "$nixos_configs" ]]; then
+    echo "  NixOS:"
+    echo "$nixos_configs" | sed 's/^/    - /'
+  fi
+
+  local darwin_configs=$(get_darwin_configs)
+  if [[ -n "$darwin_configs" ]]; then
+    echo "  Darwin:"
+    echo "$darwin_configs" | sed 's/^/    - /'
+  fi
+
+  local home_configs=$(get_home_configs)
+  if [[ -n "$home_configs" ]]; then
+    echo "  Home Manager:"
+    echo "$home_configs" | sed 's/^/    - /'
+  fi
 }
 
 show_help() {
-    cat << EOF
+  cat <<EOF
 🌳 Yggdrasil - Universal Nix Configuration Manager
    Powered by nh (yet another nix helper)
 
@@ -538,74 +500,74 @@ EOF
 
 # Main command dispatcher
 main() {
-    check_dependencies
-    
-    local command=${1:-help}
-    
-    case $command in
-        build)
-            local config=${2:-}
-            local action=${3:-switch}
-            local platform=$(detect_platform)
-            
-            case $platform in
-                nixos)
-                    rebuild_nixos "$config" "$action"
-                    ;;
-                darwin)
-                    rebuild_darwin "$config" "$action"
-                    ;;
-                standalone)
-                    rebuild_home "$config" "$action"
-                    ;;
-            esac
-            ;;
-        update)
-            update_flake
-            ;;
-        check)
-            check_flake
-            ;;
-        format)
-            format_code
-            ;;
-        cleanup)
-            cleanup_generations ${2:-7}
-            ;;
-        optimize)
-            optimize_store
-            ;;
-        list|generations)
-            list_generations
-            ;;
-        rollback)
-            rollback_generation "$2"
-            ;;
-        search)
-            search_packages "$2"
-            ;;
-        create-host)
-            create_host "$2" "${3:-nixos}"
-            ;;
-        status)
-            show_status
-            ;;
-        help|--help|-h)
-            show_help
-            ;;
-        *)
-            log_error "Unknown command: $command"
-            show_help
-            exit 1
-            ;;
+  check_dependencies
+
+  local command=${1:-help}
+
+  case $command in
+  build)
+    local config=${2:-}
+    local action=${3:-switch}
+    local platform=$(detect_platform)
+
+    case $platform in
+    nixos)
+      rebuild_nixos "$config" "$action"
+      ;;
+    darwin)
+      rebuild_darwin "$config" "$action"
+      ;;
+    standalone)
+      rebuild_home "$config" "$action"
+      ;;
     esac
+    ;;
+  update)
+    update_flake
+    ;;
+  check)
+    check_flake
+    ;;
+  format)
+    format_code
+    ;;
+  cleanup)
+    cleanup_generations ${2:-7}
+    ;;
+  optimize)
+    optimize_store
+    ;;
+  list | generations)
+    list_generations
+    ;;
+  rollback)
+    rollback_generation "$2"
+    ;;
+  search)
+    search_packages "$2"
+    ;;
+  create-host)
+    create_host "$2" "${3:-nixos}"
+    ;;
+  status)
+    show_status
+    ;;
+  help | --help | -h)
+    show_help
+    ;;
+  *)
+    log_error "Unknown command: $command"
+    show_help
+    exit 1
+    ;;
+  esac
 }
 
 # Check if we're in the right directory
 if [[ ! -f flake.nix ]]; then
-    log_error "No flake.nix found in current directory"
-    log_info "Please run this script from your Yggdrasil configuration directory"
-    exit 1
+  log_error "No flake.nix found in current directory"
+  log_info "Please run this script from your Yggdrasil configuration directory"
+  exit 1
 fi
 
 # Run main function with all arguments
