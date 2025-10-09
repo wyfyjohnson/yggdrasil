@@ -79,5 +79,7 @@
     # AI smut for school
     aichat
     ollama
+
+    (pkgs.callPackage ../yggdrasil.nix {})
   ];
 }
