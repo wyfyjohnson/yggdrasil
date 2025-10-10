@@ -194,6 +194,7 @@ in {
       ]
       ++ optionals cfg.emacs.modules.tools.lsp (
         optional cfg.emacs.modules.lang.nix nil
+        ++ [ pkgs.hyprls ]
         ++ optional cfg.emacs.modules.lang.python python3Packages.python-lsp-server
         ++ optional cfg.emacs.modules.lang.rust rust-analyzer
         ++ optional cfg.emacs.modules.lang.typescript nodePackages.typescript-language-server
@@ -202,7 +203,7 @@ in {
       )
       ++ optional cfg.emacs.modules.tools.editorconfig editorconfig-core-c
       ++ optional cfg.emacs.modules.lang.markdown pandoc
-      ++ optional cfg.emacs.modules.tools.emms kew
+      ++ optional cfg.emacs.modules.tools.emms mpv
       ++ cfg.extraPackages;
 
     # Emacs configuration file
@@ -637,9 +638,8 @@ in {
         (setq ms-player-list nil)
 
         ;; Use kew as the player
-        (require 'emms-player-simple)
-        (setq emms-player-simple-command "kew")
-        (setq emms-player-list '(emms-player-simple))
+        (require 'emms-player-mpv)
+        (setq emms-player-list '(emms-player-mpv))
 
         (emms-all)
 
