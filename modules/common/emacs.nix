@@ -202,7 +202,7 @@ in {
       )
       ++ optional cfg.emacs.modules.tools.editorconfig editorconfig-core-c
       ++ optional cfg.emacs.modules.lang.markdown pandoc
-      ++ optional cfg.emacs.modules.tools.emms mpv
+      ++ optional cfg.emacs.modules.tools.emms kew
       ++ cfg.extraPackages;
 
     # Emacs configuration file
@@ -634,12 +634,14 @@ in {
       ${optionalString cfg.emacs.modules.tools.emms ''
         ;; EMMS - Emacs MultiMedia System
         (require 'emms-setup)
-        (emms-all)
-        (emms-default-players)
+        (setq ms-player-list nil)
 
-        ;; Use mpv as the player
-        (require 'emms-player-mpv)
-        (add-to-list 'emms-player-list 'emms-player-mpv)
+        ;; Use kew as the player
+        (require 'emms-player-simple)
+        (setq emms-player-simple-command "kew")
+        (setq emms-player-list '(emms-player-simple))
+
+        (emms-all)
 
         ;; Set music directory
         (setq emms-source-file-default-directory "~/Music/")
