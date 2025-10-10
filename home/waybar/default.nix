@@ -121,12 +121,14 @@ in {
         procps
         mpc-cli
         alsa-utils
+        hyprpicker
+        hyprshot
+        cliphist
+        wl-clipboard
+        rofi-wayland
       ]
       ++ optionals cfg.enableRecording [
         wf-recorder
-      ]
-      ++ optionals cfg.enableWeather [
-        # No additional packages needed, curl already included
       ];
 
     programs.waybar = {
@@ -182,15 +184,15 @@ in {
             format = "{icon}";
             format-icons = {
               default = "";
-              "1" = "1";
-              "2" = "2";
-              "3" = "3";
-              "4" = "4";
-              "5" = "5";
-              "6" = "6";
-              "7" = "7";
-              "8" = "8";
-              "9" = "9";
+              "1" = "一";
+              "2" = "二";
+              "3" = "三";
+              "4" = "四";
+              "5" = "五";
+              "6" = "六";
+              "7" = "七";
+              "8" = "八";
+              "9" = "九";
               active = "󱓻";
               urgent = "󱓻";
             };
@@ -214,13 +216,13 @@ in {
 
           memory = {
             interval = 5;
-            format = "󰍛 {}%";
+            format = "󰍛 {usage}%";
             max-length = 10;
           };
 
           cpu = {
             interval = 5;
-            format = "󰻠 {}%";
+            format = "󰻠 {usage}%";
             max-length = 10;
           };
 
@@ -229,6 +231,7 @@ in {
             format = "󰋊 {used}";
             path = "/";
             max-length = 20;
+            tooltip-format = "Used: {used} / {total}";
           };
 
           tray = {
@@ -236,6 +239,8 @@ in {
           };
 
           clock = {
+            format = "{:%I:%M %p}";
+            format-alt = "{:%A, %B %d, %Y}";
             tooltip = true;
             tooltip-format = "<tt><small>{calendar}</small></tt>";
             calendar = {
@@ -372,9 +377,9 @@ in {
         }
       ];
 
-      # Complete CSS styling
+      # Complete CSS styling - imports colors.css at the top
       style = ''
-        ${themes.generateColorsCss cfg.theme currentColors}
+        @import "colors.css";
 
         /* ==================== */
         /* 🎛️ Estilos generales */
@@ -524,19 +529,19 @@ in {
 
         /* Icon styling for system modules */
         #custom-batteryicon.charging {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/BatteryChargeMinimalistic-symbolic.svg");
+          background-image: url("icons/system/BatteryChargeMinimalistic-symbolic.svg");
         }
 
         #custom-batteryicon.Full {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/BatteryFullMinimalistic-symbolic.svg");
+          background-image: url("icons/system/BatteryFullMinimalistic-symbolic.svg");
         }
 
         #custom-batteryicon.Med {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/BatteryHalfMinimalistic-symbolic.svg");
+          background-image: url("icons/system/BatteryHalfMinimalistic-symbolic.svg");
         }
 
         #custom-batteryicon.Low {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/BatteryLowMinimalistic-symbolic.svg");
+          background-image: url("icons/system/BatteryLowMinimalistic-symbolic.svg");
         }
 
         #custom-batteryicon {
@@ -551,19 +556,19 @@ in {
         }
 
         #custom-volumeicon.volmute {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/VolumeCross-symbolic.svg");
+          background-image: url("icons/system/VolumeCross-symbolic.svg");
         }
 
         #custom-volumeicon.volow {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/Volume-symbolic.svg");
+          background-image: url("icons/system/Volume-symbolic.svg");
         }
 
         #custom-volumeicon.volmed {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/VolumeSmall-symbolic.svg");
+          background-image: url("icons/system/VolumeSmall-symbolic.svg");
         }
 
         #custom-volumeicon.volfull {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/VolumeLoud-symbolic.svg");
+          background-image: url("icons/system/VolumeLoud-symbolic.svg");
         }
 
         #custom-volumeicon {
@@ -578,11 +583,11 @@ in {
         }
 
         #custom-bluetoothicon.BTOn {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/BluetoothWave-symbolic.svg");
+          background-image: url("icons/system/BluetoothWave-symbolic.svg");
         }
 
         #custom-bluetoothicon.BTOff {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/Bluetooth-symbolic.svg");
+          background-image: url("icons/system/Bluetooth-symbolic.svg");
         }
 
         #custom-bluetoothicon {
@@ -597,11 +602,11 @@ in {
         }
 
         #custom-networkicon.NetOn {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/Wi-FiRouterMinimalistic.svg");
+          background-image: url("icons/system/Wi-FiRouterMinimalistic.svg");
         }
 
         #custom-networkicon.NetOff {
-          background-image: url("${config.xdg.configHome}/waybar/icons/system/Netdown.svg");
+          background-image: url("icons/system/Netdown.svg");
         }
 
         #custom-networkicon {
@@ -695,43 +700,43 @@ in {
         }
 
         #custom-clipboard.clipboard {
-          background-image: url("${config.xdg.configHome}/waybar/icons/Clipboard.svg");
+          background-image: url("icons/Clipboard.svg");
         }
 
         #custom-nerd.nerd {
-          background-image: url("${config.xdg.configHome}/waybar/icons/Glasses.svg");
+          background-image: url("icons/Glasses.svg");
         }
 
         #custom-logo.logo {
-          background-image: url("${config.xdg.configHome}/waybar/icons/avatar/nix.svg");
+          background-image: url("icons/avatar/nix.svg");
         }
 
         #custom-config.config {
-          background-image: url("${config.xdg.configHome}/waybar/icons/Settings-symbolic.svg");
+          background-image: url("icons/Settings-symbolic.svg");
         }
 
         #custom-theme.theme {
-          background-image: url("${config.xdg.configHome}/waybar/icons/Palette-symbolic.svg");
+          background-image: url("icons/Palette-symbolic.svg");
         }
 
         #custom-wallpapers.wallpapers {
-          background-image: url("${config.xdg.configHome}/waybar/icons/Gallery-symbolic.svg");
+          background-image: url("icons/Gallery-symbolic.svg");
         }
 
         #custom-screenshot.screenshot {
-          background-image: url("${config.xdg.configHome}/waybar/icons/CameraMinimalistic-symbolic.svg");
+          background-image: url("icons/CameraMinimalistic-symbolic.svg");
         }
 
         #custom-record.recordoff {
-          background-image: url("${config.xdg.configHome}/waybar/icons/Videocamera-symbolic.svg");
+          background-image: url("icons/Videocamera-symbolic.svg");
         }
 
         #custom-record.recordon {
-          background-image: url("${config.xdg.configHome}/waybar/cache/recording.svg");
+          background-image: url("cache/recording.svg");
         }
 
         #custom-picker.picker {
-          background-image: url("${config.xdg.configHome}/waybar/icons/Pipette-symbolic.svg");
+          background-image: url("icons/Pipette-symbolic.svg");
         }
 
         /* ==================== */
@@ -753,63 +758,63 @@ in {
 
         /* Weather icon classes */
         #custom-weather.sunny {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/Sun-symbolic.svg");
+          background-image: url("icons/weather/Sun-symbolic.svg");
         }
 
         #custom-weather.night {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/Moon-symbolic.svg");
+          background-image: url("icons/weather/Moon-symbolic.svg");
         }
 
         #custom-weather.cloudy-day {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/CloudSun-symbolic.svg");
+          background-image: url("icons/weather/CloudSun-symbolic.svg");
         }
 
         #custom-weather.cloudy-night {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/CloudyMoon-symbolic.svg");
+          background-image: url("icons/weather/CloudyMoon-symbolic.svg");
         }
 
         #custom-weather.clouds {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/Clouds-symbolic.svg");
+          background-image: url("icons/weather/Clouds-symbolic.svg");
         }
 
         #custom-weather.cloudy {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/Cloud-symbolic.svg");
+          background-image: url("icons/weather/Cloud-symbolic.svg");
         }
 
         #custom-weather.fog {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/Fog-symbolic.svg");
+          background-image: url("icons/weather/Fog-symbolic.svg");
         }
 
         #custom-weather.light-rain,
         #custom-weather.drizzle,
         #custom-weather.rain,
         #custom-weather.heavy-rain {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/CloudRain-symbolic.svg");
+          background-image: url("icons/weather/CloudRain-symbolic.svg");
         }
 
         #custom-weather.snow,
         #custom-weather.light-snow,
         #custom-weather.heavy-snow {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/CloudSnowfall-symbolic.svg");
+          background-image: url("icons/weather/CloudSnowfall-symbolic.svg");
         }
 
         #custom-weather.sleet {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/CloudWaterdrop-symbolic.svg");
+          background-image: url("icons/weather/CloudWaterdrop-symbolic.svg");
         }
 
         #custom-weather.thunder {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/CloudBolt-symbolic.svg");
+          background-image: url("icons/weather/CloudBolt-symbolic.svg");
         }
 
         #custom-weather.storm {
-          background-image: url("${config.xdg.configHome}/waybar/icons/weather/CloudStorm-symbolic.svg");
+          background-image: url("icons/weather/CloudStorm-symbolic.svg");
         }
       '';
     };
 
     # Create config directory structure with all assets
     xdg.configFile = {
-      # Colors configuration
+      # Colors configuration - dynamically generated
       "waybar/colors.css".text = themes.generateColorsCss cfg.theme currentColors;
 
       # Rofi theme files
@@ -824,7 +829,7 @@ in {
       # Icon files - copy entire directory structure
       "waybar/icons".source = ./icons;
 
-      # Theme directories (would need to be populated)
+      # Theme directories (for custom accents)
       "waybar/themes/${cfg.theme}/.accent".text = accentColor;
       "waybar/themes/${cfg.theme}/.accent2".text = accent2Color;
 
