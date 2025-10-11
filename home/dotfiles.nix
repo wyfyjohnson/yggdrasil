@@ -72,10 +72,10 @@ in {
   );
 
   # Create waybar state directories (Linux only)
-  home.activation.createWaybarState = lib.mkIf pkgs.stdenv.isLinux (
-    lib.hm.dag.entryAfter ["writeBoundary"] ''
-      mkdir -p ~/.cache/waybar/walls-cache
-      mkdir -p ~/.local/state/waybar
-    ''
-  );
+  # home.activation.createWaybarState = lib.mkIf pkgs.stdenv.isLinux (
+  #   lib.hm.dag.entryAfter ["writeBoundary"] ''
+  #     mkdir -p ~/.cache/waybar/walls-cache
+  #     mkdir -p ~/.local/state/waybar
+  #   ''
+  # );
 }

@@ -715,12 +715,9 @@ in
         jq
         curl
         imagemagick
-        swww
         libnotify
         killall
         procps
-        mpc-cli
-        alsa-utils
         hyprpicker
         hyprshot
         cliphist
