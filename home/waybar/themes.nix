@@ -1,6 +1,5 @@
 # waybar/themes.nix
-{lib, ...}:
-with lib; {
+{lib}: {
   themeConfig = {
     Tokyo = {
       colors = {
