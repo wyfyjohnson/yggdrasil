@@ -32,7 +32,7 @@
     ../modules/common/nh.nix
     ../modules/common/emacs.nix
     ./darwin.nix
-    ./waybar/default.nix
+    ./waybar.nix
   ];
 
   # Basic programs

@@ -738,22 +738,22 @@ in
       "waybar/rofi/shared.rasi".text = themes.generateRofiTheme waybarConfig.theme currentColors;
 
       # Comment these out if files don't exist yet, uncomment when you have them:
-      # "waybar/rofi/Launcher.rasi".source = ./waybar/rofi/Launcher.rasi;
-      # "waybar/rofi/ThemeSelect.rasi".source = ./waybar/rofi/ThemeSelect.rasi;
-      # "waybar/rofi/WallSelect.rasi".source = ./waybar/rofi/WallSelect.rasi;
-      # "waybar/rofi/clipboard.rasi".source = ./waybar/rofi/clipboard.rasi;
-      # "waybar/rofi/icons.rasi".source = ./waybar/rofi/icons.rasi;
-      # "waybar/rofi/powermenu.rasi".source = ./waybar/rofi/powermenu.rasi;
+      "waybar/rofi/Launcher.rasi".source = ./waybar/rofi/Launcher.rasi;
+      "waybar/rofi/ThemeSelect.rasi".source = ./waybar/rofi/ThemeSelect.rasi;
+      "waybar/rofi/WallSelect.rasi".source = ./waybar/rofi/WallSelect.rasi;
+      "waybar/rofi/clipboard.rasi".source = ./waybar/rofi/clipboard.rasi;
+      "waybar/rofi/icons.rasi".source = ./waybar/rofi/icons.rasi;
+      "waybar/rofi/powermenu.rasi".source = ./waybar/rofi/powermenu.rasi;
 
       # Icon directory - uncomment when you have it:
-      # "waybar/icons".source = ./waybar/icons;
+      "waybar/icons".source = ./waybar/icons;
 
       # Theme accent files
       "waybar/themes/${waybarConfig.theme}/.accent".text = accentColor;
       "waybar/themes/${waybarConfig.theme}/.accent2".text = accent2Color;
 
       # Cache file - uncomment when you have it:
-      # "waybar/cache/recording.svg".source = ./waybar/cache/recording.svg;
+      "waybar/cache/recording.svg".source = ./waybar/cache/recording.svg;
     };
 
     # State directories
