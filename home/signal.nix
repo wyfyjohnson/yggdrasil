@@ -15,10 +15,10 @@
     exec = "signal-desktop --password-store=gnome-libsecret %U";
     terminal = false;
     icon = "signal-desktop";
-    categories = [ "Network" "InstantMessaging" ];
-    mimeType = [ 
-      "x-scheme-handler/sgnl" 
-      "x-scheme-handler/signalcaptcha" 
+    categories = ["Network" "InstantMessaging"];
+    mimeType = [
+      "x-scheme-handler/sgnl"
+      "x-scheme-handler/signalcaptcha"
     ];
     comment = "Private messaging from your desktop/lappy";
     genericName = "Instant Messaging";
