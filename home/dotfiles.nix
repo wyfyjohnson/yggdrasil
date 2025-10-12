@@ -23,7 +23,7 @@
   linuxConfigDirs = [
     "cava"
     "picom"
-    "waybar"
+    # "waybar"
   ];
 
   configDirs = lib.listToAttrs (
