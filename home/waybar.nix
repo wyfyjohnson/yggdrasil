@@ -1,4 +1,3 @@
-# home/waybar.nix
 {
   config,
   lib,
@@ -101,7 +100,7 @@ in
               "8" = "八";
               "9" = "九";
               active = "󱓻";
-              urgent = "󱓻";
+              urgent = "󰳤";
             };
             persistent-workspaces = {
               "1" = [];
