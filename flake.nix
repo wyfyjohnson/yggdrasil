@@ -73,7 +73,7 @@
         modules = [
           ./host/${hostname}/configuration.nix
           home-manager.darwinModules.home-manager
-          homeManagerConfig
+          (homeManagerConfig hostname system)
         ];
       };
   in {
