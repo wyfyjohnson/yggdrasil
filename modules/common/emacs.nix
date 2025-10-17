@@ -478,6 +478,7 @@ in {
       ${optionalString cfg.emacs.modules.editor.evil ''
         ;; Evil Mode - Core Configuration
         ;; CRITICAL: Set these BEFORE requiring evil
+        (setq evil-want-keybinding nil)
         (setq evil-want-integration t
               evil-want-keybinding nil
               evil-want-C-u-scroll t
@@ -810,6 +811,7 @@ in {
              "*isort Errors*" t)))
 
          ;; Rust - use rustfmt
+         (setq rustic-format-on-save nil)
          ((eq major-mode 'rust-mode)
           (when (executable-find "rustfmt")
             (shell-command-on-region
