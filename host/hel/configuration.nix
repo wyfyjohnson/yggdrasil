@@ -54,7 +54,7 @@
     git
     helix
     tree
-    raycast
+    # raycast
     unzip
     vim
     wget
