@@ -38,11 +38,6 @@
       wayland.enable = true;
     };
   };
-  # Wayland support
-  # programs.hyprland = {
-  #   enable = true;
-  #   xwayland.enable = true;
-  # };
 
   xdg.portal = {
     enable = true;
@@ -106,8 +101,6 @@
     rofi
     flameshot
     ghostty
-    hypridle
-    hyprlock
   ];
 
   environment.sessionVariables = {

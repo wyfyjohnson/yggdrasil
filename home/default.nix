@@ -24,16 +24,17 @@
 
   # Fixed imports
   imports = [
+    ./darwin.nix
+    ./dotfiles.nix
     ./git.nix
+    ./hypridle.nix
+    ./linux.nix
     ./programs.nix
     ./shell.nix
-    ./linux.nix
-    ./dotfiles.nix
+    ./waybar.nix
     ../modules/common/helix.nix
     ../modules/common/nh.nix
     ../modules/common/emacs.nix
-    ./darwin.nix
-    ./waybar.nix
   ];
 
   # Basic programs
