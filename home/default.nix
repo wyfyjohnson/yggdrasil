@@ -20,7 +20,6 @@
       VISUAL = "hx";
     };
   };
-  nixpkgs.config.allowUnfree = true;
 
   # Fixed imports
   imports = [
