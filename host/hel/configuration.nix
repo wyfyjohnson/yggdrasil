@@ -34,6 +34,7 @@
       keep-derivations = true
     '';
 
+    nixpkgs.config.allowUnfree = true;
     # Garbage collection
     gc = {
       automatic = true;
