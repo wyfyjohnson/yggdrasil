@@ -83,8 +83,8 @@
     vscode-langservers-extracted
 
     # AI smut for school
-    aichat
-    ollama
+    # aichat
+    # ollama
 
     (pkgs.callPackage ../yggdrasil.nix {})
   ];

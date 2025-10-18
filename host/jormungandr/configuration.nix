@@ -15,6 +15,7 @@
     # NixOS-specific modules
     ../../modules/nixos/desktop.nix
     ../../modules/nixos/gaming.nix
+    ../../modules/nixos/ollama.nix
     ./sddm.nix
     ./hyprland.nix
   ];
