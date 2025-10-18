@@ -363,16 +363,6 @@ in {
               treemacs-filewatch-mode t
               treemacs-fringe-indicator-mode 'always)
 
-        ${optionalString cfg.emacs.modules.editor.evil ''
-          (require 'treemacs-evil)
-          ;; Add evil keybinding for treemacs
-          (evil-define-key 'normal 'global (kbd "<leader>ft") 'treemacs)
-        ''}
-
-        ${optionalString cfg.emacs.modules.tools.magit ''
-          (require 'treemacs-magit)
-        ''}
-
         ;; Toggle treemacs with C-c t
         (global-set-key (kbd "C-c t") 'treemacs)
       ''}
@@ -509,6 +499,18 @@ in {
         ;; Evil Collection - Vim keybindings everywhere
         (when (require 'evil-collection nil t)
           (evil-collection-init))
+
+        ${optionalString cfg.emacs.modules.ui.treemacs ''
+          ;; Load treemacs-evil AFTER evil-collection
+          (require 'treemacs-evil)
+          (evil-define-key 'normal 'global (kbd "<leader>ft") 'treemacs)
+        ''}
+
+        ${optionalString cfg.emacs.modules.tools.magit ''
+          ;; Load treemacs-magit integration
+          (when (require 'treemacs-magit nil t)
+          (require 'treemacs-magit))
+        ''}
 
         ;; Evil Surround - cs, ds, ys commands
         (require 'evil-surround)
