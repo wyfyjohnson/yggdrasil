@@ -7,7 +7,7 @@
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
 
     wfetch.url = "github:iynaix/wfetch";
-    huginn.url = "codeberg:wyfy/huginn";
+    huginn.url = "github:wyfyjohnson/huginn";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
