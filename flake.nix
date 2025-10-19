@@ -7,6 +7,7 @@
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
 
     wfetch.url = "github:iynaix/wfetch";
+    huginn.url = "codeberg:wyfy/huginn";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
@@ -27,6 +28,7 @@
     home-manager,
     nix-darwin,
     wfetch,
+    huginn,
     ...
   }: let
     # home-manager configuration
@@ -38,6 +40,7 @@
         extraSpecialArgs = {
           inherit hostname;
           inherit wfetch;
+          inherit huginn;
           unstable = import nixpkgs-unstable {
             inherit system;
             config.allowUnfree = true;

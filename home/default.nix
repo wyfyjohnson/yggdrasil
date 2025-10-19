@@ -87,5 +87,6 @@
     # ollama
 
     (pkgs.callPackage ../yggdrasil.nix {})
+    huginn.packages.${pkgs.system}.default
   ];
 }
