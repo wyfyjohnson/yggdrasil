@@ -367,7 +367,7 @@ in {
         (global-set-key (kbd "C-c t") 'treemacs)
       ''}
 
-       ;;; Dashboard
+      ;;; Dashboard
       (require 'dashboard)
 
       ;; Dashboard configuration
@@ -395,15 +395,24 @@ in {
       ;; Setup dashboard
       (dashboard-setup-startup-hook)
 
-      ;; Force dashboard for emacs and emacsclient
-      (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+      ;; Create and show dashboard
+      (defun my/create-dashboard ()
+        "Create and display the dashboard."
+        (interactive)
+        (with-current-buffer (get-buffer-create "*dashboard*")
+          (dashboard-mode)
+          (dashboard-insert-startupify-lists)
+          (dashboard-refresh-buffer))
+        (switch-to-buffer "*dashboard*"))
 
-      ;; Also show dashboard for new frames (emacsclient)
+      ;; For regular emacs startup
+      (setq initial-buffer-choice 'my/create-dashboard)
+
+      ;; For emacsclient - create dashboard when new frame is made
       (add-hook 'server-after-make-frame-hook
                 (lambda ()
-                  (switch-to-buffer "*dashboard*")
-                  (dashboard-refresh-buffer)))
-
+                  (with-selected-frame (selected-frame)
+                    (my/create-dashboard))))
         ${optionalString cfg.emacs.modules.ui.modeline ''
         ;; Doom Modeline
         (require 'doom-modeline)

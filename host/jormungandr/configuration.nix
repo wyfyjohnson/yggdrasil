@@ -34,6 +34,16 @@
     };
   };
 
+  hardware.amdgpu.opencl.enable = true;
+  hardware.graphics = {
+    enable = true;
+  };
+  systemd.services.ollama = {
+    serviceConfig = {
+      Environment = "ROCR_VISIBLE_DEVICES=0";
+    };
+  };
+
   # Enable flakes
   nix.settings.experimental-features = ["nix-command" "flakes"];
   nixpkgs.config.allowUnfree = true;
