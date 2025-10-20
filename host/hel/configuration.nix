@@ -2,7 +2,7 @@
   config,
   pkgs,
   lib,
-  inputs,
+  # inputs,
   ...
 }: {
   imports = [
@@ -26,6 +26,7 @@
   system.primaryUser = "wyatt";
 
   # Nix configuration
+  nixpkgs.config.allowUnfree = true;
   nix = {
     package = pkgs.nixVersions.latest;
     extraOptions = ''
@@ -34,7 +35,6 @@
       keep-derivations = true
     '';
 
-    nixpkgs.config.allowUnfree = true;
     # Garbage collection
     gc = {
       automatic = true;

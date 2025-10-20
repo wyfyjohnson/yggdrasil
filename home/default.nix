@@ -27,7 +27,7 @@
     ./darwin.nix
     ./dotfiles.nix
     ./git.nix
-    ./hypridle.nix
+    # ./hypridle.nix
     ./linux.nix
     ./programs.nix
     ./shell.nix
