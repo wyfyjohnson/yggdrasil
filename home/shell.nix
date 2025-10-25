@@ -75,6 +75,7 @@ in {
       command -v krabby >/dev/null 2>&1 && krabby random
       autoload -Uz compinit
       compinit
+       eval "$(direnv hook zsh)"
     '';
   };
 }
