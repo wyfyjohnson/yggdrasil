@@ -64,11 +64,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1761415313,
-        "narHash": "sha256-Sn4i2lNahqtuSWPwMGuhfL2dTzoypL5iDSjLBOu3WBo=",
+        "lastModified": 1761463518,
+        "narHash": "sha256-U7cmbkGOZBjsm975TGEvd3d23WhrYFJo7Lzrxq0G6/s=",
         "owner": "wyfyjohnson",
         "repo": "huginn",
-        "rev": "9c37ee529058a3d258b70f8894eae2486576548a",
+        "rev": "a96c5bd317df66e1da8a70347cdef68f22eef0fc",
         "type": "github"
       },
       "original": {

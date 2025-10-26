@@ -1,2 +1,4 @@
 theme = catppuccin-mocha
 background-opacity = 0.7
+font-family = "Maple Mono NF"
+font-size = 18

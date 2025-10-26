@@ -33,7 +33,9 @@
       allowedUDPPorts = [];
     };
   };
-
+  nixpkgs.config.permittedInsecurePackages = [
+    "mbedtls-2.28.10"
+  ];
   hardware.amdgpu.opencl.enable = true;
   hardware.graphics = {
     enable = true;
