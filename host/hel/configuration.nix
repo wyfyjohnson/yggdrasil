@@ -54,6 +54,7 @@
     curl
     git
     helix
+    mkalias
     tree
     # raycast
     unzip
