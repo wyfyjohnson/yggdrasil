@@ -54,7 +54,7 @@ in {
         };
 
         editor = {
-          evil = true;
+          meow = true;
           multiple-cursors = true;
           snippets = true;
         };
