@@ -552,6 +552,13 @@ in {
         ;; Meow - Modal editing with Helix/Kakoune-style keybindings
         (require 'meow)
 
+        ;; Ensure insert mode allows normal typing - disable conflicting bindings
+        (defun my/ensure-insert-mode-typing ()
+          "Ensure all keys work normally in insert mode."
+          ;; Make sure no keys are bound in insert state that would interfere with typing
+          (when (boundp 'meow-insert-state-keymap)
+            (setq meow-insert-state-keymap (make-sparse-keymap))))
+
         ;; Meow setup function
         (defun meow-setup ()
           (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -566,6 +573,11 @@ in {
           (meow-leader-define-key
            ;; Command palette
            '("SPC" . execute-extended-command)
+
+           ;; Comment operations (SPC c) - like Helix Space+c
+           '("cc" . comment-line)
+           '("cC" . comment-box)
+           '("c SPC" . comment-dwim)
 
            ;; File operations (SPC f)
            '("ff" . find-file)
@@ -704,6 +716,9 @@ in {
            '("u" . meow-undo)                ;; Undo
            '("U" . meow-undo-in-selection)   ;; Undo in selection
 
+           ;; === COMMENT TOGGLE (like Helix Ctrl-c) ===
+           '("C-c" . comment-line)           ;; Comment/uncomment line or region
+
            ;; === OTHER USEFUL COMMANDS ===
            '("g" . meow-cancel-selection)    ;; Cancel selection (like Helix ESC)
            '("G" . meow-grab)                ;; Grab/secondary selection
@@ -712,6 +727,9 @@ in {
            '("m" . meow-join)                ;; Join lines (like Helix 'J')
            '("%" . mark-whole-buffer)        ;; Select entire file (like Helix '%')
            '("=" . meow-indent)              ;; Indent selection
+
+           ;; Capital C for multi-cursor - add cursor below (like Helix C)
+           '("C" . meow-line-expand)         ;; Expand selection to next line
 
            ;; Ex-mode commands (like Helix ':')
            '(":" . evil-ex)                  ;; Open command line
@@ -722,6 +740,11 @@ in {
 
         ;; Initialize Meow
         (meow-setup)
+
+        ;; Call our function to ensure insert mode is clean
+        (my/ensure-insert-mode-typing)
+
+        ;; Enable Meow globally
         (meow-global-mode 1)
 
         ;; Configure Meow behavior
@@ -729,6 +752,9 @@ in {
               meow-use-cursor-position-hack t
               meow-select-on-change t
               meow-expand-hint-remove-delay 2.0)
+
+        ;; Hook to ensure insert mode stays clean every time we enter it
+        (add-hook 'meow-insert-enter-hook 'my/ensure-insert-mode-typing)
 
         ;; Keep avy for quick jumping (works great with Meow!)
         (require 'avy)
@@ -798,11 +824,10 @@ in {
               lsp-signature-render-documentation nil
               lsp-eldoc-enable-hover nil)
 
-        ;; Explicitly unbind problematic keys that interfere with normal typing
+        ;; Explicitly unbind ALL problematic keys that interfere with normal typing
         (with-eval-after-load 'lsp-mode
-          ;; Remove any single-letter keybindings from lsp-mode-map
-          (define-key lsp-mode-map (kbd "e") nil)
-          (define-key lsp-mode-map (kbd "C-e") nil)
+          ;; Completely suppress all automatic keybindings from lsp-mode-map
+          (suppress-keymap lsp-mode-map t)
           ;; Only use LSP features through explicit prefix (C-c l)
           (define-key lsp-mode-map lsp-keymap-prefix lsp-command-map))
 
@@ -869,73 +894,83 @@ in {
       (defun format-buffer ()
         "Format the current buffer based on major mode."
         (interactive)
-        (cond
-         ;; Nix - use alejandra or nixpkgs-fmt
-         ((eq major-mode 'nix-mode)
-          (when (executable-find "nixpkgs-fmt")
-            (let ((current-point (point)))
+        ;; Save cursor position for ALL formatters
+        (let ((current-point (point))
+              (current-line (line-number-at-pos))
+              (current-column (current-column)))
+          (cond
+           ;; Nix - use alejandra or nixpkgs-fmt
+           ((eq major-mode 'nix-mode)
+            (when (executable-find "nixpkgs-fmt")
               (shell-command-on-region
                (point-min) (point-max)
                "nixpkgs-fmt"
                (current-buffer) t
-               "*nixpkgs-fmt Errors*" t)
-              (goto-char current-point))))
+               "*nixpkgs-fmt Errors*" t)))
 
-         ;; Python - use black and isort
-         ((eq major-mode 'python-mode)
-          (when (executable-find "black")
-            (shell-command-on-region
-             (point-min) (point-max)
-             "black --quiet -"
-             (current-buffer) t
-             "*Black Errors*" t))
-          (when (executable-find "isort")
-            (shell-command-on-region
-             (point-min) (point-max)
-             "isort --quiet -"
-             (current-buffer) t
-             "*isort Errors*" t)))
+           ;; Python - use black and isort
+           ((eq major-mode 'python-mode)
+            (when (executable-find "black")
+              (shell-command-on-region
+               (point-min) (point-max)
+               "black --quiet -"
+               (current-buffer) t
+               "*Black Errors*" t))
+            (when (executable-find "isort")
+              (shell-command-on-region
+               (point-min) (point-max)
+               "isort --quiet -"
+               (current-buffer) t
+               "*isort Errors*" t)))
 
-         ;; Rust - use rustfmt
-         ((eq major-mode 'rust-mode)
-          (when (executable-find "rustfmt")
-            (shell-command-on-region
-             (point-min) (point-max)
-             "rustfmt"
-             (current-buffer) t
-             "*rustfmt Errors*" t)))
+           ;; Rust - use rustfmt
+           ((eq major-mode 'rust-mode)
+            (when (executable-find "rustfmt")
+              (shell-command-on-region
+               (point-min) (point-max)
+               "rustfmt"
+               (current-buffer) t
+               "*rustfmt Errors*" t)))
 
-         ;; JavaScript/TypeScript - use prettier
-         ((or (eq major-mode 'js2-mode)
-              (eq major-mode 'typescript-mode)
-              (eq major-mode 'web-mode))
-          (when (executable-find "prettier")
-            (shell-command-on-region
-             (point-min) (point-max)
-             "prettier --stdin-filepath dummy.js"
-             (current-buffer) t
-             "*Prettier Errors*" t)))
+           ;; JavaScript/TypeScript - use prettier
+           ((or (eq major-mode 'js2-mode)
+                (eq major-mode 'typescript-mode)
+                (eq major-mode 'web-mode))
+            (when (executable-find "prettier")
+              (shell-command-on-region
+               (point-min) (point-max)
+               "prettier --stdin-filepath dummy.js"
+               (current-buffer) t
+               "*Prettier Errors*" t)))
 
-         ;; Go - use gofmt
-         ((eq major-mode 'go-mode)
-          (when (executable-find "gofmt")
-            (shell-command-on-region
-             (point-min) (point-max)
-             "gofmt"
-             (current-buffer) t
-             "*gofmt Errors*" t)))
+           ;; Go - use gofmt
+           ((eq major-mode 'go-mode)
+            (when (executable-find "gofmt")
+              (shell-command-on-region
+               (point-min) (point-max)
+               "gofmt"
+               (current-buffer) t
+               "*gofmt Errors*" t)))
 
-         ;; Shell scripts - use shfmt
-         ((eq major-mode 'sh-mode)
-          (when (executable-find "shfmt")
-            (shell-command-on-region
-             (point-min) (point-max)
-             "shfmt -i 2"
-             (current-buffer) t
-             "*shfmt Errors*" t)))
+           ;; Shell scripts - use shfmt
+           ((eq major-mode 'sh-mode)
+            (when (executable-find "shfmt")
+              (shell-command-on-region
+               (point-min) (point-max)
+               "shfmt -i 2"
+               (current-buffer) t
+               "*shfmt Errors*" t)))
 
-         ;; Fallback to built-in indent
-         (t (indent-region (point-min) (point-max)))))
+           ;; Fallback to built-in indent
+           (t (indent-region (point-min) (point-max))))
+
+          ;; Restore cursor position after formatting
+          ;; Try to restore exact point first, fall back to line+column
+          (goto-char (min current-point (point-max)))
+          ;; If the point moved significantly, try to restore line+column
+          (when (> (abs (- (line-number-at-pos) current-line)) 2)
+            (goto-line current-line)
+            (move-to-column current-column))))
 
       ;; Enable format on save for configured modes
       (defun enable-format-on-save ()

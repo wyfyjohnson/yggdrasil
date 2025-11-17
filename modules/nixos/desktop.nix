@@ -99,6 +99,7 @@
     catppuccin-sddm-corners
     jq
     rofi
+    lutris
     flameshot
     ghostty
   ];
