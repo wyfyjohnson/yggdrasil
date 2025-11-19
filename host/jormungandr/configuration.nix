@@ -62,6 +62,7 @@
   # Host-specific packages
   environment.systemPackages = with pkgs; [
     tree
+    vllm
   ];
 
   # File systems (host-specific)
