@@ -39,7 +39,7 @@ in
     # Linux-specific packages
     home.packages = with pkgs; [
       firefox
-      beets-unstable
+      beets
       bluez
       cava
       discord

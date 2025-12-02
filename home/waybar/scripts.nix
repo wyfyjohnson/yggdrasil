@@ -277,7 +277,7 @@
     done
 
     # Show rofi selector
-    selected=$(echo -en "$rofi_list" | ${pkgs.rofi-wayland}/bin/rofi -dmenu -theme "$XDG_CONFIG_HOME/waybar/rofi/ThemeSelect.rasi" -p "Select Theme")
+    selected=$(echo -en "$rofi_list" | ${pkgs.rofi}/bin/rofi -dmenu -theme "$XDG_CONFIG_HOME/waybar/rofi/ThemeSelect.rasi" -p "Select Theme")
 
     if [ -n "$selected" ]; then
       echo "$selected" > "$THEME_FILE"
@@ -346,7 +346,7 @@
     done
 
     # Show rofi selector
-    selected=$(echo -en "$rofi_list" | ${pkgs.rofi-wayland}/bin/rofi -dmenu -theme "$XDG_CONFIG_HOME/waybar/rofi/WallSelect.rasi" -p "Select Wallpaper")
+    selected=$(echo -en "$rofi_list" | ${pkgs.rofi}/bin/rofi -dmenu -theme "$XDG_CONFIG_HOME/waybar/rofi/WallSelect.rasi" -p "Select Wallpaper")
 
     if [ -n "$selected" ]; then
       wallpaper_path="$wall_dir/$selected"
@@ -421,7 +421,7 @@
       exit 1
     fi
 
-    SELECTED=$(cat "$SYMBOLS_FILE" | ${pkgs.rofi-wayland}/bin/rofi -dmenu -i -theme "$XDG_CONFIG_HOME/waybar/rofi/icons.rasi")
+    SELECTED=$(cat "$SYMBOLS_FILE" | ${pkgs.rofi}/bin/rofi -dmenu -i -theme "$XDG_CONFIG_HOME/waybar/rofi/icons.rasi")
 
     CHAR=$(echo "$SELECTED" | awk '{print $1}')
 
@@ -452,7 +452,7 @@
 
     # Rofi CMD
     rofi_cmd() {
-      ${pkgs.rofi-wayland}/bin/rofi -dmenu \
+      ${pkgs.rofi}/bin/rofi -dmenu \
         -p "Goodbye ''${USER}" \
         -mesg "Uptime: $uptime" \
         -theme "''${XDG_CONFIG_HOME}/waybar/rofi/''${theme}.rasi"
@@ -469,7 +469,7 @@
         --shutdown) ${pkgs.systemd}/bin/systemctl poweroff ;;
         --reboot)   ${pkgs.systemd}/bin/systemctl reboot ;;
         --suspend)
-          ${pkgs.mpc-cli}/bin/mpc -q pause 2>/dev/null
+          ${pkgs.mpc}/bin/mpc -q pause 2>/dev/null
           ${pkgs.alsa-utils}/bin/amixer set Master mute
           ${pkgs.systemd}/bin/systemctl suspend
           ;;

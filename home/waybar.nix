@@ -171,7 +171,7 @@ in
             tooltip = true;
             interval = 86400;
             return-type = "json";
-            on-click = "${pkgs.rofi-wayland}/bin/rofi -show drun -theme ${config.xdg.configHome}/waybar/rofi/Launcher.rasi";
+            on-click = "${pkgs.rofi}/bin/rofi -show drun -theme ${config.xdg.configHome}/waybar/rofi/Launcher.rasi";
           };
 
           "custom/theme" = {
@@ -218,7 +218,7 @@ in
             tooltip = true;
             interval = 86400;
             return-type = "json";
-            on-click = "${pkgs.cliphist}/bin/cliphist list | ${pkgs.rofi-wayland}/bin/rofi -dmenu -theme ${config.xdg.configHome}/waybar/rofi/clipboard.rasi | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy";
+            on-click = "${pkgs.cliphist}/bin/cliphist list | ${pkgs.rofi}/bin/rofi -dmenu -theme ${config.xdg.configHome}/waybar/rofi/clipboard.rasi | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy";
           };
 
           "custom/nerd" = {
@@ -721,7 +721,7 @@ in
         hyprshot
         cliphist
         wl-clipboard
-        rofi-wayland
+        rofi
       ]
       ++ lib.optionals waybarConfig.enableRecording [wf-recorder];
 
