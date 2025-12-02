@@ -57,7 +57,7 @@ in
       cliphist
       wl-clipboard
       pavucontrol
-      rofi-wayland
+      rofi
       upower
       vivaldi
       waybar

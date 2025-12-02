@@ -17,7 +17,7 @@
 
       # Noto fonts for better Unicode coverage
       noto-fonts
-      noto-fonts-emoji
+      noto-fonts-color-emoji
 
       # Icon fonts
       font-awesome
