@@ -13,6 +13,7 @@
     ../../modules/common/packages.nix
     ../../modules/common/environment.nix
     ../../modules/common/programs.nix
+    ../../modules/common/nh.nix
     ../../modules/nixos/fonts.nix
     ../../modules/nixos/locale.nix
     # NixOS-specific modules
