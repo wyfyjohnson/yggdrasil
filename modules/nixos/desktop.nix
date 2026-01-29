@@ -34,7 +34,6 @@
   services.displayManager = {
     sddm = {
       enable = true;
-      theme = "catppuccin-sddm-corners";
       wayland.enable = true;
     };
   };
@@ -102,6 +101,7 @@
     lutris
     flameshot
     ghostty
+    prismlauncher
   ];
 
   environment.sessionVariables = {
