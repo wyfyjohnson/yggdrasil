@@ -10,6 +10,12 @@
     ./hardware-configuration.nix
     # Common modules
     ../../modules/common/users.nix
+    ../../modules/common/packages.nix
+    ../../modules/common/environment.nix
+    ../../modules/common/shell.nix
+    ../../modules/common/programs.nix
+    ../../modules/common/helix.nix
+    ../../modules/common/emacs.nix
     ../../modules/nixos/fonts.nix
     ../../modules/nixos/locale.nix
     # NixOS-specific modules

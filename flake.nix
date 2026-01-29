@@ -9,11 +9,6 @@
     wfetch.url = "github:iynaix/wfetch";
     huginn.url = "github:wyfyjohnson/huginn";
 
-    home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-darwin = {
       url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
@@ -25,31 +20,11 @@
     nixpkgs,
     nixpkgs-unstable,
     nixpkgs-darwin,
-    home-manager,
     nix-darwin,
     wfetch,
     huginn,
     ...
   }: let
-    # home-manager configuration
-    homeManagerConfig = hostname: system: {
-      home-manager = {
-        useGlobalPkgs = true;
-        useUserPackages = true;
-        backupFileExtension = "backup";
-        extraSpecialArgs = {
-          inherit hostname;
-          inherit wfetch;
-          inherit huginn;
-          unstable = import nixpkgs-unstable {
-            inherit system;
-            config.allowUnfree = true;
-          };
-        };
-        users.wyatt = ./home;
-      };
-    };
-
     # Helper function for NixOS systems
     mkNixosSystem = {
       system,
@@ -57,12 +32,15 @@
     }:
       nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = {inherit hostname;};
+        specialArgs = {
+          inherit hostname wfetch huginn;
+          unstable = import nixpkgs-unstable {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        };
         modules = [
           ./host/${hostname}/configuration.nix
-          home-manager.nixosModules.home-manager
-          # homeManagerConfig
-          (homeManagerConfig hostname system)
         ];
       };
 
@@ -73,10 +51,15 @@
     }:
       nix-darwin.lib.darwinSystem {
         inherit system;
+        specialArgs = {
+          inherit hostname wfetch huginn;
+          unstable = import nixpkgs-darwin {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        };
         modules = [
           ./host/${hostname}/configuration.nix
-          home-manager.darwinModules.home-manager
-          (homeManagerConfig hostname system)
         ];
       };
   in {
@@ -97,24 +80,6 @@
       hel = mkDarwinSystem {
         system = "aarch64-darwin";
         hostname = "hel";
-      };
-    };
-
-    # Standalone Home Manager Configurations
-    homeConfigurations = {
-      "wyatt@linux" = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs {
-          system = "x86_64-linux";
-          config.allowUnfree = true;
-        };
-        modules = [./home];
-      };
-      "wyatt@darwin" = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs-darwin {
-          system = "aarch64-darwin";
-          config.allowUnfree = true;
-        };
-        modules = [./home];
       };
     };
   };
