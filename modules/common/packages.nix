@@ -3,7 +3,8 @@
   huginn,
   wfetch,
   ...
-}: {
+}:
+{
   environment.systemPackages = with pkgs; [
     # Development tools
     alejandra
@@ -30,6 +31,7 @@
 
     # Editors
     helix
+    zed-editor
 
     # Browsers & Communication
     discord
@@ -85,7 +87,7 @@
     zsh-syntax-highlighting
 
     # Custom packages
-    (pkgs.callPackage ../../yggdrasil.nix {})
+    (pkgs.callPackage ../../yggdrasil.nix { })
     huginn.packages.${pkgs.system}.default
     wfetch.packages.${pkgs.system}.default
   ];
