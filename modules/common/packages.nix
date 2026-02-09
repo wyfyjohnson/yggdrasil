@@ -88,7 +88,7 @@
 
     # Custom packages
     (pkgs.callPackage ../../yggdrasil.nix { })
-    huginn.packages.${pkgs.system}.default
-    wfetch.packages.${pkgs.system}.default
+    huginn.packages.${pkgs.stdenv.hostPlatform.system}.default
+    wfetch.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }
