@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   # Bootloader configuration for desktop systems
   boot.loader = {
     systemd-boot.enable = true;
@@ -41,7 +42,7 @@
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-gtk];
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
     config.common.default = "*";
   };
 
@@ -97,11 +98,26 @@
     gnome-system-monitor
     catppuccin-sddm-corners
     jq
+    bitwarden-desktop
     rofi
+    rofi-rbw
     lutris
     flameshot
     ghostty
     prismlauncher
+
+    # Catppuccin Macchiato theming
+    (catppuccin-gtk.override {
+      variant = "macchiato";
+      accents = [ "mauve" ];
+    })
+    (catppuccin-kvantum.override {
+      variant = "macchiato";
+      accent = "mauve";
+    })
+    catppuccin-qt5ct
+    libsForQt5.qtstyleplugin-kvantum
+    kdePackages.qtstyleplugin-kvantum
   ];
 
   environment.sessionVariables = {
@@ -109,7 +125,56 @@
     GTK_USE_PORTAL = "0";
     XCURSOR_THEME = "Bibata-Modern-Ice";
     XCURSOR_SIZE = "24";
+
+    # GTK theming - Catppuccin Macchiato
+    GTK_THEME = "catppuccin-macchiato-mauve-standard";
+
+    # QT theming - use Kvantum
+    QT_QPA_PLATFORMTHEME = "qt5ct";
+    QT_STYLE_OVERRIDE = "kvantum";
   };
+
+  # GTK3 theme configuration - Catppuccin Macchiato
+  environment.etc."xdg/gtk-3.0/settings.ini".text = ''
+    [Settings]
+    gtk-theme-name=catppuccin-macchiato-mauve-standard
+    gtk-icon-theme-name=Adwaita
+    gtk-cursor-theme-name=Bibata-Modern-Ice
+    gtk-cursor-theme-size=24
+  '';
+
+  # GTK4 theme configuration - Catppuccin Macchiato
+  environment.etc."xdg/gtk-4.0/settings.ini".text = ''
+    [Settings]
+    gtk-theme-name=catppuccin-macchiato-mauve-standard
+    gtk-icon-theme-name=Adwaita
+    gtk-cursor-theme-name=Bibata-Modern-Ice
+    gtk-cursor-theme-size=24
+  '';
+
+  # Kvantum theme configuration - Catppuccin Macchiato
+  environment.etc."xdg/Kvantum/kvantum.kvconfig".text = ''
+    [General]
+    theme=catppuccin-macchiato-mauve
+  '';
+
+  # qt5ct configuration - use Kvantum as the style
+  environment.etc."xdg/qt5ct/qt5ct.conf".text = ''
+    [Appearance]
+    style=kvantum
+    color_scheme_path=
+    custom_palette=false
+    standard_dialogs=default
+  '';
+
+  # qt6ct configuration - use Kvantum as the style
+  environment.etc."xdg/qt6ct/qt6ct.conf".text = ''
+    [Appearance]
+    style=kvantum
+    color_scheme_path=
+    custom_palette=false
+    standard_dialogs=default
+  '';
 
   # GNOME services
   services.gnome = {
@@ -121,8 +186,8 @@
   # Flatpak support
   services.flatpak.enable = true;
   systemd.services.flatpak-repo = {
-    wantedBy = ["multi-user.target"];
-    path = [pkgs.flatpak];
+    wantedBy = [ "multi-user.target" ];
+    path = [ pkgs.flatpak ];
     script = ''
       flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
     '';

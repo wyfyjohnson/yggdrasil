@@ -8,7 +8,7 @@
     enable = true;
 
     settings = {
-      theme = "catppuccin_mocha"; # or your preferred theme
+      theme = "catppuccin_macchiato";
 
       editor = {
         bufferline = "always";
@@ -43,7 +43,9 @@
         {
           name = "nix";
           language-servers = ["nil"];
-          formatter = {command = "alejandra";};
+          formatter = {
+            command = "alejandra";
+          };
           auto-format = true;
         }
         {

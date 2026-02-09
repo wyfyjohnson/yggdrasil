@@ -4,8 +4,7 @@
   pkgs,
   lib,
   ...
-}:
-{
+}: {
   # Gaming-related configuration
 
   # Steam
@@ -21,7 +20,6 @@
   # Gaming packages
   environment.systemPackages = with pkgs; [
     # Game launchers
-    lutris
     heroic
     bottles
 

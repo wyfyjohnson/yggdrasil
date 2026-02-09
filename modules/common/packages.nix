@@ -3,8 +3,7 @@
   huginn,
   wfetch,
   ...
-}:
-{
+}: {
   environment.systemPackages = with pkgs; [
     # Development tools
     alejandra
@@ -34,8 +33,10 @@
     zed-editor
 
     # Browsers & Communication
+    bitwarden-cli
     discord
     firefox
+    rbw
     signal-desktop
     vivaldi
     webcord
@@ -87,7 +88,7 @@
     zsh-syntax-highlighting
 
     # Custom packages
-    (pkgs.callPackage ../../yggdrasil.nix { })
+    (pkgs.callPackage ../../yggdrasil.nix {})
     huginn.packages.${pkgs.stdenv.hostPlatform.system}.default
     wfetch.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
