@@ -101,6 +101,8 @@
     bitwarden-desktop
     rofi
     rofi-rbw
+    xdotool
+    xsel
     lutris
     flameshot
     ghostty
