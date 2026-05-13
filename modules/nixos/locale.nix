@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   # Time zone configuration
   time.timeZone = "America/Los_Angeles";
 
@@ -39,9 +40,15 @@
   # Keyboard layout
   services.xserver = {
     xkb = {
-      layout = "us";
-      variant = "";
-      options = "caps:escape"; # Map Caps Lock to Escape
+      layout = "us,ara";
+      variant = ",";
+      options = "caps:escape,grp:alt_shift_toggle"; # Map Caps Lock to Escape
     };
+  };
+
+  environment.variables = {
+    XKB_DEFAULT_LAYOUT = "us,ara";
+    XKB_DEFAULT_VARIANT = ",";
+    XKB_DEFAULT_OPTIONS = "caps:escape,grp:alt_shift_toggle";
   };
 }

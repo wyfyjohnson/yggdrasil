@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   fonts = {
     packages = with pkgs; [
       # Programming fonts
@@ -19,6 +20,9 @@
       noto-fonts
       noto-fonts-color-emoji
 
+      # Arabic fonts
+      kawkab-mono-font
+
       # Icon fonts
       font-awesome
 
@@ -31,10 +35,24 @@
     fontconfig = {
       enable = true;
       defaultFonts = {
-        serif = ["Liberation Serif" "Noto Serif"];
-        sansSerif = ["Liberation Sans" "Noto Sans"];
-        monospace = ["Maple Mono NF" "FiraCode Nerd Font" "JetBrainsMono Nerd Font" "Liberation Mono"];
-        emoji = ["Noto Color Emoji"];
+        serif = [
+          "Liberation Serif"
+          "Noto Serif"
+          "Noto Naskh Arabic"
+        ];
+        sansSerif = [
+          "Liberation Sans"
+          "Noto Sans"
+          "Noto Sans Arabic"
+        ];
+        monospace = [
+          "Maple Mono NF"
+          "Kawkab Mono"
+          "FiraCode Nerd Font"
+          "JetBrainsMono Nerd Font"
+          "Liberation Mono"
+        ];
+        emoji = [ "Noto Color Emoji" ];
       };
 
       # Font priority configuration
@@ -43,6 +61,7 @@
           <family>monospace</family>
           <prefer>
             <family>Maple Mono NF</family>
+            <family>Kawkab Mono</family>
             <family>FiraCode Nerd Font</family>
             <family>JetBrainsMono Nerd Font</family>
             <family>Liberation Mono</family>

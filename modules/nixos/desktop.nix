@@ -26,10 +26,6 @@
     desktopManager = {
       cinnamon.enable = true;
     };
-    xkb = {
-      layout = "us";
-      variant = "";
-    };
   };
   # Display Manager - SDDM with Catppuccin theme
   services.displayManager = {
